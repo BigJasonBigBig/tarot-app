@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神祕星辰塔羅牌 - 探索命運與潛意識</title>
+    <meta name="description" content="一個神祕而精緻的塔羅牌占卜網頁，透過星辰的力量，為您解答過去、現在與未來的疑惑。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Starry & Nebula Cosmic Background -->
+    <div class="universe-bg">
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+    </div>
+    
+    <!-- Floating Mystic Veil Effect -->
+    <div class="mystic-veil"></div>
+
+    <!-- Header Section -->
+    <header>
+        <h1 id="app-title">神祕星辰塔羅 (Celestial Tarot)</h1>
+        <p class="subtitle">解鎖您的潛意識與命運指引</p>
+        <div class="divider">
+            <span class="divider-icon">✦</span>
+            <span class="divider-icon">★</span>
+            <span class="divider-icon">✦</span>
+        </div>
+    </header>
+
+    <!-- Main Section -->
+    <main>
+        <!-- Spread Option Buttons -->
+        <div class="spread-selector" id="spreadSelector">
+            <!-- Dynamically populated by JS -->
+        </div>
+
+        <!-- Central Deck to click and draw from -->
+        <div class="deck-container">
+            <div class="deck-status" id="deckStatus">請點擊牌堆抽取第 1 張牌</div>
+            <div class="mystic-deck" title="點擊抽取一張牌" tabindex="0" role="button" aria-label="抽取一張塔羅牌">
+                <!-- Stacked cards mockup for deck appearance -->
+                <div class="deck-card" style="transform: rotate(-3deg) translate(-8px, -4px);">
+                    <div class="card-back-pattern"></div>
+                </div>
+                <div class="deck-card" style="transform: rotate(2deg) translate(4px, 2px);">
+                    <div class="card-back-pattern"></div>
+                </div>
+                <div class="deck-card" style="transform: rotate(-1deg) translate(-2px, -2px);">
+                    <div class="card-back-pattern"></div>
+                </div>
+                <div class="deck-card" style="transform: rotate(0deg) translate(0px, 0px);">
+                    <div class="card-back-pattern"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The actual Spread Board where cards will be drawn into -->
+        <div class="spread-board" id="spreadBoard">
+            <!-- Dynamically populated card slots -->
+        </div>
+
+        <!-- The detailed reading results -->
+        <section class="reading-result" id="readingResult">
+            <h2 class="result-title">★ 命運啟示錄 ★</h2>
+            <div class="card-explanation-list" id="explanationList">
+                <!-- Detailed card interpretations will go here -->
+            </div>
+            
+            <div class="action-container" id="actionContainer" style="display: none;">
+                <button class="action-btn" id="resetBtn">重新占卜</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
