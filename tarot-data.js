@@ -1313,5 +1313,231 @@ SUITS.forEach(suit => {
 const TAROT_DECK = [...TAROT_CARDS, ...MINOR_ARCANA];
 
 // Export to global window context
+
+// ---------------------------------------------------------------------------
+// Extra tarot knowledge layer: astrology/element correspondence, numerology,
+// and a simple yes/no guidance system, merged onto every card in TAROT_DECK.
+// This is a general reference synthesized from common, widely-taught tarot
+// traditions (Rider-Waite-Smith + Golden Dawn correspondences) — offered as a
+// guideline for reflection, not a deterministic prediction.
+// ---------------------------------------------------------------------------
+
+const NUMBER_MEANINGS = {
+    0: "無限的能量：尚未成形的起點，是一切可能性的種子，也代表全然的自由。",
+    1: "起始的能量：新機會、原創的火花，一切尚未定型，充滿可能性。",
+    2: "二元的能量：選擇、夥伴關係、需要找到平衡點。",
+    3: "成長的能量：初步的成果開始展現，適合尋求協作與交流。",
+    4: "穩固的能量：建立基礎與秩序，但也要留意是否過度保守。",
+    5: "變動的能量：挑戰、衝突或失序出現，是成長必經的陣痛。",
+    6: "和諧的能量：付出與回報開始找到平衡，關係趨於穩定。",
+    7: "內省的能量：需要停下來思考、評估，而非急著往前衝。",
+    8: "力量的能量：透過紀律與專注，把想法落實為具體成果。",
+    9: "接近完成的能量：大部分的旅程已走完，但仍需最後的堅持。",
+    10: "循環完成的能量：一個階段徹底結束，也是下一個循環的種子。"
+};
+
+const COURT_NUMEROLOGY = {
+    page: "宮廷牌．侍從：學習與探索的角色，代表該元素剛萌芽、還在摸索的階段。",
+    knight: "宮廷牌．騎士：行動與追尋的角色，代表該元素被積極地實踐與驅動。",
+    queen: "宮廷牌．皇后：內化與涵容的角色，代表該元素成熟、由內而外自然流露。",
+    king: "宮廷牌．國王：精通與掌權的角色，代表該元素被完全掌握並展現於外在的權威。"
+};
+
+// Reduce a Major Arcana number (0-21) down to a single digit for its
+// numerology reading, the way most numerology-based tarot guides do.
+function reduceMajorNumber(n) {
+    if (n === 0) return 0;
+    let x = n;
+    while (x > 9) {
+        x = String(x).split('').reduce((sum, d) => sum + Number(d), 0);
+    }
+    return x;
+}
+
+const MAJOR_ROMAN_TO_INT = {
+    "0": 0, "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7,
+    "VIII": 8, "IX": 9, "X": 10, "XI": 11, "XII": 12, "XIII": 13, "XIV": 14,
+    "XV": 15, "XVI": 16, "XVII": 17, "XVIII": 18, "XIX": 19, "XX": 20, "XXI": 21
+};
+
+// Traditional Golden-Dawn-style astrology/element attributions for each
+// Major Arcana card, plus a curated yes/no leaning for quick guidance.
+const MAJOR_EXTRA_INFO = {
+    fool:        { astro: "元素：風 Air（自由不羈、無拘無束的能量）",
+        yesNo: { upright: { answer: "maybe", note: "值得放手一試，但請留意潛在的風險。" }, reversed: { answer: "no", note: "時機尚未成熟，貿然行動容易後悔。" } } },
+    magician:    { astro: "行星：水星 Mercury（溝通、智識、實踐的力量）",
+        yesNo: { upright: { answer: "yes", note: "你已具備足夠的能力與資源去實現它。" }, reversed: { answer: "no", note: "資源或方向尚未到位，容易淪為空談。" } } },
+    priestess:   { astro: "天體：月亮 Moon（直覺、潛意識、隱藏的真相）",
+        yesNo: { upright: { answer: "maybe", note: "答案尚未明朗，先相信直覺、耐心等待。" }, reversed: { answer: "no", note: "資訊被隱瞞或誤導，暫時看不清全貌。" } } },
+    empress:     { astro: "行星：金星 Venus（豐盛、滋養、創造與愛）",
+        yesNo: { upright: { answer: "yes", note: "豐盛與滋養的能量站在你這一邊。" }, reversed: { answer: "maybe", note: "資源或情感上有些匱乏感，需要先照顧好自己。" } } },
+    emperor:     { astro: "星座：牡羊座 Aries（結構、權威、掌控力）",
+        yesNo: { upright: { answer: "yes", note: "只要建立清楚的規劃與紀律，結果會很穩固。" }, reversed: { answer: "no", note: "過度控制或僵化的做法會帶來阻力。" } } },
+    hierophant:  { astro: "星座：金牛座 Taurus（傳統、制度、既定的道路）",
+        yesNo: { upright: { answer: "yes", note: "依循既有的規範或尋求前輩指引會比較順利。" }, reversed: { answer: "maybe", note: "傳統做法未必適用，可考慮走一條不一樣的路。" } } },
+    lovers:      { astro: "星座：雙子座 Gemini（連結、選擇、價值觀的一致）",
+        yesNo: { upright: { answer: "yes", note: "彼此的心意一致，這是值得投入的連結。" }, reversed: { answer: "no", note: "價值觀或溝通上出現落差，需要先釐清。" } } },
+    chariot:     { astro: "星座：巨蟹座 Cancer（意志力、掌控方向、勝利）",
+        yesNo: { upright: { answer: "yes", note: "只要意志堅定、方向明確，就能順利達成。" }, reversed: { answer: "no", note: "方向不一致或內部拉扯會讓進展停滯。" } } },
+    strength:    { astro: "星座：獅子座 Leo（內在力量、溫柔的堅韌）",
+        yesNo: { upright: { answer: "yes", note: "用溫柔而堅定的態度面對，會比強硬更有效。" }, reversed: { answer: "maybe", note: "信心正在動搖，先找回內在的力量再前進。" } } },
+    hermit:      { astro: "星座：處女座 Virgo（內省、獨處、尋求真理）",
+        yesNo: { upright: { answer: "maybe", note: "此刻更適合先向內探索，答案還需要一些時間沉澱。" }, reversed: { answer: "no", note: "過度孤立反而讓你看不清全貌，適時尋求陪伴。" } } },
+    wheel:       { astro: "行星：木星 Jupiter（命運、機運、循環的轉折）",
+        yesNo: { upright: { answer: "yes", note: "命運的風向正在轉為對你有利。" }, reversed: { answer: "no", note: "這段時間運勢起伏較大，宜靜觀其變。" } } },
+    justice:     { astro: "星座：天秤座 Libra（公平、因果、清晰的判斷）",
+        yesNo: { upright: { answer: "yes", note: "只要合情合理，結果會是公平且對等的。" }, reversed: { answer: "no", note: "目前的處理方式有失公允，值得重新檢視。" } } },
+    hangedman:   { astro: "元素：水 Water（暫停、犧牲、換個角度看世界）",
+        yesNo: { upright: { answer: "maybe", note: "現在適合暫停等待，而不是急著採取行動。" }, reversed: { answer: "no", note: "持續的拖延或抗拒改變只會讓情況更僵持。" } } },
+    death:       { astro: "星座：天蠍座 Scorpio（結束、蛻變、徹底的轉化）",
+        yesNo: { upright: { answer: "no", note: "這代表某個階段的結束，而非你期待的延續。" }, reversed: { answer: "no", note: "該放手的執著遲遲無法放下，轉化正在被卡住。" } } },
+    temperance:  { astro: "星座：射手座 Sagittarius（調和、耐心、循序漸進）",
+        yesNo: { upright: { answer: "yes", note: "只要保持耐心、循序漸進，結果會趨於和諧。" }, reversed: { answer: "no", note: "步調失衡、太過極端，需要重新找回平衡。" } } },
+    devil:       { astro: "星座：摩羯座 Capricorn（束縛、慾望、不健康的依附）",
+        yesNo: { upright: { answer: "no", note: "這段關係或選擇可能帶有不健康的束縛。" }, reversed: { answer: "yes", note: "你正在鬆開束縛，準備掙脫不再適合的處境。" } } },
+    tower:       { astro: "行星：火星 Mars（劇變、衝擊、瞬間的瓦解）",
+        yesNo: { upright: { answer: "no", note: "會有突如其來的變化，計畫恐怕難以照原樣進行。" }, reversed: { answer: "no", note: "該面對的衝擊被拖延，壓力正在暗中累積。" } } },
+    star:        { astro: "星座：水瓶座 Aquarius（希望、療癒、對未來的信念）",
+        yesNo: { upright: { answer: "yes", note: "懷抱希望前進，事情正朝好的方向療癒與開展。" }, reversed: { answer: "no", note: "信心正在流失，先給自己一些療癒與喘息的空間。" } } },
+    moon:        { astro: "星座：雙魚座 Pisces（迷惘、潛意識、尚未清晰的真相）",
+        yesNo: { upright: { answer: "maybe", note: "事情尚未明朗，很多擔憂可能只是想像放大了。" }, reversed: { answer: "yes", note: "混亂正在散去，真相與清晰感即將浮現。" } } },
+    sun:         { astro: "天體：太陽 Sun（成功、活力、毫無保留的喜悅）",
+        yesNo: { upright: { answer: "yes", note: "這是牌組中最正向、最明確的肯定訊號之一。" }, reversed: { answer: "maybe", note: "好結果仍在，但可能不如預期那樣張揚顯著。" } } },
+    judgement:   { astro: "元素：火 Fire（覺醒、重生、對過去的總結與釋放）",
+        yesNo: { upright: { answer: "yes", note: "這是一次重要的覺醒與更新，值得把握。" }, reversed: { answer: "no", note: "對自己的評判太過嚴苛，卡在自我懷疑裡。" } } },
+    world:       { astro: "行星：土星 Saturn（圓滿、整合、階段性的完成）",
+        yesNo: { upright: { answer: "yes", note: "一個完整的階段即將圓滿達成，值得慶祝。" }, reversed: { answer: "maybe", note: "還差最後一哩路，尚未真正走到完成。" } } }
+};
+
+const SUIT_ELEMENT_EN = { wands: "Fire", cups: "Water", swords: "Air", pentacles: "Earth" };
+
+// Curated yes/no guidance for all 56 Minor Arcana cards, based on their
+// standard Rider-Waite-Smith meanings (each suit x rank combination is
+// hand-checked rather than derived from a generic formula, since suits genuinely
+// differ in tone — e.g. Nine of Swords is anxious while Nine of Cups is content).
+const MINOR_YESNO = {
+    wands_ace:     { upright: { answer: "yes", note: "新靈感、新機會正在浮現。" }, reversed: { answer: "maybe", note: "機會延遲，方向感尚未穩固。" } },
+    wands_2:       { upright: { answer: "yes", note: "正在規劃，前景樂觀。" }, reversed: { answer: "maybe", note: "猶豫不決，仍在按兵不動。" } },
+    wands_3:       { upright: { answer: "yes", note: "拓展順利，機會在望。" }, reversed: { answer: "maybe", note: "進度比預期慢一些。" } },
+    wands_4:       { upright: { answer: "yes", note: "值得慶祝的好結果。" }, reversed: { answer: "maybe", note: "慶祝被延後，並非全然否定。" } },
+    wands_5:       { upright: { answer: "no", note: "競爭與衝突增加了阻力。" }, reversed: { answer: "maybe", note: "衝突正在逐漸化解。" } },
+    wands_6:       { upright: { answer: "yes", note: "勝利與好消息就在眼前。" }, reversed: { answer: "maybe", note: "成果被延遲或尚未被看見。" } },
+    wands_7:       { upright: { answer: "maybe", note: "需要堅持捍衛立場，結果未定。" }, reversed: { answer: "no", note: "難以招架各方壓力。" } },
+    wands_8:       { upright: { answer: "yes", note: "事情快速推進，好消息在路上。" }, reversed: { answer: "maybe", note: "出現延誤與溝通不良。" } },
+    wands_9:       { upright: { answer: "maybe", note: "已經很努力，接近終點但仍需堅持。" }, reversed: { answer: "no", note: "疲憊感讓你很想放棄。" } },
+    wands_10:      { upright: { answer: "maybe", note: "目標將達成，但代價是龐大的負擔。" }, reversed: { answer: "no", note: "不堪重負，是該放手部分責任了。" } },
+    wands_page:    { upright: { answer: "yes", note: "充滿熱情的新消息或起點。" }, reversed: { answer: "maybe", note: "三分鐘熱度，需要更多耐心。" } },
+    wands_knight:  { upright: { answer: "yes", note: "行動力強，勇於嘗試。" }, reversed: { answer: "no", note: "衝動躁進，欠缺規劃。" } },
+    wands_queen:   { upright: { answer: "yes", note: "自信與魅力帶來好結果。" }, reversed: { answer: "maybe", note: "信心動搖，需要重新聚焦。" } },
+    wands_king:    { upright: { answer: "yes", note: "有遠見的領導帶來成功。" }, reversed: { answer: "maybe", note: "獨斷專行可能造成阻礙。" } },
+
+    cups_ace:      { upright: { answer: "yes", note: "新的情感或創意能量正湧現。" }, reversed: { answer: "maybe", note: "情感受阻或被壓抑。" } },
+    cups_2:        { upright: { answer: "yes", note: "和諧的連結與吸引力。" }, reversed: { answer: "maybe", note: "關係略失衡，需要溝通。" } },
+    cups_3:        { upright: { answer: "yes", note: "值得慶祝的好消息，友誼支持著你。" }, reversed: { answer: "maybe", note: "團體中出現了一些小摩擦。" } },
+    cups_4:        { upright: { answer: "no", note: "提不起興趣，容易錯過眼前的好機會。" }, reversed: { answer: "maybe", note: "重新燃起了對事物的興趣。" } },
+    cups_5:        { upright: { answer: "no", note: "失落與遺憾佔據了心思。" }, reversed: { answer: "maybe", note: "正從傷痛中慢慢恢復。" } },
+    cups_6:        { upright: { answer: "yes", note: "懷舊而美好的能量，值得信任。" }, reversed: { answer: "maybe", note: "停留在過去，難以往前走。" } },
+    cups_7:        { upright: { answer: "maybe", note: "選項很多，但需要先看清真相。" }, reversed: { answer: "yes", note: "看清楚後，你能做出清醒的決定。" } },
+    cups_8:        { upright: { answer: "maybe", note: "離開表面的滿足，去尋找更深的意義。" }, reversed: { answer: "no", note: "害怕改變而勉強留下。" } },
+    cups_9:        { upright: { answer: "yes", note: "願望實現，心滿意足。" }, reversed: { answer: "maybe", note: "表面滿足，內心其實仍有缺口。" } },
+    cups_10:       { upright: { answer: "yes", note: "圓滿與幸福的結果。" }, reversed: { answer: "maybe", note: "表面和諧，實際仍有裂痕待修復。" } },
+    cups_page:     { upright: { answer: "yes", note: "充滿直覺與好消息的訊號。" }, reversed: { answer: "maybe", note: "情緒不夠成熟，訊息還不明確。" } },
+    cups_knight:   { upright: { answer: "yes", note: "浪漫的邀約或提案值得期待。" }, reversed: { answer: "maybe", note: "言過其實，實際行動略顯不足。" } },
+    cups_queen:    { upright: { answer: "yes", note: "同理心帶來正向的結果。" }, reversed: { answer: "maybe", note: "情緒化正在影響判斷。" } },
+    cups_king:     { upright: { answer: "yes", note: "情緒成熟穩定，帶來好結果。" }, reversed: { answer: "maybe", note: "表面冷靜，內心其實壓抑著波動。" } },
+
+    swords_ace:    { upright: { answer: "yes", note: "清晰的洞見帶來突破。" }, reversed: { answer: "no", note: "思緒混亂，尚未看清真相。" } },
+    swords_2:      { upright: { answer: "no", note: "陷入僵局，仍在逃避做決定。" }, reversed: { answer: "maybe", note: "開始願意面對抉擇了。" } },
+    swords_3:      { upright: { answer: "no", note: "心痛與失落難以避免。" }, reversed: { answer: "maybe", note: "傷痛正在慢慢癒合。" } },
+    swords_4:      { upright: { answer: "maybe", note: "需要先休息，暫不宜貿然行動。" }, reversed: { answer: "yes", note: "休息夠了，準備重新出發。" } },
+    swords_5:      { upright: { answer: "no", note: "這場衝突裡沒有真正的贏家。" }, reversed: { answer: "maybe", note: "衝突正在落幕，但餘波仍在。" } },
+    swords_6:      { upright: { answer: "yes", note: "正在渡過難關，情況會逐漸好轉。" }, reversed: { answer: "maybe", note: "過渡期尚未真正結束。" } },
+    swords_7:      { upright: { answer: "no", note: "暗藏欺瞞或不夠光明正大的策略。" }, reversed: { answer: "maybe", note: "真相即將浮現。" } },
+    swords_8:      { upright: { answer: "no", note: "感覺受困，但限制其實多來自自己。" }, reversed: { answer: "yes", note: "正在找到脫困的方法。" } },
+    swords_9:      { upright: { answer: "no", note: "焦慮與恐懼放大了問題本身。" }, reversed: { answer: "maybe", note: "開始能放下一部分的憂慮。" } },
+    swords_10:     { upright: { answer: "no", note: "徹底的結束，但也代表谷底已經過去。" }, reversed: { answer: "maybe", note: "最壞的已經過去，正在慢慢復原。" } },
+    swords_page:   { upright: { answer: "maybe", note: "需要更多資訊才能下判斷。" }, reversed: { answer: "no", note: "八卦或不實訊息正在干擾判斷。" } },
+    swords_knight: { upright: { answer: "maybe", note: "行動快速，但可能不夠周全。" }, reversed: { answer: "no", note: "魯莽衝動可能帶來反效果。" } },
+    swords_queen:  { upright: { answer: "yes", note: "理性的分析帶來清楚的答案。" }, reversed: { answer: "maybe", note: "過度批判可能影響了判斷。" } },
+    swords_king:   { upright: { answer: "yes", note: "公正且理性的決策值得信賴。" }, reversed: { answer: "maybe", note: "過於冷酷，可能忽略了人情。" } },
+
+    pentacles_ace:    { upright: { answer: "yes", note: "實質的機會正在出現。" }, reversed: { answer: "maybe", note: "機會延遲，基礎尚未穩固。" } },
+    pentacles_2:      { upright: { answer: "maybe", note: "正在努力維持平衡，結果仍在調整中。" }, reversed: { answer: "no", note: "資源分身乏術，難以兼顧。" } },
+    pentacles_3:      { upright: { answer: "yes", note: "團隊合作帶來扎實的成果。" }, reversed: { answer: "maybe", note: "合作出現分歧，需要協調。" } },
+    pentacles_4:      { upright: { answer: "maybe", note: "穩固，但也可能過於保守。" }, reversed: { answer: "no", note: "過度執著於掌控，反而錯失機會。" } },
+    pentacles_5:      { upright: { answer: "no", note: "資源匱乏，或感覺被排除在外。" }, reversed: { answer: "maybe", note: "處境正在慢慢好轉。" } },
+    pentacles_6:      { upright: { answer: "yes", note: "公平的給予與收穫。" }, reversed: { answer: "maybe", note: "付出與回報不太對等，需留意。" } },
+    pentacles_7:      { upright: { answer: "maybe", note: "成果仍在累積中，需要耐心等待。" }, reversed: { answer: "no", note: "努力似乎沒有得到相應的回報。" } },
+    pentacles_8:      { upright: { answer: "yes", note: "專注精進帶來扎實的進展。" }, reversed: { answer: "maybe", note: "品質或熱情有些下滑。" } },
+    pentacles_9:      { upright: { answer: "yes", note: "憑自己的努力獲得富足與自由。" }, reversed: { answer: "maybe", note: "表面獨立，實際仍有依賴。" } },
+    pentacles_10:     { upright: { answer: "yes", note: "長遠且穩定的成功與傳承。" }, reversed: { answer: "maybe", note: "家庭或財務問題需要處理。" } },
+    pentacles_page:   { upright: { answer: "yes", note: "務實的新機會或學習計畫值得投入。" }, reversed: { answer: "maybe", note: "缺乏實際行動，只停留在計畫階段。" } },
+    pentacles_knight: { upright: { answer: "yes", note: "穩紮穩打，值得信賴的進展。" }, reversed: { answer: "no", note: "進度停滯，過於墨守成規。" } },
+    pentacles_queen:  { upright: { answer: "yes", note: "務實且慷慨的能量帶來安全感。" }, reversed: { answer: "maybe", note: "過度操心瑣事，忽略了自己。" } },
+    pentacles_king:   { upright: { answer: "yes", note: "穩健的實力帶來實質的成功。" }, reversed: { answer: "maybe", note: "過度重視物質，可能忽略了其他面向。" } }
+};
+
+const YES_NO_LABEL = { yes: "傾向：是", no: "傾向：否", maybe: "傾向：不確定" };
+
+// Curated "signature" card-combination readings: when two specific cards
+// land in the same spread together, tarot books commonly call out a
+// well-known synergy between them. Keyed by "<id1>|<id2>" sorted alphabetically.
+const CARD_COMBINATIONS = {};
+function addCombo(a, b, text) {
+    const key = [a, b].sort().join('|');
+    CARD_COMBINATIONS[key] = text;
+}
+addCombo("death", "star", "「置之死地而後生」的強力組合：舊有的一切徹底結束後，全新的希望正在浮現，這是重生前必要的清空。");
+addCombo("lovers", "cups_2", "極為和諧的感情連結，暗示彼此心意相通、深刻的靈魂契合，是難得的雙向奔赴。");
+addCombo("star", "tower", "巨變之後迎來療癒與希望：混亂終將帶來新的信念與方向，黑暗過後總會有光。");
+addCombo("fool", "magician", "全新的開始加上足夠的能力與資源，這是勇敢展開行動、心想事成的絕佳組合。");
+addCombo("sun", "swords_10", "最谷底的結束後，迎來燦爛的新生：這代表否極泰來，黑暗之後必有光明。");
+addCombo("devil", "tower", "長期壓抑或束縛的狀態即將被劇烈的方式打破，過程震撼，卻是掙脫枷鎖的必經之路。");
+addCombo("empress", "wands_ace", "豐盛與新機會同時降臨，代表在創造力與資源上都會有令人滿意的收穫。");
+addCombo("hermit", "moon", "需要更多獨處與內省的時間，答案尚未完全清晰，此刻適合向內探索而非急著對外行動。");
+addCombo("justice", "swords_2", "一個懸而未決的抉擇，終於會有公平、清晰的答案浮現。");
+addCombo("wheel", "world", "一個完整循環真正走向圓滿的結束，代表命運的安排恰好將一切帶向最好的結果。");
+addCombo("cups_10", "sun", "家庭與幸福感達到顛峰，這是少見的極度正向組合，代表由衷的快樂與圓滿。");
+addCombo("moon", "swords_9", "焦慮與不安可能被過度放大，很多恐懼其實只存在於想像之中，事情不一定如你所想的糟。");
+addCombo("wands_ace", "wands_3", "全新的計畫正快速展開，並且已經看見未來擴展的契機，適合積極對外發展。");
+addCombo("hangedman", "wheel", "暫時的停滯其實是命運巧妙的安排，換個角度看世界，會發現轉機正在醞釀。");
+addCombo("strength", "sun", "內在的力量終將帶來外顯的成功與肯定，過程雖然需要耐心，但結果值得期待。");
+addCombo("lovers", "swords_2", "面臨情感或關係上的重要抉擇，需要誠實面對自己真正的心意，才能做出無悔的決定。");
+addCombo("cups_ace", "empress", "情感與創造力同時湧現，是孕育新關係或新作品的絕佳能量。");
+addCombo("cups_9", "devil", "表面看似享樂滿足，實際上可能陷入不健康的依賴或欲望，值得誠實檢視。");
+addCombo("cups_ace", "star", "懷抱希望展開一段新的情感或創作旅程，這股能量純粹而充滿信心。");
+addCombo("death", "tower", "劇烈且徹底的變動同時發生，舊有的一切正在瓦解，雖然衝擊很大，卻是重生前必要的清空。");
+addCombo("sun", "wands_6", "顯著的成功與眾人的肯定同時降臨，這是值得大方慶祝的高峰時刻。");
+addCombo("moon", "swords_7", "事情背後可能隱藏著你尚未察覺的欺瞞或不透明之處，直覺提醒你要更謹慎查證。");
+addCombo("hermit", "pentacles_9", "享受獨處帶來的富足與自我實現，這段時間最好的陪伴其實是你自己。");
+addCombo("chariot", "wands_king", "意志力與領導力同時匯聚，只要方向明確，就能大步邁向成功。");
+
+// Merge everything onto TAROT_DECK (majors + minors).
+TAROT_DECK.forEach(card => {
+    const isMinor = card.id.includes('_');
+    if (!isMinor) {
+        const extra = MAJOR_EXTRA_INFO[card.id];
+        if (extra) {
+            card.astro = extra.astro;
+            card.yesNo = extra.yesNo;
+        }
+        const numValue = MAJOR_ROMAN_TO_INT[card.number];
+        card.numerology = NUMBER_MEANINGS[reduceMajorNumber(numValue)];
+    } else {
+        const [suit, rank] = card.id.split('_');
+        const elementZh = (SUIT_NAMES[suit] && SUIT_NAMES[suit].key) || '';
+        const elementEn = SUIT_ELEMENT_EN[suit] || '';
+        card.astro = `元素：${elementZh} ${elementEn}（${(SUIT_NAMES[suit] && SUIT_NAMES[suit].zh) || ''}牌組）`;
+        if (COURT_NUMEROLOGY[rank]) {
+            card.numerology = COURT_NUMEROLOGY[rank];
+        } else {
+            const n = rank === 'ace' ? 1 : Number(rank);
+            card.numerology = NUMBER_MEANINGS[n] || '';
+        }
+        card.yesNo = MINOR_YESNO[card.id] || null;
+    }
+});
+
+
 window.TAROT_CARDS = TAROT_DECK;
 window.CARD_BACK_SVG = CARD_BACK_SVG;

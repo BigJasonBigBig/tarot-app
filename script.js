@@ -334,19 +334,23 @@ const resetBtn = document.getElementById('resetBtn');
 const viewSelect = document.getElementById('viewSelect');
 const viewIntro = document.getElementById('viewIntro');
 const viewReading = document.getElementById('viewReading');
+const viewKnowledge = document.getElementById('viewKnowledge');
 const introTitle = document.getElementById('introTitle');
 const introDesc = document.getElementById('introDesc');
 const introBackBtn = document.getElementById('introBackBtn');
 const topicSelector = document.getElementById('topicSelector');
 const startReadingBtn = document.getElementById('startReadingBtn');
 const backToSelectBtn = document.getElementById('backToSelectBtn');
+const knowledgeLinkBtn = document.getElementById('knowledgeLinkBtn');
+const knowledgeBackBtn = document.getElementById('knowledgeBackBtn');
 
-// Switches between the three top-level screens: choose spread -> spread
-// intro & topic picker -> the actual reading (deck, board, results).
+// Switches between the top-level screens: choose spread -> spread intro &
+// topic picker -> the actual reading (deck, board, results) -> knowledge page.
 function showView(name) {
     viewSelect.hidden = name !== 'select';
     viewIntro.hidden = name !== 'intro';
     viewReading.hidden = name !== 'reading';
+    viewKnowledge.hidden = name !== 'knowledge';
     if (name !== 'reading') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -422,6 +426,9 @@ backToSelectBtn.addEventListener('click', () => {
     actionContainer.style.display = 'none';
     showView('select');
 });
+
+knowledgeLinkBtn.addEventListener('click', () => showView('knowledge'));
+knowledgeBackBtn.addEventListener('click', () => showView('select'));
 
 function resetReading() {
     drawnCards = [];
@@ -557,6 +564,23 @@ function getSuitInfo(cardId) {
     return SUIT_INFO[prefix] || MAJOR_SUIT_INFO;
 }
 
+// Scans all drawn cards for any "signature" pairings defined in
+// CARD_COMBINATIONS (see tarot-data.js), returning every match found.
+function findCombinations(cards) {
+    const found = [];
+    const seen = new Set();
+    for (let i = 0; i < cards.length; i++) {
+        for (let j = i + 1; j < cards.length; j++) {
+            const key = [cards[i].id, cards[j].id].sort().join('|');
+            if (typeof CARD_COMBINATIONS !== 'undefined' && CARD_COMBINATIONS[key] && !seen.has(key)) {
+                seen.add(key);
+                found.push({ names: [cards[i].name, cards[j].name], text: CARD_COMBINATIONS[key] });
+            }
+        }
+    }
+    return found;
+}
+
 function revealInterpretations() {
     explanationList.innerHTML = '';
     const slots = SPREADS[currentSpreadType].slots;
@@ -571,6 +595,8 @@ function revealInterpretations() {
         const suitInfo = getSuitInfo(card.id);
         const topicInsight = buildTopicInsight(card, currentTopic, card.isReversed);
         const topicLabel = (TOPICS[currentTopic] || TOPICS.general).label;
+        const yn = card.yesNo ? (card.isReversed ? card.yesNo.reversed : card.yesNo.upright) : null;
+        const ynBadge = yn ? `<span class="yesno-badge yesno-${yn.answer}">${YES_NO_LABEL[yn.answer]}</span>` : '';
         item.style.setProperty('--accent', suitInfo.color);
 
         item.innerHTML = `
@@ -579,6 +605,7 @@ function revealInterpretations() {
                 <span class="explanation-card-name">${card.name}</span>
                 <span class="explanation-tag ${directionClass}">${directionText}</span>
                 <span class="explanation-slot">【${slots[index]}】</span>
+                ${ynBadge}
             </div>
             <div class="explanation-keywords">關鍵字：${card.keywords}</div>
             <div class="explanation-desc"><strong>牌面意象：</strong>${card.desc}</div>
@@ -587,9 +614,30 @@ function revealInterpretations() {
                 <span class="explanation-topic-label">${topicLabel} 專屬解讀</span>
                 <p>${topicInsight}</p>
             </div>
+            <div class="explanation-extra">
+                <div class="explanation-extra-item"><strong>對應能量：</strong>${card.astro || ''}</div>
+                <div class="explanation-extra-item"><strong>數字意涵：</strong>${card.numerology || ''}</div>
+                ${yn ? `<div class="explanation-extra-item"><strong>是非指引補充：</strong>${yn.note}</div>` : ''}
+            </div>
         `;
         explanationList.appendChild(item);
     });
+
+    const combos = findCombinations(drawnCards);
+    if (combos.length > 0) {
+        const comboBox = document.createElement('div');
+        comboBox.classList.add('combo-box');
+        comboBox.innerHTML = `
+            <h3 class="combo-box-title">✦ 牌組特殊組合解讀 ✦</h3>
+            ${combos.map(c => `
+                <div class="combo-item">
+                    <span class="combo-pair">${c.names[0]} × ${c.names[1]}</span>
+                    <p>${c.text}</p>
+                </div>
+            `).join('')}
+        `;
+        explanationList.appendChild(comboBox);
+    }
 
     readingResult.classList.add('visible');
     actionContainer.style.display = 'flex';

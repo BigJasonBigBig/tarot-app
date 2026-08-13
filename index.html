@@ -47,9 +47,62 @@
     <main>
         <!-- STEP 1: Landing — choose a spread type -->
         <section class="view-panel view-select" id="viewSelect">
+            <div class="night-sky-decor" aria-hidden="true">
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+                <div class="ghost-fire gf-1 gf-green"></div>
+                <div class="ghost-fire gf-2 gf-cyan"></div>
+                <div class="ghost-fire gf-3 gf-green"></div>
+                <div class="ghost-fire gf-4 gf-purple"></div>
+                <div class="ghost-fire gf-5 gf-green"></div>
+            </div>
             <p class="view-lead">選擇一種占卜方式</p>
             <div class="spread-selector" id="spreadSelector">
                 <!-- Dynamically populated by JS -->
+            </div>
+            <button class="knowledge-link" id="knowledgeLinkBtn" type="button">📖 塔羅知識專區</button>
+        </section>
+
+        <!-- Tarot Knowledge view — accessible from the landing screen -->
+        <section class="view-panel view-knowledge" id="viewKnowledge" hidden>
+            <button class="back-link" id="knowledgeBackBtn" type="button">← 返回選擇牌陣</button>
+            <h2 class="knowledge-title">✦ 塔羅知識專區 ✦</h2>
+
+            <div class="knowledge-section">
+                <h3>塔羅牌的起源</h3>
+                <p>塔羅牌最早可追溯至 15 世紀的義大利，原本是貴族間流行的紙牌遊戲。到了 18 世紀後，法國的神秘學者開始賦予塔羅牌占卜與哲學的意涵，逐漸發展出今日常見、結合占星與卡巴拉思想的解讀系統。目前最廣為流傳的版本，是 1909 年出版的「偉特（Rider-Waite-Smith）」塔羅牌，本站的解讀內容也主要參考這個系統。</p>
+            </div>
+
+            <div class="knowledge-section">
+                <h3>78 張牌的架構：大阿爾克那與小阿爾克那</h3>
+                <p><strong>大阿爾克那（Major Arcana）</strong>共 22 張，從 0 號愚者到 21 號世界，描述的是人生中重大的課題與靈魂成長的旅程，出現時通常代表較深層、較關鍵的能量或轉折。</p>
+                <p><strong>小阿爾克那（Minor Arcana）</strong>共 56 張，分為權杖、聖杯、寶劍、錢幣四種花色，每種花色各有 14 張（數字牌 Ace～10，加上侍從、騎士、皇后、國王四張宮廷牌），描述的則是日常生活中比較具體、細節的人事物。</p>
+            </div>
+
+            <div class="knowledge-section">
+                <h3>四種花色與元素</h3>
+                <ul>
+                    <li><strong>權杖 Wands · 火元素</strong>：代表熱情、行動力、事業與創造力。</li>
+                    <li><strong>聖杯 Cups · 水元素</strong>：代表情感、關係、直覺與內心世界。</li>
+                    <li><strong>寶劍 Swords · 風元素</strong>：代表思緒、溝通、衝突與決策。</li>
+                    <li><strong>錢幣 Pentacles · 土元素</strong>：代表金錢、身體、實質資源與安全感。</li>
+                </ul>
+            </div>
+
+            <div class="knowledge-section">
+                <h3>正位與逆位怎麼看？</h3>
+                <p>抽牌時卡面朝上稱為「正位」，代表這張牌的能量比較直接、順暢地展現；如果卡面顛倒則稱為「逆位」，通常代表這股能量受到阻礙、被壓抑，或是以比較內化、負面的方式呈現。逆位並不等於「壞事」，很多時候只是提醒你：這件事還需要多一點時間、覺察或調整。</p>
+            </div>
+
+            <div class="knowledge-section">
+                <h3>本站新增的解讀功能</h3>
+                <p>抽牌結果除了基本的正逆位解讀，還會顯示：針對你選擇主題（愛情/事業/財運/健康/人際/綜合）的專屬解讀、每張牌對應的占星或元素能量與數字意涵、簡易的「是非指引」，以及當牌陣中出現特定經典組合時的額外解讀。這些內容綜合參考了偉特系統、黃金黎明占星對應與坊間常見的數字命理，目的是讓每一次占卜都更完整、更有層次。</p>
+            </div>
+
+            <div class="knowledge-section knowledge-disclaimer">
+                <h3>溫馨提醒</h3>
+                <p>塔羅占卜是一種自我覺察與反思的工具，結果僅供參考娛樂，並非絕對的命定。人生重大的決定（例如財務、醫療、法律相關事項），仍建議諮詢專業人士，並以自己的理性判斷為主。</p>
             </div>
         </section>
 
