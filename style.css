@@ -582,8 +582,8 @@ main {
 /* Central mystical crest above the spread selector: a slowly rotating
    compass-star sigil with an all-seeing eye at its core. */
 .mystic-emblem {
-    width: 128px;
-    height: 128px;
+    width: 156px;
+    height: 156px;
     margin: 0 auto 0.8rem;
     animation: emblemBreathe 6s ease-in-out infinite;
     pointer-events: none;
