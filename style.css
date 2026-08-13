@@ -579,7 +579,56 @@ main {
     color: var(--gold);
 }
 
-/* Entry link into the Tarot Knowledge view, shown on the landing screen */
+/* Central mystical crest above the spread selector: a slowly rotating
+   compass-star sigil with an all-seeing eye at its core. */
+.mystic-emblem {
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 0.8rem;
+    animation: emblemBreathe 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.mystic-emblem svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.mystic-emblem-rotor {
+    transform-origin: 100px 100px;
+    animation: emblemRotate 90s linear infinite;
+}
+
+.mystic-emblem-eye {
+    transform-origin: 100px 100px;
+    animation: emblemEyeGlow 4s ease-in-out infinite;
+}
+
+@keyframes emblemBreathe {
+    0%, 100% { filter: drop-shadow(0 0 6px var(--gold-glow)); }
+    50%      { filter: drop-shadow(0 0 18px var(--gold-glow)); }
+}
+
+@keyframes emblemRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes emblemEyeGlow {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+}
+
+/* Entry links into the Tarot Knowledge / Birthday Card views, shown on the landing screen */
+.landing-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.8rem;
+}
+
 .knowledge-link {
     background: none;
     border: 1px solid rgba(223, 186, 71, 0.3);
@@ -590,14 +639,116 @@ main {
     letter-spacing: 1px;
     padding: 0.5rem 1.3rem;
     cursor: pointer;
-    margin-top: 1.8rem;
     transition: all 0.3s ease;
+}
+
+.landing-links .knowledge-link {
+    margin-top: 0;
 }
 
 .knowledge-link:hover {
     color: var(--gold);
     border-color: var(--gold);
     box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* Birthday Card view (numerology life/soul card calculator) */
+.view-birthcard {
+    max-width: 640px;
+    text-align: center;
+}
+
+.birthcard-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.birthcard-form label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.birthdate-input {
+    background: rgba(10, 6, 26, 0.7);
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-family: 'Montserrat', sans-serif;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    color-scheme: dark;
+}
+
+.birthdate-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.birthcard-result {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    background: rgba(10, 6, 26, 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: left;
+    animation: fadeInUp 0.7s ease forwards;
+}
+
+.birthcard-card {
+    width: 150px;
+    height: 255px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+    position: relative;
+}
+
+.birthcard-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.birthcard-info {
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.birthcard-info h3 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.birthcard-info p {
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: var(--text-light);
+}
+
+.birthcard-keywords {
+    font-style: italic;
+    color: #38bdf8;
+}
+
+.birthcard-error {
+    color: #f87171;
+    font-size: 0.9rem;
 }
 
 /* Tarot Knowledge view */
