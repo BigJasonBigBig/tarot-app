@@ -144,6 +144,122 @@ body {
     }
 }
 
+/* Meditation Overlay: mist + slowly rising/fading focus prompts */
+.meditation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 45%, rgba(24, 16, 46, 0.95) 0%, rgba(4, 2, 9, 0.985) 100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.9s ease;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.meditation-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mist-layer {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    background:
+        radial-gradient(circle at 35% 40%, rgba(255, 255, 255, 0.07) 0%, transparent 55%),
+        radial-gradient(circle at 65% 65%, rgba(196, 181, 253, 0.06) 0%, transparent 55%),
+        radial-gradient(circle at 50% 20%, rgba(223, 186, 71, 0.05) 0%, transparent 50%);
+    filter: blur(34px);
+    animation: mistDrift 20s ease-in-out infinite alternate;
+}
+
+.mist-layer-2 {
+    animation-duration: 26s;
+    animation-delay: -7s;
+    opacity: 0.75;
+}
+
+.mist-layer-3 {
+    animation-duration: 32s;
+    animation-delay: -14s;
+    opacity: 0.55;
+}
+
+@keyframes mistDrift {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(4%, -3%) scale(1.08); }
+    100% { transform: translate(-3%, 3%) scale(1.04); }
+}
+
+.meditation-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 90vw;
+    width: 600px;
+    padding: 0 1.5rem;
+}
+
+.meditation-intro {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--text-light);
+    letter-spacing: 3px;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: meditationFadeIn 1.5s ease forwards 0.3s;
+}
+
+.meditation-skip {
+    margin-top: 3rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: meditationFadeIn 1.5s ease forwards 1.8s;
+}
+
+@keyframes meditationFadeIn {
+    to { opacity: 0.85; }
+}
+
+.meditation-topic {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.9rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--gold-glow);
+    min-height: 3rem;
+    letter-spacing: 3px;
+    opacity: 0;
+}
+
+.meditation-topic.show {
+    animation: topicFloat 2.3s ease-in-out;
+}
+
+@keyframes topicFloat {
+    0% { opacity: 0; transform: translateY(26px); }
+    18% { opacity: 1; transform: translateY(0); }
+    78% { opacity: 1; transform: translateY(-4px); }
+    100% { opacity: 0; transform: translateY(-30px); }
+}
+
+@media (max-width: 600px) {
+    .meditation-topic {
+        font-size: 1.4rem;
+    }
+    .meditation-intro {
+        font-size: 0.95rem;
+    }
+}
+
 /* Header & Mystical Styles */
 header {
     margin-top: 2.5rem;

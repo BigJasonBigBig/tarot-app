@@ -57,6 +57,57 @@ let currentSpreadType = 'single';
 let drawnCards = [];
 let shuffledDeck = [];
 
+// Focus prompts shown one at a time on the meditation overlay before each reading
+const MEDITATION_TOPICS = [
+    "感情 · 關係",
+    "事業 · 工作",
+    "財運 · 金錢",
+    "健康 · 身心",
+    "人際 · 溝通",
+    "抉擇 · 方向",
+    "內心的疑惑"
+];
+const MEDITATION_INTERVAL_MS = 2200;
+
+let meditationInterval = null;
+let meditationTimeout = null;
+
+// Shows the mist overlay and cycles through focus prompts, then calls onComplete.
+// Clicking anywhere on the overlay skips straight to onComplete.
+function startMeditation(onComplete) {
+    const overlay = document.getElementById('meditationOverlay');
+    const topicEl = document.getElementById('meditationTopic');
+    if (!overlay || !topicEl) {
+        onComplete();
+        return;
+    }
+
+    let index = 0;
+    const showNextTopic = () => {
+        topicEl.classList.remove('show');
+        void topicEl.offsetWidth; // force reflow so the animation restarts every time
+        topicEl.textContent = MEDITATION_TOPICS[index % MEDITATION_TOPICS.length];
+        topicEl.classList.add('show');
+        index++;
+    };
+
+    const finish = () => {
+        clearInterval(meditationInterval);
+        clearTimeout(meditationTimeout);
+        meditationInterval = null;
+        meditationTimeout = null;
+        overlay.removeEventListener('click', finish);
+        overlay.classList.remove('visible');
+        setTimeout(onComplete, 600); // let the fade-out transition finish first
+    };
+
+    overlay.classList.add('visible');
+    showNextTopic();
+    meditationInterval = setInterval(showNextTopic, MEDITATION_INTERVAL_MS);
+    meditationTimeout = setTimeout(finish, MEDITATION_TOPICS.length * MEDITATION_INTERVAL_MS + 400);
+    overlay.addEventListener('click', finish);
+}
+
 // Initialize Web Audio API for atmospheric sound effects
 let audioCtx = null;
 function playDrawSound() {
@@ -169,17 +220,27 @@ function resetReading() {
         spreadBoard.appendChild(slotContainer);
     });
     
-    deckStatus.textContent = `請點擊牌堆抽取第 1 張牌 (${SPREADS[currentSpreadType].name})`;
-    const deckEl = document.querySelector('.mystic-deck');
-    deckEl.style.pointerEvents = 'auto';
-    deckEl.style.opacity = '1';
-    deckEl.setAttribute('tabindex', '0');
-    deckEl.setAttribute('aria-disabled', 'false');
-    
     // Dynamically update static deck cards on reset to use the new beautiful card backs
     const staticDecks = document.querySelectorAll('.deck-card');
     staticDecks.forEach(deck => {
         deck.innerHTML = `<div class="card-back-pattern">${CARD_BACK_SVG}</div>`;
+    });
+
+    // Keep the deck disabled and show the meditation overlay first, so the
+    // seeker silently focuses their question before any card can be drawn.
+    const deckEl = document.querySelector('.mystic-deck');
+    deckEl.style.pointerEvents = 'none';
+    deckEl.style.opacity = '0.5';
+    deckEl.setAttribute('tabindex', '-1');
+    deckEl.setAttribute('aria-disabled', 'true');
+    deckStatus.textContent = '請靜心默想...';
+
+    startMeditation(() => {
+        deckStatus.textContent = `請點擊牌堆抽取第 1 張牌 (${SPREADS[currentSpreadType].name})`;
+        deckEl.style.pointerEvents = 'auto';
+        deckEl.style.opacity = '1';
+        deckEl.setAttribute('tabindex', '0');
+        deckEl.setAttribute('aria-disabled', 'false');
     });
 }
 
