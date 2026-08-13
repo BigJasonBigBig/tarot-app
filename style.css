@@ -1,11 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap');
+
 :root {
-    --bg-dark: #040209;
-    --bg-card: #080512;
+    --bg-dark: #030206;
+    --bg-card: #000000;
     --gold: #dfba47;
     --gold-dim: #997e2f;
     --gold-glow: rgba(223, 186, 71, 0.45);
-    --purple-glow: rgba(139, 92, 246, 0.35);
-    --cyan-glow: rgba(6, 182, 212, 0.3);
+    --purple-glow: rgba(139, 92, 246, 0.3);
+    --cyan-glow: rgba(6, 182, 212, 0.25);
     --text-light: #f8fafc;
     --text-muted: #94a3b8;
     --card-width: 170px;
@@ -38,7 +40,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -3;
-    background: radial-gradient(circle at 50% 50%, #0e0825 0%, #040209 100%);
+    background: radial-gradient(circle at 50% 50%, #0d0620 0%, #030206 100%);
     overflow: hidden;
 }
 
@@ -50,36 +52,11 @@ body {
     width: 100%;
     height: 100%;
     background-image: 
-        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-    background-size: 550px 550px, 350px 350px, 250px 250px;
-    background-position: 0 0, 40px 60px, 130px 270px;
-    opacity: 0.25;
+        radial-gradient(white, rgba(255,255,255,.15) 2px, transparent 40px),
+        radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 30px);
+    background-size: 550px 550px, 350px 350px;
+    opacity: 0.2;
     animation: starsRotate 240s linear infinite;
-}
-
-.universe-bg::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-        radial-gradient(#dfba47, rgba(223,186,71,.5) 1px, transparent 20px),
-        radial-gradient(white, rgba(255,255,255,.4) 1px, transparent 15px),
-        radial-gradient(#dfba47, rgba(223,186,71,.4) 1px, transparent 18px);
-    background-size: 180px 180px, 120px 120px, 220px 220px;
-    background-position: 20px 30px, 90px 150px, 160px 40px;
-    opacity: 0.5;
-    animation: twinkle 6s ease-in-out infinite alternate;
-}
-
-@keyframes twinkle {
-    0% { opacity: 0.2; }
-    50% { opacity: 0.7; }
-    100% { opacity: 0.3; }
 }
 
 .nebula {
@@ -88,9 +65,9 @@ body {
     height: 700px;
     border-radius: 50%;
     background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
-    filter: blur(90px);
+    filter: blur(95px);
     mix-blend-mode: screen;
-    animation: nebulaFloat 25s ease-in-out infinite alternate, breathingGlow 10s ease-in-out infinite alternate;
+    animation: nebulaFloat 25s ease-in-out infinite alternate, breathingGlow 12s ease-in-out infinite alternate;
 }
 
 .nebula-1 {
@@ -103,7 +80,7 @@ body {
     right: -15%;
     background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
     animation-delay: -12.5s;
-    animation-duration: 30s, 12s;
+    animation-duration: 30s, 14s;
 }
 
 @keyframes starsRotate {
@@ -113,17 +90,17 @@ body {
 
 @keyframes nebulaFloat {
     0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(65px, 35px) scale(1.15); }
+    100% { transform: translate(50px, 30px) scale(1.1); }
 }
 
 @keyframes breathingGlow {
     0% {
-        opacity: 0.25;
-        filter: blur(80px) brightness(0.7);
+        opacity: 0.2;
+        filter: blur(85px) brightness(0.7);
     }
     100% {
-        opacity: 0.6;
-        filter: blur(100px) brightness(1.2);
+        opacity: 0.55;
+        filter: blur(105px) brightness(1.15);
     }
 }
 
@@ -138,31 +115,31 @@ body {
     pointer-events: none;
     background: linear-gradient(
         125deg,
-        rgba(139, 92, 246, 0.03) 0%,
-        rgba(59, 130, 246, 0.04) 25%,
-        rgba(6, 182, 212, 0.03) 50%,
-        rgba(139, 92, 246, 0.05) 75%,
-        rgba(59, 130, 246, 0.03) 100%
+        rgba(139, 92, 246, 0.02) 0%,
+        rgba(59, 130, 246, 0.03) 25%,
+        rgba(6, 182, 212, 0.02) 50%,
+        rgba(139, 92, 246, 0.04) 75%,
+        rgba(59, 130, 246, 0.02) 100%
     );
     background-size: 300% 300%;
     filter: blur(8px);
-    animation: veilMove 20s ease-in-out infinite alternate;
+    animation: veilMove 22s ease-in-out infinite alternate;
 }
 
 @keyframes veilMove {
     0% {
         background-position: 0% 50%;
-        opacity: 0.6;
+        opacity: 0.5;
         transform: scale(1);
     }
     50% {
         background-position: 100% 50%;
-        opacity: 0.9;
-        transform: scale(1.05);
+        opacity: 0.8;
+        transform: scale(1.03);
     }
     100% {
         background-position: 50% 100%;
-        opacity: 0.6;
+        opacity: 0.5;
         transform: scale(1);
     }
 }
@@ -182,12 +159,6 @@ h1 {
     text-shadow: 0 0 18px var(--gold-glow);
     letter-spacing: 5px;
     margin-bottom: 0.5rem;
-    animation: titleGlow 5s ease-in-out infinite alternate;
-}
-
-@keyframes titleGlow {
-    0% { text-shadow: 0 0 14px var(--gold-glow); }
-    100% { text-shadow: 0 0 28px var(--gold-glow), 0 0 46px var(--purple-glow); }
 }
 
 .subtitle {
@@ -256,12 +227,6 @@ main {
     letter-spacing: 2px;
 }
 
-.spread-btn:focus-visible,
-.mystic-deck:focus-visible {
-    outline: 2px solid var(--gold);
-    outline-offset: 3px;
-}
-
 .spread-btn:hover, .spread-btn.active {
     border-color: var(--gold);
     background: rgba(22, 14, 54, 0.85);
@@ -304,38 +269,21 @@ main {
     align-items: center;
 }
 
-.mystic-deck::before {
-    content: '';
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--gold-glow) 0%, transparent 72%);
-    opacity: 0.35;
-    filter: blur(6px);
-    z-index: -1;
-    animation: deckPulse 3.5s ease-in-out infinite;
-}
-
-@keyframes deckPulse {
-    0%, 100% { transform: scale(0.9); opacity: 0.25; }
-    50% { transform: scale(1.12); opacity: 0.5; }
-}
-
 .deck-card {
     position: absolute;
     width: 140px;
     height: 240px;
-    background: linear-gradient(135deg, #100b2b 0%, #060412 100%);
-    border: 2px solid var(--gold);
+    background: var(--bg-card);
+    border: none; /* Borders are inside SVGs now */
     border-radius: 12px;
-    box-shadow: -6px 6px 18px rgba(0,0,0,0.6);
+    box-shadow: -6px 6px 18px rgba(0,0,0,0.7);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px;
+    padding: 0;
+    overflow: hidden;
 }
 
 .deck-card:hover {
@@ -368,77 +316,11 @@ main {
     width: 100%;
 }
 
-/* Larger spreads (Love / Career) get a slightly tighter gap so everything fits gracefully */
-.spread-board.slots-5,
-.spread-board.slots-6 {
-    gap: 1.6rem 2rem;
-}
-
-.spread-board.slots-5 .tarot-card-container,
-.spread-board.slots-6 .tarot-card-container {
-    width: calc(var(--card-width) * 0.88);
-    height: calc(var(--card-height) * 0.88);
-}
-
 .slot-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     animation: fadeIn 0.8s ease forwards;
-}
-
-/* Celtic Cross: classic cross + staff layout */
-.spread-board.layout-celtic {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(100px, 150px));
-    grid-template-rows: repeat(4, auto);
-    grid-template-areas:
-        ".    c5   .    c10"
-        "c4   c1   c6   c9"
-        ".    c2   .    c8"
-        ".    c3   .    c7";
-    column-gap: 2.2rem;
-    row-gap: 1.8rem;
-    justify-content: center;
-    align-items: center;
-    min-height: unset;
-}
-
-.spread-board.layout-celtic .tarot-card-container {
-    width: calc(var(--card-width) * 0.78);
-    height: calc(var(--card-height) * 0.78);
-}
-
-.spread-board.layout-celtic .slot-container:nth-child(1)  { grid-area: c1; }
-.spread-board.layout-celtic .slot-container:nth-child(2)  { grid-area: c2; }
-.spread-board.layout-celtic .slot-container:nth-child(3)  { grid-area: c3; }
-.spread-board.layout-celtic .slot-container:nth-child(4)  { grid-area: c4; }
-.spread-board.layout-celtic .slot-container:nth-child(5)  { grid-area: c5; }
-.spread-board.layout-celtic .slot-container:nth-child(6)  { grid-area: c6; }
-.spread-board.layout-celtic .slot-container:nth-child(7)  { grid-area: c7; }
-.spread-board.layout-celtic .slot-container:nth-child(8)  { grid-area: c8; }
-.spread-board.layout-celtic .slot-container:nth-child(9)  { grid-area: c9; }
-.spread-board.layout-celtic .slot-container:nth-child(10) { grid-area: c10; }
-
-/* Card 2 traditionally lies crossed on top of card 1 */
-.spread-board.layout-celtic .slot-container:nth-child(2) .tarot-card-container {
-    transform: rotate(90deg);
-    margin: 1rem 0;
-}
-
-.spread-board.layout-celtic .slot-container:nth-child(2) .slot-title {
-    font-size: 0.75rem;
-}
-
-@media (max-width: 900px) {
-    .spread-board.layout-celtic {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .spread-board.layout-celtic .slot-container:nth-child(2) .tarot-card-container {
-        transform: none;
-        margin: 0;
-    }
 }
 
 .slot-title {
@@ -452,32 +334,10 @@ main {
 
 /* Tarot 3D Flip Mechanics */
 .tarot-card-container {
-    position: relative;
     width: var(--card-width);
     height: var(--card-height);
     perspective: 1000px;
     cursor: pointer;
-}
-
-/* Sparkle burst the instant a card is revealed */
-.tarot-card-container::after {
-    content: '';
-    position: absolute;
-    inset: -18%;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--gold-glow) 0%, rgba(139, 92, 246, 0.25) 45%, transparent 70%);
-    opacity: 0;
-    pointer-events: none;
-    z-index: -1;
-}
-
-.tarot-card-container:has(.tarot-card.flipped)::after {
-    animation: cardBurst 0.9s ease-out forwards;
-}
-
-@keyframes cardBurst {
-    0% { opacity: 0.9; transform: scale(0.3); }
-    100% { opacity: 0; transform: scale(1.5); }
 }
 
 .tarot-card {
@@ -501,18 +361,22 @@ main {
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-    border-radius: 14px;
-    border: 2px solid var(--gold);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+    border-radius: 12px;
+    border: none; /* Borders are drawn inside SVGs */
+    box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+    overflow: hidden;
 }
 
 /* Card Back */
 .card-face.back {
-    background: linear-gradient(135deg, #100b2b 0%, #060412 100%);
+    background: radial-gradient(circle at 30% 40%, rgba(236, 72, 153, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 70% 30%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 50% 70%, rgba(139, 92, 246, 0.4) 0%, transparent 65%),
+                #06030e;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px;
+    padding: 0;
 }
 
 .card-face.back .inner-pattern {
@@ -528,47 +392,21 @@ main {
     height: 100%;
 }
 
-/* Card Front - LUXURIOUS REDESIGN */
+/* Card Front - VIBRANT COSMIC NEBULA */
 .card-face.front {
-    background: radial-gradient(circle at center, #1b163d 0%, #070513 100%);
+    background: radial-gradient(circle at 20% 30%, rgba(236, 72, 153, 0.55) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.55) 0%, transparent 60%),
+                radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.6) 0%, transparent 65%),
+                #06030e;
     transform: rotateY(180deg);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 14px;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(223, 186, 71, 0.15);
+    padding: 0; /* Align SVGs to edges */
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.35);
 }
 
-/* Inner Double Gold Frame */
-.card-face.front::before {
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;
-    border: 1px solid rgba(223, 186, 71, 0.3);
-    border-radius: 9px;
-    pointer-events: none;
-    z-index: 2;
-}
-
-/* Ornate Corner Decorations */
-.corner-decor {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border: 1.5px solid var(--gold);
-    pointer-events: none;
-    z-index: 3;
-}
-.corner-tl { top: 9px; left: 9px; border-right: none; border-bottom: none; }
-.corner-tr { top: 9px; right: 9px; border-left: none; border-bottom: none; }
-.corner-bl { bottom: 9px; left: 9px; border-right: none; border-top: none; }
-.corner-br { bottom: 9px; right: 9px; border-left: none; border-top: none; }
-
-/* Dynamic Foil Shimmer Effect */
+/* Dynamic Foil Shimmer Effect over SVGs */
 .card-face.front::after {
     content: '';
     position: absolute;
@@ -579,9 +417,9 @@ main {
     background: linear-gradient(
         110deg,
         rgba(255, 255, 255, 0) 30%,
-        rgba(223, 186, 71, 0.18) 45%,
-        rgba(255, 255, 255, 0.35) 50%,
-        rgba(223, 186, 71, 0.18) 55%,
+        rgba(223, 186, 71, 0.12) 45%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(223, 186, 71, 0.12) 55%,
         rgba(255, 255, 255, 0) 70%
     );
     transform: skewX(-20deg);
@@ -589,7 +427,6 @@ main {
     z-index: 4;
 }
 
-/* Shimmer Trigger on Flip / Hover */
 .tarot-card.flipped:hover .card-face.front::after {
     animation: foilShimmer 1.8s ease-out forwards;
 }
@@ -599,56 +436,70 @@ main {
     100% { left: 150%; }
 }
 
+/* Position text elements absolutely over SVG frames */
 .card-header {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
     font-family: 'Cinzel Decorative', serif;
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--gold);
     text-align: center;
     letter-spacing: 2px;
-    z-index: 2;
+    z-index: 5;
+    pointer-events: none;
 }
 
 .card-illustration {
-    flex-grow: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px 0;
-    max-height: 180px;
+    padding: 0;
     z-index: 2;
 }
 
 .card-illustration svg {
-    width: 90%;
-    height: auto;
-    max-height: 155px;
-    filter: drop-shadow(0 0 10px var(--gold-glow));
+    width: 100%;
+    height: 100%;
+    max-height: 100% !important;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.45)) drop-shadow(0 0 10px rgba(139, 92, 246, 0.25));
 }
 
 .card-footer {
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    width: 100%;
     font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: bold;
-    color: var(--text-light);
+    color: var(--gold);
     text-align: center;
     letter-spacing: 1.5px;
-    text-shadow: 0 0 5px rgba(255,255,255,0.4);
-    z-index: 2;
+    text-shadow: 0 0 5px rgba(0,0,0,0.8);
+    z-index: 5;
+    pointer-events: none;
 }
 
 /* Reading Result Display Box */
 .reading-result {
     width: 100%;
     max-width: 800px;
-    background: rgba(10, 6, 26, 0.88);
+    background: rgba(8, 5, 15, 0.92);
     border: 1px solid rgba(223, 186, 71, 0.35);
     border-radius: 16px;
     padding: 2.5rem;
     margin-top: 1rem;
     margin-bottom: 3rem;
     backdrop-filter: blur(15px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
     display: none;
     animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -673,20 +524,11 @@ main {
 }
 
 .explanation-item {
-    --accent: var(--gold);
     border-bottom: 1px solid rgba(223, 186, 71, 0.15);
-    border-left: 3px solid var(--accent);
     padding-bottom: 2rem;
-    padding-left: 1.2rem;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    transition: background 0.3s ease;
-    border-radius: 0 8px 8px 0;
-}
-
-.explanation-item:hover {
-    background: rgba(255, 255, 255, 0.02);
 }
 
 .explanation-item:last-child {
@@ -714,46 +556,6 @@ main {
     border-radius: 4px;
     letter-spacing: 1px;
     font-family: 'Cinzel', serif;
-}
-
-.explanation-suit {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    letter-spacing: 1px;
-    font-family: 'Cinzel', serif;
-    text-transform: uppercase;
-    border: 1px solid transparent;
-}
-
-.suit-major {
-    background: rgba(223, 186, 71, 0.16);
-    color: var(--gold);
-    border-color: rgba(223, 186, 71, 0.4);
-}
-
-.suit-wands {
-    background: rgba(226, 131, 62, 0.16);
-    color: #e2833e;
-    border-color: rgba(226, 131, 62, 0.4);
-}
-
-.suit-cups {
-    background: rgba(56, 189, 248, 0.16);
-    color: #38bdf8;
-    border-color: rgba(56, 189, 248, 0.4);
-}
-
-.suit-swords {
-    background: rgba(148, 163, 184, 0.16);
-    color: #cbd5e1;
-    border-color: rgba(148, 163, 184, 0.4);
-}
-
-.suit-pentacles {
-    background: rgba(52, 211, 153, 0.16);
-    color: #34d399;
-    border-color: rgba(52, 211, 153, 0.4);
 }
 
 .tag-upright {
@@ -865,20 +667,5 @@ main {
     .tarot-card-container {
         width: 120px;
         height: 205px;
-    }
-    
-    .card-face.front {
-        padding: 8px;
-    }
-    
-    .card-illustration svg {
-        max-height: 110px;
-    }
-
-    .spread-board.slots-5 .tarot-card-container,
-    .spread-board.slots-6 .tarot-card-container,
-    .spread-board.layout-celtic .tarot-card-container {
-        width: 96px;
-        height: 164px;
     }
 }
