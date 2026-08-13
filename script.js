@@ -4,18 +4,26 @@
 const SPREADS = {
     single: {
         name: "每日占卜 (Single Card)",
+        tagline: "快速的單張指引",
+        description: "只抽一張牌，用來回應「今天/現在整體要注意什麼」這種單一、籠統的問題。不需要複雜的背景資訊，最適合每天花 30 秒問候一下自己的直覺。",
         slots: ["今日指引"]
     },
     three: {
         name: "三牌占卜 (Past, Present, Future)",
+        tagline: "看懂一件事的來龍去脈",
+        description: "抽三張牌，分別代表「過去、現在、未來」，適合想了解一件事情是怎麼走到現在、接下來又會如何發展，例如一段關係、一個計畫或一個持續困擾你的狀況。",
         slots: ["過去 (Past)", "現在 (Present)", "未來 (Future)"]
     },
     relationship: {
         name: "關係牌陣 (Relationship Spread)",
+        tagline: "看懂你和某個人之間",
+        description: "抽三張牌，分別代表「你的狀態、對方的狀態、你們之間的連結」。不限定愛情，朋友、家人、同事之間的關係都適用，適合想搞懂彼此互動狀態的時候使用。",
         slots: ["你的狀態 (You)", "對方的狀態 (The Other)", "你們的連結 (The Connection)"]
     },
     love: {
         name: "愛情牌陣 (Love Spread)",
+        tagline: "深入拆解感情狀態",
+        description: "抽六張牌，更細地拆解感情狀態：你的感受、對方的感受、關係現況、遇到的挑戰、給你的建議，以及可能的未來走向，適合認真想搞懂一段感情的人使用。",
         slots: [
             "你的感受 (Your Feelings)",
             "對方的感受 (Their Feelings)",
@@ -27,6 +35,8 @@ const SPREADS = {
     },
     career: {
         name: "事業牌陣 (Career Spread)",
+        tagline: "拆解工作與職涯難題",
+        description: "抽五張牌，拆解工作或事業問題：目前處境、面臨的阻礙、你的優勢資源、行動建議，以及可能的結果，適合用來問工作、轉職、創業之類的問題。",
         slots: [
             "目前處境 (Current Situation)",
             "面臨阻礙 (Obstacles)",
@@ -37,6 +47,8 @@ const SPREADS = {
     },
     celtic: {
         name: "凱爾特十字牌陣 (Celtic Cross)",
+        tagline: "最完整、最經典的深度解讀",
+        description: "抽十張牌，是塔羅最經典、最完整的牌陣，涵蓋現況、挑戰、潛意識、過去、目標、近期未來、自身態度、外在環境、希望與恐懼、最終結果。適合針對一件重要的事情做全面、深入的解讀。",
         layoutClass: "layout-celtic",
         slots: [
             "現況 (Present)",
@@ -52,6 +64,177 @@ const SPREADS = {
         ]
     }
 };
+
+// Topics the seeker can pick before drawing, used to give each card a
+// question-specific interpretation on top of its base upright/reversed meaning.
+const TOPICS = {
+    love: { label: "愛情 / 感情", short: "感情", icon: "♥" },
+    career: { label: "事業 / 工作", short: "事業", icon: "✦" },
+    wealth: { label: "財運 / 金錢", short: "財運", icon: "◆" },
+    health: { label: "健康 / 身心", short: "健康", icon: "✚" },
+    relationships: { label: "人際 / 社交", short: "人際關係", icon: "◎" },
+    general: { label: "綜合 / 其他", short: "整體人生", icon: "★" }
+};
+
+let currentTopic = 'general';
+
+// Topic-specific guidance banks. Each card deterministically picks one line per
+// topic/direction (based on its id) and combines it with its own keyword, so
+// every card x topic combination reads as a tailored, detailed interpretation.
+const TOPIC_ADVICE = {
+    love: {
+        upright: [
+            "這是敞開心房、讓感情自然流動的好時機，不要因為害怕受傷而築起高牆。",
+            "你與對方之間的溝通正處於順暢的頻率上，適合坦白說出心裡真正的感受。",
+            "單身的你，桃花能量正在增強，保持開放的心態，緣分可能就在不經意間出現。",
+            "這段關係值得你投入更多真誠與耐心，對方感受得到你的用心。",
+            "相信自己在感情中的直覺，此刻的選擇多半是出於愛而非恐懼。",
+            "適合主動跨出一步，無論是表白、和解或是更進一步的承諾。",
+            "這張牌鼓勵你先學會愛自己，你才有能力給出更成熟穩定的愛。",
+            "過去感情裡的陰影正在被療癒，你已經準備好迎接更健康的關係。"
+        ],
+        reversed: [
+            "感情裡可能存在你一直迴避的問題，逃避只會讓裂痕越來越深，該正視了。",
+            "你或對方可能正在用沉默或冷戰代替溝通，請試著先放下防備。",
+            "這段關係目前的付出可能不太對等，留意自己是否一直在單方面遷就。",
+            "感情中的不安全感可能來自過去的傷痛，而不是眼前這個人真正做錯了什麼。",
+            "現在不是做重大感情決定的最佳時機，先給自己一些沉澱的空間。",
+            "你可能對這段關係抱有不切實際的幻想，試著看清對方真實的樣子。",
+            "舊情復燃或糾纏不清的關係，可能會消耗你比想像中更多的心力。",
+            "學會拒絕不健康的相處模式，離開有時候比留下更需要勇氣。"
+        ]
+    },
+    career: {
+        upright: [
+            "你目前的努力正在被看見，繼續保持專業與穩定的表現，機會會主動找上你。",
+            "適合主動爭取你想要的專案、升遷或新機會，你的能力已經準備好了。",
+            "團隊合作會是這段時間的關鍵，懂得借力使力比單打獨鬥更有效率。",
+            "這是學習新技能、拓展專業領域的好時機，投資自己絕對值得。",
+            "你的創意與想法在這個階段特別有價值，勇敢在會議或提案中表達出來。",
+            "工作上的耐心會有回報，眼前看似緩慢的進展，其實正在累積實力。",
+            "適合建立長期的職涯規劃，而不只是應付眼前的任務。",
+            "你與同事或主管之間的信任正在建立，這會是未來合作的重要基礎。"
+        ],
+        reversed: [
+            "目前的工作狀態可能讓你感到停滯或疲乏，是時候誠實檢視這是否還適合你。",
+            "職場上的溝通可能出現誤解，先確認清楚再行動，避免不必要的衝突。",
+            "過度追求完美或攬下太多責任，可能讓你正在燃燒殆盡，請適度放手。",
+            "這不是貿然離職或做重大職涯決定的時機，先觀察局勢再行動。",
+            "留意職場中表面合作、私下較勁的狀況，保護好自己的成果。",
+            "你可能正在用忙碌掩蓋對這份工作真正的不滿足，值得誠實面對。",
+            "團隊裡可能出現方向不一致的狀況，適合找機會坦誠溝通、對齊目標。",
+            "眼前的挫折不代表能力不足，很可能只是時機或資源尚未到位。"
+        ]
+    },
+    wealth: {
+        upright: [
+            "財務上正迎來穩定成長的能量，適合做長期規劃而非短期投機。",
+            "一個實質的收入機會或投資機會可能正在靠近，保持敏銳但不躁進。",
+            "你目前的理財習慣正走在正確的方向上，持續下去會看到成果。",
+            "這是檢視資源、開源節流的好時機，小小的調整就能帶來明顯改善。",
+            "適合尋求專業意見來優化你的財務規劃，讓資源運用得更有效率。",
+            "過去的努力正在轉化為實質的回報，你值得享受這份豐盛。",
+            "分享與投資自己一樣重要，適度的付出反而會為你帶來更多流動。",
+            "你對金錢的態度正在變得更成熟務實，這會是長期財富累積的基礎。"
+        ],
+        reversed: [
+            "這段時間不適合衝動消費或高風險投資，先穩住現金流再說。",
+            "留意帳單、合約或財務細節，粗心可能會造成不必要的損失。",
+            "財務上的焦慮可能來自對未來的不確定感，先盤點現況會比一直擔心更有幫助。",
+            "收入可能暫時受阻或延遲，這是提醒你建立緩衝資金的時候。",
+            "借貸或替他人擔保財務責任這件事，現在需要格外謹慎評估。",
+            "過度的物質欲望可能讓你忽略了真正重要的財務目標，重新排序優先順序。",
+            "財務上的困境往往是暫時的，不要因此對自己的能力失去信心。",
+            "適合誠實面對財務上一直逃避處理的問題，越早處理越輕鬆。"
+        ]
+    },
+    health: {
+        upright: [
+            "身心正處於逐漸恢復平衡的階段，持續你目前正在做的健康習慣。",
+            "適合開始一項新的運動或養生計畫，你的身體會給你正向的回饋。",
+            "情緒上的穩定正在幫助你的身體狀態變得更好，繼續照顧好內心。",
+            "這是傾聽身體訊號、適度休息的好時機，不需要過度勉強自己。",
+            "你的能量正在回升，適合逐步恢復活動量，但仍要留意循序漸進。",
+            "尋求適合的支持，無論是朋友、專業協助或運動夥伴，都會加速你的恢復。",
+            "身心靈的連結在這段時間特別重要，靜心或伸展會帶來明顯幫助。",
+            "過去累積的疲憊正在被釋放，給自己多一點耐心等待狀態調整。"
+        ],
+        reversed: [
+            "身體可能正在發出被你忽略的警訊，該安排時間好好檢查與休息了。",
+            "長期壓力可能已經累積成身體上的負擔，學習真正放鬆比忍耐更重要。",
+            "這段時間不適合過度透支體力，勉強自己只會拖長恢復的時間。",
+            "情緒上的壓抑可能正在影響你的睡眠或消化，值得找到健康的抒發方式。",
+            "避免用不健康的方式（暴飲暴食、熬夜、逃避）來應對壓力。",
+            "對自己的身體多一點耐心，恢復需要時間，不要因為緩慢而灰心。",
+            "適合重新檢視生活作息，混亂的節奏可能是不適的根源之一。",
+            "尋求專業協助並不代表軟弱，是對自己負責任的表現。"
+        ]
+    },
+    relationships: {
+        upright: [
+            "你與身邊人的關係正處於良好的互動狀態，適合主動維繫珍貴的情誼。",
+            "誠懇的溝通會為你帶來意想不到的支持，別害怕先開口。",
+            "適合修復一段久未聯繫的關係，對方可能也在等待你的訊息。",
+            "你在人群中的存在感正在增強，這是拓展人脈、結交新朋友的好時機。",
+            "給予他人真誠的關心，會讓你收穫更深厚的信任與連結。",
+            "這段時間適合設立健康的界線，好的關係需要雙方都感到舒服。",
+            "你身邊值得信賴的人，此刻可能正是你最需要的支持力量。",
+            "團體或家庭中的和諧正在建立，耐心會帶來更緊密的凝聚力。"
+        ],
+        reversed: [
+            "人際互動中可能出現誤會或冷淡，先別急著下結論，給彼此一些空間。",
+            "留意自己是否在一段關係中過度付出卻得不到對等的回應。",
+            "某些關係可能已經走到需要重新評估是否還要繼續投入的階段。",
+            "表面的社交可能正在消耗你，把心力留給真正重要的人。",
+            "你可能正在迴避一段需要誠實對話的關係，拖延只會讓誤解加深。",
+            "適合檢視自己在人際互動中是否過度討好，忽略了自己的需求。",
+            "孤立感可能只是暫時的，主動伸出手，會比等待對方先開口更有幫助。",
+            "家庭或團體內部的緊張關係，需要有人先願意放下立場、傾聽對方。"
+        ]
+    },
+    general: {
+        upright: [
+            "整體而言，你正走在正確的方向上，保持信心繼續前進。",
+            "生命正在為你打開一扇新的門，保持開放的心態去迎接改變。",
+            "你目前擁有的資源與能力，已經足夠應付眼前的挑戰。",
+            "這是內外在都逐漸趨於平衡與和諧的階段，好好享受這份穩定。",
+            "相信自己過去累積的努力，成果正在慢慢浮現。",
+            "適合為自己設立新的目標，你現在的狀態很適合展開行動。",
+            "生活中的小小巧合或直覺，這段時間特別值得留意與信任。",
+            "你正在成長為更成熟、更了解自己的人，這條路值得繼續走下去。"
+        ],
+        reversed: [
+            "生活中可能有些停滯或反覆的狀況，這是提醒你放慢腳步、重新檢視的時候。",
+            "你可能正在對抗一些其實可以放下的執念，試著鬆開緊握的手。",
+            "這段時間適合向內探索，答案可能不在外界，而在你自己心裡。",
+            "混亂或不確定感只是暫時的過渡期，不代表你正在走錯方向。",
+            "留意是否因為害怕改變而讓自己停留在不再適合的處境裡。",
+            "適合誠實面對一直逃避的課題，越早正視，越早能真正放下。",
+            "你可能對自己太過嚴苛，允許自己有休息與不完美的空間。",
+            "眼前的挑戰其實是在幫助你看清楚，什麼才是真正重要的事。"
+        ]
+    }
+};
+
+function hashToIndex(str, len) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+    }
+    return hash % len;
+}
+
+// Builds a topic-specific interpretation paragraph for a given card, weaving
+// the card's own leading keyword together with a deterministically-picked
+// topic/direction guidance line so every card + topic pairing feels tailored.
+function buildTopicInsight(card, topicKey, isReversed) {
+    const topic = TOPICS[topicKey] || TOPICS.general;
+    const bank = (TOPIC_ADVICE[topicKey] || TOPIC_ADVICE.general)[isReversed ? 'reversed' : 'upright'];
+    const advice = bank[hashToIndex(card.id + topicKey + (isReversed ? 'r' : 'u'), bank.length)];
+    const anchorKeyword = (card.keywords || '').split('、')[0] || card.name;
+    const directionWord = isReversed ? '逆位' : '正位';
+    return `如果你這次想問的是「${topic.short}」，${card.name}${directionWord}裡「${anchorKeyword}」這股能量特別值得留意：${advice}`;
+}
 
 let currentSpreadType = 'single';
 let drawnCards = [];
@@ -148,43 +331,97 @@ const explanationList = document.getElementById('explanationList');
 const actionContainer = document.getElementById('actionContainer');
 const resetBtn = document.getElementById('resetBtn');
 
-// Setup Spread Buttons
+const viewSelect = document.getElementById('viewSelect');
+const viewIntro = document.getElementById('viewIntro');
+const viewReading = document.getElementById('viewReading');
+const introTitle = document.getElementById('introTitle');
+const introDesc = document.getElementById('introDesc');
+const introBackBtn = document.getElementById('introBackBtn');
+const topicSelector = document.getElementById('topicSelector');
+const startReadingBtn = document.getElementById('startReadingBtn');
+const backToSelectBtn = document.getElementById('backToSelectBtn');
+
+// Switches between the three top-level screens: choose spread -> spread
+// intro & topic picker -> the actual reading (deck, board, results).
+function showView(name) {
+    viewSelect.hidden = name !== 'select';
+    viewIntro.hidden = name !== 'intro';
+    viewReading.hidden = name !== 'reading';
+    if (name !== 'reading') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// Setup Spread Buttons (landing screen)
 function initSpreads() {
     spreadSelector.innerHTML = '';
     Object.keys(SPREADS).forEach(key => {
+        const spread = SPREADS[key];
         const btn = document.createElement('button');
         btn.classList.add('spread-btn');
-        if (key === currentSpreadType) btn.classList.add('active');
-        btn.textContent = SPREADS[key].name;
+        btn.innerHTML = `<span class="spread-btn-name">${spread.name}</span><span class="spread-btn-tagline">${spread.tagline || ''}</span>`;
         btn.setAttribute('tabindex', '0');
         btn.setAttribute('role', 'button');
-        btn.setAttribute('aria-pressed', key === currentSpreadType ? 'true' : 'false');
-        btn.addEventListener('click', (e) => selectSpread(key, e.currentTarget));
+        btn.addEventListener('click', (e) => openSpreadIntro(key, e.currentTarget));
         btn.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                selectSpread(key, e.currentTarget);
+                openSpreadIntro(key, e.currentTarget);
             }
         });
         spreadSelector.appendChild(btn);
     });
 }
 
-function selectSpread(type, targetBtn) {
-    if (drawnCards.length > 0 && !confirm("切換牌陣將會重置當前的占卜，確定要切換嗎？")) {
-        return;
-    }
-    currentSpreadType = type;
-    document.querySelectorAll('.spread-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.setAttribute('aria-pressed', 'false');
+// Setup Topic Buttons (intro screen) — built once, reused for every spread
+function initTopicSelector() {
+    topicSelector.innerHTML = '';
+    Object.keys(TOPICS).forEach(key => {
+        const topic = TOPICS[key];
+        const btn = document.createElement('button');
+        btn.classList.add('topic-btn');
+        btn.type = 'button';
+        if (key === currentTopic) btn.classList.add('active');
+        btn.innerHTML = `<span class="topic-btn-icon">${topic.icon}</span><span>${topic.label}</span>`;
+        btn.setAttribute('aria-pressed', key === currentTopic ? 'true' : 'false');
+        btn.addEventListener('click', () => {
+            currentTopic = key;
+            document.querySelectorAll('.topic-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+        });
+        topicSelector.appendChild(btn);
     });
-    if (targetBtn) {
-        targetBtn.classList.add('active');
-        targetBtn.setAttribute('aria-pressed', 'true');
-    }
-    resetReading();
 }
+
+// Shows the spread-intro screen: name, description, and the topic picker.
+function openSpreadIntro(type, targetBtn) {
+    currentSpreadType = type;
+    document.querySelectorAll('.spread-btn').forEach(btn => btn.classList.remove('active'));
+    if (targetBtn) targetBtn.classList.add('active');
+
+    const spread = SPREADS[type];
+    introTitle.textContent = spread.name;
+    introDesc.textContent = spread.description || '';
+    showView('intro');
+}
+
+introBackBtn.addEventListener('click', () => showView('select'));
+
+startReadingBtn.addEventListener('click', () => {
+    showView('reading');
+    resetReading();
+});
+
+backToSelectBtn.addEventListener('click', () => {
+    drawnCards = [];
+    readingResult.classList.remove('visible');
+    actionContainer.style.display = 'none';
+    showView('select');
+});
 
 function resetReading() {
     drawnCards = [];
@@ -332,6 +569,8 @@ function revealInterpretations() {
         const directionClass = card.isReversed ? 'tag-reversed' : 'tag-upright';
         const interpretation = card.isReversed ? card.reversed : card.upright;
         const suitInfo = getSuitInfo(card.id);
+        const topicInsight = buildTopicInsight(card, currentTopic, card.isReversed);
+        const topicLabel = (TOPICS[currentTopic] || TOPICS.general).label;
         item.style.setProperty('--accent', suitInfo.color);
 
         item.innerHTML = `
@@ -344,6 +583,10 @@ function revealInterpretations() {
             <div class="explanation-keywords">關鍵字：${card.keywords}</div>
             <div class="explanation-desc"><strong>牌面意象：</strong>${card.desc}</div>
             <div class="explanation-desc"><strong>命運解讀：</strong>${interpretation}</div>
+            <div class="explanation-topic">
+                <span class="explanation-topic-label">${topicLabel} 專屬解讀</span>
+                <p>${topicInsight}</p>
+            </div>
         `;
         explanationList.appendChild(item);
     });
@@ -374,5 +617,6 @@ resetBtn.addEventListener('click', resetReading);
 // Init on load
 window.addEventListener('DOMContentLoaded', () => {
     initSpreads();
-    resetReading();
+    initTopicSelector();
+    showView('select');
 });

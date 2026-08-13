@@ -45,46 +45,67 @@
 
     <!-- Main Section -->
     <main>
-        <!-- Spread Option Buttons -->
-        <div class="spread-selector" id="spreadSelector">
-            <!-- Dynamically populated by JS -->
-        </div>
+        <!-- STEP 1: Landing — choose a spread type -->
+        <section class="view-panel view-select" id="viewSelect">
+            <p class="view-lead">選擇一種占卜方式</p>
+            <div class="spread-selector" id="spreadSelector">
+                <!-- Dynamically populated by JS -->
+            </div>
+        </section>
 
-        <!-- Central Deck to click and draw from -->
-        <div class="deck-container">
-            <div class="deck-status" id="deckStatus">請點擊牌堆抽取第 1 張牌</div>
-            <div class="mystic-deck" title="點擊抽取一張牌" tabindex="0" role="button" aria-label="抽取一張塔羅牌">
-                <!-- Stacked cards mockup for deck appearance -->
-                <div class="deck-card" style="transform: rotate(-3deg) translate(-8px, -4px);">
-                    <div class="card-back-pattern"></div>
-                </div>
-                <div class="deck-card" style="transform: rotate(2deg) translate(4px, 2px);">
-                    <div class="card-back-pattern"></div>
-                </div>
-                <div class="deck-card" style="transform: rotate(-1deg) translate(-2px, -2px);">
-                    <div class="card-back-pattern"></div>
-                </div>
-                <div class="deck-card" style="transform: rotate(0deg) translate(0px, 0px);">
-                    <div class="card-back-pattern"></div>
+        <!-- STEP 2: Intro — explain the chosen spread + pick a topic -->
+        <section class="view-panel view-intro" id="viewIntro" hidden>
+            <button class="back-link" id="introBackBtn" type="button">← 返回選擇牌陣</button>
+            <h2 class="intro-title" id="introTitle"></h2>
+            <p class="intro-desc" id="introDesc"></p>
+
+            <p class="topic-lead">你這次想詢問的主題是？</p>
+            <div class="topic-selector" id="topicSelector">
+                <!-- Dynamically populated by JS -->
+            </div>
+
+            <button class="action-btn" id="startReadingBtn" type="button">開始占卜</button>
+        </section>
+
+        <!-- STEP 3: Reading — draw cards and see the result -->
+        <section class="view-panel view-reading" id="viewReading" hidden>
+            <!-- Central Deck to click and draw from -->
+            <div class="deck-container">
+                <div class="deck-status" id="deckStatus">請點擊牌堆抽取第 1 張牌</div>
+                <div class="mystic-deck" title="點擊抽取一張牌" tabindex="0" role="button" aria-label="抽取一張塔羅牌">
+                    <!-- Stacked cards mockup for deck appearance -->
+                    <div class="deck-card" style="transform: rotate(-3deg) translate(-8px, -4px);">
+                        <div class="card-back-pattern"></div>
+                    </div>
+                    <div class="deck-card" style="transform: rotate(2deg) translate(4px, 2px);">
+                        <div class="card-back-pattern"></div>
+                    </div>
+                    <div class="deck-card" style="transform: rotate(-1deg) translate(-2px, -2px);">
+                        <div class="card-back-pattern"></div>
+                    </div>
+                    <div class="deck-card" style="transform: rotate(0deg) translate(0px, 0px);">
+                        <div class="card-back-pattern"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- The actual Spread Board where cards will be drawn into -->
-        <div class="spread-board" id="spreadBoard">
-            <!-- Dynamically populated card slots -->
-        </div>
+            <!-- The actual Spread Board where cards will be drawn into -->
+            <div class="spread-board" id="spreadBoard">
+                <!-- Dynamically populated card slots -->
+            </div>
 
-        <!-- The detailed reading results -->
-        <section class="reading-result" id="readingResult">
-            <h2 class="result-title">★ 命運啟示錄 ★</h2>
-            <div class="card-explanation-list" id="explanationList">
-                <!-- Detailed card interpretations will go here -->
-            </div>
-            
-            <div class="action-container" id="actionContainer" style="display: none;">
-                <button class="action-btn" id="resetBtn">重新占卜</button>
-            </div>
+            <!-- The detailed reading results -->
+            <section class="reading-result" id="readingResult">
+                <h2 class="result-title">★ 命運啟示錄 ★</h2>
+                <div class="card-explanation-list" id="explanationList">
+                    <!-- Detailed card interpretations will go here -->
+                </div>
+
+                <div class="action-container" id="actionContainer" style="display: none;">
+                    <button class="action-btn" id="resetBtn">重新占卜</button>
+                    <button class="action-btn action-btn-secondary" id="backToSelectBtn">重新選擇牌陣</button>
+                </div>
+            </section>
         </section>
     </main>
 
