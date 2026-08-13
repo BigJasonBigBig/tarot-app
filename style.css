@@ -777,6 +777,22 @@ main {
     transform: rotateY(180deg) rotateZ(180deg);
 }
 
+/* A card that's been dealt face-down and is waiting to be opened —
+   gently pulses to invite the seeker to click it. */
+.tarot-card-container.unrevealed {
+    animation: cardInvitePulse 2.4s ease-in-out infinite;
+}
+
+.tarot-card-container.revealed {
+    cursor: default;
+    animation: none;
+}
+
+@keyframes cardInvitePulse {
+    0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+    50% { filter: drop-shadow(0 0 16px var(--gold-glow)); }
+}
+
 .card-face {
     position: absolute;
     width: 100%;
@@ -950,6 +966,16 @@ main {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.reveal-hint {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
 
 .explanation-item:last-child {
