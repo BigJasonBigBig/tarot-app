@@ -535,18 +535,19 @@ function resetReading() {
             <div class="tarot-card-container" id="slot-${index}">
                 <div class="tarot-card">
                     <div class="card-face back">
-                        <div class="inner-pattern">${CARD_BACK_SVG}</div>
+                        <img src="assets/card-back.jpg" alt="牌背" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="inner-pattern" style="display: none;">${CARD_BACK_SVG}</div>
                     </div>
                 </div>
             </div>
         `;
         spreadBoard.appendChild(slotContainer);
     });
-    
+
     // Dynamically update static deck cards on reset to use the new beautiful card backs
     const staticDecks = document.querySelectorAll('.deck-card');
     staticDecks.forEach(deck => {
-        deck.innerHTML = `<div class="card-back-pattern">${CARD_BACK_SVG}</div>`;
+        deck.innerHTML = `<img src="assets/card-back.jpg" alt="牌背" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="card-back-pattern" style="display: none;">${CARD_BACK_SVG}</div>`;
     });
 
     // Keep the deck disabled and show the meditation overlay first, so the

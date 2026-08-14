@@ -589,6 +589,24 @@ main {
     pointer-events: none;
 }
 
+/* Hero cover art on the landing screen (falls back to the mystic-emblem
+   sigil above if the image fails to load). */
+.cover-art-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+}
+
+.cover-art {
+    width: 190px;
+    max-width: 65%;
+    height: auto;
+    border-radius: 14px;
+    border: 2px solid rgba(223, 186, 71, 0.5);
+    box-shadow: 0 0 30px var(--gold-glow), 0 15px 35px rgba(0, 0, 0, 0.7);
+    animation: emblemBreathe 6s ease-in-out infinite;
+}
+
 .mystic-emblem svg {
     width: 100%;
     height: 100%;

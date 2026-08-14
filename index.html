@@ -57,7 +57,10 @@
                 <div class="ghost-fire gf-4 gf-purple"></div>
                 <div class="ghost-fire gf-5 gf-green"></div>
             </div>
-            <div class="mystic-emblem" aria-hidden="true">
+            <div class="cover-art-wrap">
+                <img src="assets/cover.jpg" alt="神秘星辰塔羅 Celestial Tarot" class="cover-art" onerror="this.style.display='none'; document.getElementById('mysticEmblemFallback').style.display='block';">
+            </div>
+            <div class="mystic-emblem" id="mysticEmblemFallback" style="display:none;" aria-hidden="true">
                 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <radialGradient id="mysticEmblemGlow" cx="50%" cy="50%" r="50%">
