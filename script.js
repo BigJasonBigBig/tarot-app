@@ -533,12 +533,7 @@ function resetReading() {
         slotContainer.innerHTML = `
             <div class="slot-title">${slotName}</div>
             <div class="tarot-card-container" id="slot-${index}">
-                <div class="tarot-card">
-                    <div class="card-face back">
-                        <img src="assets/card-back.jpg" alt="牌背" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="inner-pattern" style="display: none;">${CARD_BACK_SVG}</div>
-                    </div>
-                </div>
+                <div class="tarot-card-placeholder"></div>
             </div>
         `;
         spreadBoard.appendChild(slotContainer);
@@ -588,7 +583,18 @@ function drawCard() {
         revealed: false
     });
 
-    const slotCardEl = document.querySelector(`#slot-${currentSlotIndex} .tarot-card`);
+    // The slot starts out as an empty placeholder — replace it with an actual
+    // face-down card (back showing) only now that a card has really landed here.
+    const slotContainerEl = document.getElementById(`slot-${currentSlotIndex}`);
+    slotContainerEl.innerHTML = `
+        <div class="tarot-card">
+            <div class="card-face back">
+                <img src="assets/card-back.jpg" alt="牌背" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="inner-pattern" style="display: none;">${CARD_BACK_SVG}</div>
+            </div>
+        </div>
+    `;
+    const slotCardEl = slotContainerEl.querySelector('.tarot-card');
 
     // Web-optimized card artwork (compressed copies of the files in /cards).
     // Falls back to the built-in SVG illustration below if the image is missing.
