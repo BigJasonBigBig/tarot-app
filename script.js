@@ -655,7 +655,13 @@ function buildNatalWheelSVG(chart) {
     const { ZODIAC_SIGNS } = window.TarotAstrology;
     const asc = chart.ascendant;
 
-    let svg = `<svg viewBox="0 0 400 400" class="natal-wheel-svg" role="img" aria-label="本命星盤輪圖">`;
+    // Extra margin around the 0-400 wheel so edge labels (ASC/MC) never get
+    // clipped by the SVG canvas, whatever angle they land at.
+    let svg = `<svg viewBox="-25 -25 450 450" class="natal-wheel-svg" role="img" aria-label="本命星盤輪圖">`;
+
+    // Solid backing disc so the page's background watermark doesn't show
+    // through the middle of the wheel and muddy the reading.
+    svg += `<circle cx="${cx}" cy="${cy}" r="${outerR}" fill="#0a0714"/>`;
 
     // Zodiac ring: 12 wedges, alternating shade so signs are easy to tell apart
     ZODIAC_SIGNS.forEach((sign, i) => {
@@ -705,6 +711,9 @@ function buildNatalWheelSVG(chart) {
         svg += `<circle cx="${glyph.x.toFixed(1)}" cy="${glyph.y.toFixed(1)}" r="9" fill="#06030e" stroke="${p.retrograde ? '#f87171' : '#dfba47'}" stroke-width="1"/>`;
         svg += `<text x="${glyph.x.toFixed(1)}" y="${glyph.y.toFixed(1)}" class="natal-planet-glyph" text-anchor="middle" dominant-baseline="middle">${p.symbol}</text>`;
     });
+
+    // Crisp outer edge, drawn last so it sits cleanly on top of everything.
+    svg += `<circle cx="${cx}" cy="${cy}" r="${outerR}" fill="none" stroke="#dfba47" stroke-width="1.2"/>`;
 
     svg += `</svg>`;
     return svg;

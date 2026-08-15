@@ -23,31 +23,31 @@
 //   Ascendant a few degrees. This is disclosed in the UI.
 
 const ZODIAC_SIGNS = [
-    { name: '牡羊座', en: 'Aries', symbol: '♈', element: '火', trait: '衝勁十足、直接坦率，喜歡當開路先鋒' },
-    { name: '金牛座', en: 'Taurus', symbol: '♉', element: '土', trait: '穩定務實、重視感官享受與安全感' },
-    { name: '雙子座', en: 'Gemini', symbol: '♊', element: '風', trait: '好奇多變、思路敏捷，熱愛交流資訊' },
-    { name: '巨蟹座', en: 'Cancer', symbol: '♋', element: '水', trait: '重感情、顧家戀舊，內心敏感細膩' },
-    { name: '獅子座', en: 'Leo', symbol: '♌', element: '火', trait: '自信大方、渴望被看見，天生的舞台魅力' },
-    { name: '處女座', en: 'Virgo', symbol: '♍', element: '土', trait: '講求細節與效率，追求完美與實用並重' },
-    { name: '天秤座', en: 'Libra', symbol: '♎', element: '風', trait: '重視和諧與美感，擅長權衡與協調' },
-    { name: '天蠍座', en: 'Scorpio', symbol: '♏', element: '水', trait: '情感濃烈深沉，洞察力強、不輕易顯露底牌' },
-    { name: '射手座', en: 'Sagittarius', symbol: '♐', element: '火', trait: '樂觀自由、嚮往遠方，喜歡探索與哲思' },
-    { name: '摩羯座', en: 'Capricorn', symbol: '♑', element: '土', trait: '腳踏實地、目標導向，願意為長期成果努力' },
-    { name: '水瓶座', en: 'Aquarius', symbol: '♒', element: '風', trait: '獨立特立、重視理念，關心群體與未來' },
-    { name: '雙魚座', en: 'Pisces', symbol: '♓', element: '水', trait: '富同理心與想像力，容易與他人情緒共感' }
+    { name: '牡羊座', en: 'Aries', symbol: '♈\uFE0E', element: '火', trait: '衝勁十足、直接坦率，喜歡當開路先鋒' },
+    { name: '金牛座', en: 'Taurus', symbol: '♉\uFE0E', element: '土', trait: '穩定務實、重視感官享受與安全感' },
+    { name: '雙子座', en: 'Gemini', symbol: '♊\uFE0E', element: '風', trait: '好奇多變、思路敏捷，熱愛交流資訊' },
+    { name: '巨蟹座', en: 'Cancer', symbol: '♋\uFE0E', element: '水', trait: '重感情、顧家戀舊，內心敏感細膩' },
+    { name: '獅子座', en: 'Leo', symbol: '♌\uFE0E', element: '火', trait: '自信大方、渴望被看見，天生的舞台魅力' },
+    { name: '處女座', en: 'Virgo', symbol: '♍\uFE0E', element: '土', trait: '講求細節與效率，追求完美與實用並重' },
+    { name: '天秤座', en: 'Libra', symbol: '♎\uFE0E', element: '風', trait: '重視和諧與美感，擅長權衡與協調' },
+    { name: '天蠍座', en: 'Scorpio', symbol: '♏\uFE0E', element: '水', trait: '情感濃烈深沉，洞察力強、不輕易顯露底牌' },
+    { name: '射手座', en: 'Sagittarius', symbol: '♐\uFE0E', element: '火', trait: '樂觀自由、嚮往遠方，喜歡探索與哲思' },
+    { name: '摩羯座', en: 'Capricorn', symbol: '♑\uFE0E', element: '土', trait: '腳踏實地、目標導向，願意為長期成果努力' },
+    { name: '水瓶座', en: 'Aquarius', symbol: '♒\uFE0E', element: '風', trait: '獨立特立、重視理念，關心群體與未來' },
+    { name: '雙魚座', en: 'Pisces', symbol: '♓\uFE0E', element: '水', trait: '富同理心與想像力，容易與他人情緒共感' }
 ];
 
 const PLANETS_META = [
-    { body: 'Sun', label: '太陽', symbol: '☉', meaning: '自我核心、生命力與存在感', retrogradeCapable: false },
-    { body: 'Moon', label: '月亮', symbol: '☽', meaning: '情緒模式、內在安全感與直覺', retrogradeCapable: false },
-    { body: 'Mercury', label: '水星', symbol: '☿', meaning: '思考方式、表達與溝通習慣', retrogradeCapable: true },
-    { body: 'Venus', label: '金星', symbol: '♀', meaning: '愛與美的品味、人際吸引力', retrogradeCapable: true },
-    { body: 'Mars', label: '火星', symbol: '♂', meaning: '行動力、慾望與競爭方式', retrogradeCapable: true },
-    { body: 'Jupiter', label: '木星', symbol: '♃', meaning: '擴張、機運與信念系統', retrogradeCapable: true },
-    { body: 'Saturn', label: '土星', symbol: '♄', meaning: '限制、責任與長期修煉的課題', retrogradeCapable: true },
-    { body: 'Uranus', label: '天王星', symbol: '♅', meaning: '突破、獨立與革新的衝動', retrogradeCapable: true },
-    { body: 'Neptune', label: '海王星', symbol: '♆', meaning: '夢想、靈性與模糊不清的渴望', retrogradeCapable: true },
-    { body: 'Pluto', label: '冥王星', symbol: '♇', meaning: '蛻變、深層力量與生死課題', retrogradeCapable: true }
+    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '自我核心、生命力與存在感', retrogradeCapable: false },
+    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '情緒模式、內在安全感與直覺', retrogradeCapable: false },
+    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '思考方式、表達與溝通習慣', retrogradeCapable: true },
+    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '愛與美的品味、人際吸引力', retrogradeCapable: true },
+    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '行動力、慾望與競爭方式', retrogradeCapable: true },
+    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '擴張、機運與信念系統', retrogradeCapable: true },
+    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '限制、責任與長期修煉的課題', retrogradeCapable: true },
+    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '突破、獨立與革新的衝動', retrogradeCapable: true },
+    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '夢想、靈性與模糊不清的渴望', retrogradeCapable: true },
+    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '蛻變、深層力量與生死課題', retrogradeCapable: true }
 ];
 
 const HOUSE_MEANINGS = [
