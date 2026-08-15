@@ -104,6 +104,47 @@ body {
     }
 }
 
+/* Giant faint mystic sigil watermark — sits behind every screen so the
+   background reads as a rich dark surface instead of flat black. Purely
+   decorative, so it's marked aria-hidden and never blocks clicks. */
+.bg-emblem {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 145vmin;
+    height: 145vmin;
+    transform: translate(-50%, -50%);
+    z-index: -3;
+    opacity: 0.07;
+    pointer-events: none;
+}
+
+.bg-emblem svg {
+    width: 100%;
+    height: 100%;
+}
+
+.bg-emblem-star-outer {
+    transform-origin: 200px 200px;
+    animation: bgEmblemSpin 200s linear infinite;
+}
+
+.bg-emblem-star-inner {
+    transform-origin: 200px 200px;
+    animation: bgEmblemSpin 140s linear infinite reverse;
+}
+
+@keyframes bgEmblemSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+    .bg-emblem {
+        opacity: 0.05;
+    }
+}
+
 /* Floating Mystic Veil Overlay */
 .mystic-veil {
     position: fixed;
@@ -1579,6 +1620,8 @@ main {
     .nebula,
     .universe-bg::before,
     .mystic-veil,
+    .bg-emblem-star-outer,
+    .bg-emblem-star-inner,
     .mist-layer,
     .meditation-topic,
     .cloud,
