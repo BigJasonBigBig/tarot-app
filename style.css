@@ -810,6 +810,74 @@ main {
     animation: fadeInUp 0.7s ease forwards;
 }
 
+.natal-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+}
+
+.natal-block {
+    width: 100%;
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 12px;
+    background: rgba(10, 6, 26, 0.4);
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+}
+
+.natal-block.expanded {
+    border-color: rgba(223, 186, 71, 0.55);
+}
+
+.natal-block-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.9rem 1.1rem;
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.natal-block-header:hover {
+    background: rgba(223, 186, 71, 0.07);
+}
+
+.natal-block-chevron {
+    transition: transform 0.3s ease;
+    color: var(--gold);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    margin-left: 0.6rem;
+}
+
+.natal-block.expanded .natal-block-chevron {
+    transform: rotate(180deg);
+}
+
+.natal-block-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    padding: 0 1.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.natal-block.expanded .natal-block-body {
+    max-height: 5000px;
+    padding: 0 1.1rem 1.2rem;
+}
+
 .natal-wheel-wrap {
     width: min(420px, 90vw);
 }
@@ -950,24 +1018,6 @@ main {
     border-top: 1px solid rgba(223, 186, 71, 0.12);
 }
 
-.natal-house-guide {
-    width: 100%;
-    margin-top: 1.6rem;
-    padding-top: 1.4rem;
-    border-top: 1px solid rgba(223, 186, 71, 0.25);
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-}
-
-.natal-house-guide-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1.05rem;
-    color: var(--gold);
-    text-align: center;
-    letter-spacing: 1px;
-}
-
 .natal-house-guide-intro {
     font-size: 0.82rem;
     line-height: 1.7;
@@ -975,20 +1025,55 @@ main {
     text-align: left;
 }
 
+.natal-house-guide-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
 .natal-house-row {
+    width: 100%;
     background: rgba(10, 6, 26, 0.5);
     border: 1px solid rgba(223, 186, 71, 0.16);
     border-radius: 10px;
-    padding: 0.8rem 1rem;
+    overflow: hidden;
     text-align: left;
+    transition: border-color 0.3s ease;
+}
+
+.natal-house-row.expanded {
+    border-color: rgba(223, 186, 71, 0.4);
 }
 
 .natal-house-heading {
+    width: 100%;
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 0.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+    font: inherit;
+}
+
+.natal-house-heading:hover {
+    background: rgba(223, 186, 71, 0.05);
+}
+
+.natal-house-chevron {
+    margin-left: auto;
+    color: var(--gold);
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.natal-house-row.expanded .natal-house-chevron {
+    transform: rotate(180deg);
 }
 
 .natal-house-badge {
@@ -1016,6 +1101,18 @@ main {
     font-size: 0.78rem;
     color: var(--text-light);
     opacity: 0.85;
+}
+
+.natal-house-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.25s ease;
+    padding: 0 0.9rem;
+}
+
+.natal-house-row.expanded .natal-house-body {
+    max-height: 600px;
+    padding: 0.1rem 0.9rem 0.9rem;
 }
 
 .natal-house-desc {
@@ -1963,7 +2060,13 @@ main {
     .tarot-card,
     .spread-btn,
     .topic-btn,
-    .action-btn {
+    .action-btn,
+    .natal-block-body,
+    .natal-block-chevron,
+    .natal-house-body,
+    .natal-house-chevron,
+    .natal-block,
+    .natal-house-row {
         transition-duration: 0.01ms !important;
     }
 
