@@ -139,6 +139,22 @@ body {
     to { transform: rotate(360deg); }
 }
 
+.bg-emblem-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bgEmblemBlink 6.5s ease-in-out infinite;
+}
+
+/* Mostly open, with one quick close-and-open near the end of each cycle —
+   reads as a natural, unhurried blink rather than a mechanical flicker. */
+@keyframes bgEmblemBlink {
+    0%, 90% { transform: scaleY(1); }
+    93% { transform: scaleY(0.05); }
+    96% { transform: scaleY(1); }
+    98% { transform: scaleY(0.05); }
+    100% { transform: scaleY(1); }
+}
+
 @media (max-width: 600px) {
     .bg-emblem {
         opacity: 0.05;
@@ -1622,6 +1638,7 @@ main {
     .mystic-veil,
     .bg-emblem-star-outer,
     .bg-emblem-star-inner,
+    .bg-emblem-eye,
     .mist-layer,
     .meditation-topic,
     .cloud,

@@ -101,8 +101,13 @@
 
             <polygon class="bg-emblem-star-inner" points="200.00,105.00 222.96,144.57 267.18,132.82 255.43,177.04 295.00,200.00 255.43,222.96 267.18,267.18 222.96,255.43 200.00,295.00 177.04,255.43 132.82,267.18 144.57,222.96 105.00,200.00 144.57,177.04 132.82,132.82 177.04,144.57" fill="none" stroke="url(#bgEmblemGold)" stroke-width="0.7"/>
 
-            <circle cx="200" cy="200" r="10" fill="none" stroke="url(#bgEmblemGold)" stroke-width="1"/>
-            <circle cx="200" cy="200" r="3" fill="url(#bgEmblemGold)"/>
+            <!-- The all-seeing eye at the sigil's heart — blinks on its own -->
+            <g class="bg-emblem-eye">
+                <path d="M178,200 Q200,183 222,200 Q200,217 178,200 Z" fill="#0a0714" stroke="url(#bgEmblemGold)" stroke-width="1.2"/>
+                <circle cx="200" cy="200" r="7" fill="url(#bgEmblemGold)"/>
+                <circle cx="200" cy="200" r="2.6" fill="#0a0714"/>
+                <circle cx="201.4" cy="198" r="0.9" fill="#fff2a1"/>
+            </g>
         </svg>
     </div>
     
