@@ -38,16 +38,16 @@ const ZODIAC_SIGNS = [
 ];
 
 const PLANETS_META = [
-    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '自我核心、生命力與存在感', retrogradeCapable: false },
-    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '情緒模式、內在安全感與直覺', retrogradeCapable: false },
-    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '思考方式、表達與溝通習慣', retrogradeCapable: true },
-    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '愛與美的品味、人際吸引力', retrogradeCapable: true },
-    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '行動力、慾望與競爭方式', retrogradeCapable: true },
-    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '擴張、機運與信念系統', retrogradeCapable: true },
-    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '限制、責任與長期修煉的課題', retrogradeCapable: true },
-    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '突破、獨立與革新的衝動', retrogradeCapable: true },
-    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '夢想、靈性與模糊不清的渴望', retrogradeCapable: true },
-    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '蛻變、深層力量與生死課題', retrogradeCapable: true }
+    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '自我核心、生命力與存在感', retrogradeCapable: false, color: '#f5b942' },
+    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '情緒模式、內在安全感與直覺', retrogradeCapable: false, color: '#b8c4d9' },
+    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '思考方式、表達與溝通習慣', retrogradeCapable: true, color: '#f97316' },
+    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '愛與美的品味、人際吸引力', retrogradeCapable: true, color: '#f472b6' },
+    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '行動力、慾望與競爭方式', retrogradeCapable: true, color: '#ef4444' },
+    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '擴張、機運與信念系統', retrogradeCapable: true, color: '#a78bfa' },
+    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '限制、責任與長期修煉的課題', retrogradeCapable: true, color: '#94a3b8' },
+    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '突破、獨立與革新的衝動', retrogradeCapable: true, color: '#22d3ee' },
+    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '夢想、靈性與模糊不清的渴望', retrogradeCapable: true, color: '#60a5fa' },
+    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '蛻變、深層力量與生死課題', retrogradeCapable: true, color: '#c0392b' }
 ];
 
 const HOUSE_MEANINGS = [
@@ -95,6 +95,39 @@ function norm360(deg) {
 // Signed shortest angular difference b-a, result in (-180, 180]
 function angleDiff(a, b) {
     return ((b - a + 540) % 360) - 180;
+}
+
+// Major aspects only (the ones that actually read clearly on a small wheel).
+// "tone" drives the line color when the wheel is drawn: soft = generally
+// easeful (blue), hard = generally tense (red), neutral = conjunction,
+// drawn faint since the two bodies already sit right next to each other.
+const ASPECT_DEFS = [
+    { name: 'conjunction', label: '合相', angle: 0, orb: 8, tone: 'neutral' },
+    { name: 'sextile', label: '六分相', angle: 60, orb: 5, tone: 'soft' },
+    { name: 'square', label: '四分相', angle: 90, orb: 6, tone: 'hard' },
+    { name: 'trine', label: '三分相', angle: 120, orb: 6, tone: 'soft' },
+    { name: 'opposition', label: '對分相', angle: 180, orb: 7, tone: 'hard' }
+];
+
+// Finds every major aspect between the given planets (any objects with a
+// `.body` id and `.elon` ecliptic longitude — works for the natal chart's
+// planet list as-is).
+function computeAspects(planets) {
+    const results = [];
+    for (let i = 0; i < planets.length; i++) {
+        for (let j = i + 1; j < planets.length; j++) {
+            const a = planets[i], b = planets[j];
+            let diff = Math.abs(norm360(a.elon - b.elon));
+            if (diff > 180) diff = 360 - diff;
+            for (const def of ASPECT_DEFS) {
+                if (Math.abs(diff - def.angle) <= def.orb) {
+                    results.push({ a: a.body, b: b.body, aspect: def.name, label: def.label, tone: def.tone, orb: Math.abs(diff - def.angle) });
+                    break; // only the closest-matching aspect per pair
+                }
+            }
+        }
+    }
+    return results;
 }
 
 function eclipticLongitude(Astronomy, body, time) {
@@ -209,13 +242,15 @@ if (typeof window !== 'undefined') {
         PLANETS_META,
         HOUSE_MEANINGS,
         CITY_PRESETS,
+        ASPECT_DEFS,
         computeNatalChart,
+        computeAspects,
         norm360
     };
 }
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        ZODIAC_SIGNS, PLANETS_META, HOUSE_MEANINGS, CITY_PRESETS,
-        computeNatalChart, norm360, angleDiff, computeAscendantAndMC, eclipticLongitude
+        ZODIAC_SIGNS, PLANETS_META, HOUSE_MEANINGS, CITY_PRESETS, ASPECT_DEFS,
+        computeNatalChart, computeAspects, norm360, angleDiff, computeAscendantAndMC, eclipticLongitude
     };
 }

@@ -649,10 +649,15 @@ function natalAssignPlanetBands(planets, ascendant) {
     return bandOf;
 }
 
+const NATAL_ASPECT_COLORS = { soft: '#38bdf8', hard: '#f87171', neutral: 'rgba(223,186,71,0.35)' };
+
 function buildNatalWheelSVG(chart) {
     const cx = 200, cy = 200;
-    const outerR = 190, zodiacInnerR = 155, houseInnerR = 42, tickR = 150;
-    const { ZODIAC_SIGNS } = window.TarotAstrology;
+    // Radial layout, outside-in: zodiac wedge ring (165-190) -> degree tick
+    // band (155-165) -> house-cusp band (42-155) -> aspect lines (r=120,
+    // inside the house band) -> center.
+    const outerR = 190, zodiacInnerR = 165, tickOuterR = 165, houseRingOuter = 155, houseInnerR = 42, aspectR = 120;
+    const { ZODIAC_SIGNS, computeAspects } = window.TarotAstrology;
     const asc = chart.ascendant;
 
     // Extra margin around the 0-400 wheel so edge labels (ASC/MC) never get
@@ -667,19 +672,30 @@ function buildNatalWheelSVG(chart) {
     ZODIAC_SIGNS.forEach((sign, i) => {
         const elonStart = i * 30, elonEnd = i * 30 + 30;
         const path = natalAnnularWedgePath(cx, cy, zodiacInnerR, outerR, elonStart, elonEnd, asc);
-        const fill = i % 2 === 0 ? 'rgba(223,186,71,0.07)' : 'rgba(223,186,71,0.02)';
+        const fill = i % 2 === 0 ? 'rgba(223,186,71,0.09)' : 'rgba(223,186,71,0.025)';
         svg += `<path d="${path}" fill="${fill}" stroke="rgba(223,186,71,0.35)" stroke-width="0.6"/>`;
         const mid = natalPolarPoint(cx, cy, (zodiacInnerR + outerR) / 2, elonStart + 15, asc);
         svg += `<text x="${mid.x.toFixed(1)}" y="${mid.y.toFixed(1)}" class="natal-sign-glyph" text-anchor="middle" dominant-baseline="middle">${sign.symbol}</text>`;
     });
 
+    // Degree tick ring just inside the zodiac wedges — longer ticks every
+    // 10°, short ticks every 2°, echoing a real ephemeris wheel's rim.
+    for (let d = 0; d < 360; d += 2) {
+        const isMajor = d % 10 === 0;
+        const r1 = tickOuterR;
+        const r2 = isMajor ? tickOuterR - 10 : tickOuterR - 5;
+        const p1 = natalPolarPoint(cx, cy, r1, d, asc);
+        const p2 = natalPolarPoint(cx, cy, r2, d, asc);
+        svg += `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="rgba(223,186,71,${isMajor ? 0.55 : 0.25})" stroke-width="${isMajor ? 0.9 : 0.5}"/>`;
+    }
+
     // House cusp lines + house numbers (Equal House: cusp i = Ascendant + i*30)
     for (let i = 0; i < 12; i++) {
         const cuspElon = asc + i * 30;
         const p1 = natalPolarPoint(cx, cy, houseInnerR, cuspElon, asc);
-        const p2 = natalPolarPoint(cx, cy, zodiacInnerR, cuspElon, asc);
+        const p2 = natalPolarPoint(cx, cy, houseRingOuter, cuspElon, asc);
         svg += `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="rgba(223,186,71,0.3)" stroke-width="0.6"/>`;
-        const numPos = natalPolarPoint(cx, cy, (houseInnerR + zodiacInnerR) / 2 - 10, cuspElon + 15, asc);
+        const numPos = natalPolarPoint(cx, cy, houseInnerR + 16, cuspElon + 15, asc);
         svg += `<text x="${numPos.x.toFixed(1)}" y="${numPos.y.toFixed(1)}" class="natal-house-num" text-anchor="middle" dominant-baseline="middle">${i + 1}</text>`;
     }
 
@@ -697,19 +713,34 @@ function buildNatalWheelSVG(chart) {
     const mcLabel = natalPolarPoint(cx, cy, outerR + 10, chart.midheaven, asc);
     svg += `<text x="${mcLabel.x.toFixed(1)}" y="${mcLabel.y.toFixed(1)}" class="natal-axis-label" text-anchor="middle" dominant-baseline="middle">MC</text>`;
 
-    // Inner boundary circle
+    // Inner boundary circle (the "aspect ring" floor)
     svg += `<circle cx="${cx}" cy="${cy}" r="${houseInnerR}" fill="none" stroke="rgba(223,186,71,0.3)" stroke-width="0.6"/>`;
+
+    // Aspect lines — the web of relationships between planets, drawn from
+    // each planet's true position (not its band-nudged label position) so
+    // the geometry stays astronomically honest even when labels are spread
+    // out to avoid overlapping.
+    const aspects = computeAspects(chart.planets);
+    aspects.forEach(asp => {
+        if (asp.tone === 'neutral') return; // conjunctions: bodies already sit together, a line adds no info
+        const pa = chart.planets.find(p => p.body === asp.a);
+        const pb = chart.planets.find(p => p.body === asp.b);
+        if (!pa || !pb) return;
+        const pointA = natalPolarPoint(cx, cy, aspectR, pa.elon, asc);
+        const pointB = natalPolarPoint(cx, cy, aspectR, pb.elon, asc);
+        svg += `<line x1="${pointA.x.toFixed(1)}" y1="${pointA.y.toFixed(1)}" x2="${pointB.x.toFixed(1)}" y2="${pointB.y.toFixed(1)}" stroke="${NATAL_ASPECT_COLORS[asp.tone]}" stroke-width="1" opacity="0.7"/>`;
+    });
 
     // Planets, spread across radius bands to avoid overlap, with a thin
     // leader line back to their true position on the zodiac ring.
     const bandOf = natalAssignPlanetBands(chart.planets, asc);
     chart.planets.forEach(p => {
         const band = bandOf[p.body];
-        const tick = natalPolarPoint(cx, cy, tickR, p.elon, asc);
+        const tick = natalPolarPoint(cx, cy, zodiacInnerR - 2, p.elon, asc);
         const glyph = natalPolarPoint(cx, cy, band, p.elon, asc);
         svg += `<line x1="${tick.x.toFixed(1)}" y1="${tick.y.toFixed(1)}" x2="${glyph.x.toFixed(1)}" y2="${glyph.y.toFixed(1)}" stroke="rgba(223,186,71,0.35)" stroke-width="0.5"/>`;
-        svg += `<circle cx="${glyph.x.toFixed(1)}" cy="${glyph.y.toFixed(1)}" r="9" fill="#06030e" stroke="${p.retrograde ? '#f87171' : '#dfba47'}" stroke-width="1"/>`;
-        svg += `<text x="${glyph.x.toFixed(1)}" y="${glyph.y.toFixed(1)}" class="natal-planet-glyph" text-anchor="middle" dominant-baseline="middle">${p.symbol}</text>`;
+        svg += `<circle cx="${glyph.x.toFixed(1)}" cy="${glyph.y.toFixed(1)}" r="10" fill="#0a0714" stroke="${p.retrograde ? '#f87171' : (p.color || '#dfba47')}" stroke-width="1.4"/>`;
+        svg += `<text x="${glyph.x.toFixed(1)}" y="${glyph.y.toFixed(1)}" class="natal-planet-glyph" text-anchor="middle" dominant-baseline="middle" fill="${p.color || '#f8fafc'}">${p.symbol}</text>`;
     });
 
     // Crisp outer edge, drawn last so it sits cleanly on top of everything.
@@ -735,6 +766,10 @@ function renderNatalResult(chart) {
     natalResult.hidden = false;
     natalResult.innerHTML = `
         <div class="natal-wheel-wrap">${wheelSvg}</div>
+        <div class="natal-legend">
+            <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#38bdf8"></i>調和相位（六分／三分）</span>
+            <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#f87171"></i>緊張相位（四分／對分）</span>
+        </div>
         <div class="natal-angles">
             <div class="natal-angle-item"><strong>上升星座 ASC：</strong>${ascendantSign.symbol} ${ascendantSign.name} ${ascendantDegree.toFixed(1)}°　—　${ascendantSign.trait}</div>
             <div class="natal-angle-item"><strong>天頂 MC：</strong>${midheavenSign.symbol} ${midheavenSign.name} ${midheavenDegree.toFixed(1)}°</div>
@@ -1223,15 +1258,161 @@ function buildShareText() {
     return `✦ 神祕星辰塔羅牌 ✦\n牌陣：${spreadName}　主題：${topicLabel}\n${lines.join('\n')}\n\n來自 神祕星辰塔羅 Celestial Tarot`;
 }
 
+// Splits a CJK-friendly string into lines that fit maxWidth, breaking on
+// individual characters (Chinese text has no spaces to wrap on) but keeping
+// ASCII "words" together where reasonable.
+function wrapTextForCanvas(ctx, text, maxWidth) {
+    const lines = [];
+    let current = '';
+    for (const ch of text) {
+        const test = current + ch;
+        if (current && ctx.measureText(test).width > maxWidth) {
+            lines.push(current);
+            current = ch;
+        } else {
+            current = test;
+        }
+    }
+    if (current) lines.push(current);
+    return lines;
+}
+
+// Draws the whole shareable summary onto a canvas 2D context, starting at
+// startY, and returns the final Y position — used both to measure the
+// required canvas height (dry run on a scratch canvas) and to do the real
+// drawing (on the correctly-sized canvas), so the two never disagree.
+function drawShareContent(ctx, width, spreadName, topicLabel, cards) {
+    const padX = 44;
+    const contentWidth = width - padX * 2;
+    let y = 56;
+
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#dfba47';
+    ctx.font = '600 30px Cinzel, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✦ 神祕星辰塔羅牌 ✦', width / 2, y);
+    y += 34;
+
+    ctx.fillStyle = '#b9a984';
+    ctx.font = '15px Montserrat, sans-serif';
+    ctx.fillText(`牌陣：${spreadName}　主題：${topicLabel}`, width / 2, y);
+    y += 28;
+
+    ctx.strokeStyle = 'rgba(223,186,71,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padX, y);
+    ctx.lineTo(width - padX, y);
+    ctx.stroke();
+    y += 34;
+
+    ctx.textAlign = 'left';
+    cards.forEach((c, i) => {
+        const dirText = c.isReversed ? '逆位' : '正位';
+        const dirColor = c.isReversed ? '#f87171' : '#4ade80';
+
+        ctx.font = '600 20px Cinzel, serif';
+        ctx.fillStyle = '#dfba47';
+        const nameText = `${c.slotLabel}｜${c.name}`;
+        ctx.fillText(nameText, padX, y);
+        const nameWidth = ctx.measureText(nameText).width;
+
+        ctx.font = '13px Montserrat, sans-serif';
+        ctx.fillStyle = dirColor;
+        ctx.fillText(`〔${dirText}〕`, padX + nameWidth + 12, y);
+        y += 24;
+
+        ctx.font = '13px Montserrat, sans-serif';
+        ctx.fillStyle = '#8b95a8';
+        ctx.fillText(`關鍵字：${c.keywords || ''}`, padX, y);
+        y += 22;
+
+        ctx.font = '14px Montserrat, sans-serif';
+        ctx.fillStyle = '#e8e8f0';
+        const bodyLines = wrapTextForCanvas(ctx, c.interpretation || '', contentWidth);
+        bodyLines.forEach(line => {
+            ctx.fillText(line, padX, y);
+            y += 22;
+        });
+
+        y += 10;
+        if (i < cards.length - 1) {
+            ctx.strokeStyle = 'rgba(223,186,71,0.15)';
+            ctx.beginPath();
+            ctx.moveTo(padX, y);
+            ctx.lineTo(width - padX, y);
+            ctx.stroke();
+            y += 26;
+        }
+    });
+
+    y += 18;
+    ctx.textAlign = 'center';
+    ctx.font = '12px Montserrat, sans-serif';
+    ctx.fillStyle = '#6b7280';
+    ctx.fillText('神祕星辰塔羅 · Celestial Tarot', width / 2, y);
+    y += 30;
+
+    return y;
+}
+
+async function buildShareCanvas() {
+    if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (e) { /* ignore */ }
+    }
+
+    const spreadName = SPREADS[currentSpreadType] ? SPREADS[currentSpreadType].name : '';
+    const topicLabel = (TOPICS[currentTopic] || TOPICS.general).label;
+    const slots = SPREADS[currentSpreadType].slots;
+    const cards = drawnCards.map((c, i) => ({
+        slotLabel: slots[i],
+        name: c.name,
+        isReversed: c.isReversed,
+        keywords: c.keywords,
+        interpretation: c.isReversed ? c.reversed : c.upright
+    }));
+
+    const width = 720;
+
+    // Dry run on a throwaway canvas just to measure the required height —
+    // this uses the exact same drawing function, so height and layout can
+    // never fall out of sync with each other.
+    const scratch = document.createElement('canvas');
+    scratch.width = width;
+    scratch.height = 10;
+    const scratchCtx = scratch.getContext('2d');
+    const measuredHeight = drawShareContent(scratchCtx, width, spreadName, topicLabel, cards);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = Math.ceil(measuredHeight) + 20;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#0a0714';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'rgba(223,186,71,0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(6, 6, canvas.width - 12, canvas.height - 12);
+
+    drawShareContent(ctx, width, spreadName, topicLabel, cards);
+
+    return canvas;
+}
+
 async function shareReading() {
     const shareText = buildShareText();
+    let canvas = null;
+    try {
+        canvas = await buildShareCanvas();
+    } catch (e) {
+        // drawing failed for some reason — fall back to text-only sharing below
+    }
 
     // Try the native share sheet first (mobile browsers mostly); it can share
     // an image file directly if the browser supports file sharing.
     if (navigator.share) {
         try {
-            if (typeof html2canvas === 'function' && navigator.canShare) {
-                const canvas = await html2canvas(readingResult, { backgroundColor: '#030206', scale: 2 });
+            if (canvas && navigator.canShare) {
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const file = new File([blob], 'tarot-reading.png', { type: 'image/png' });
                 if (navigator.canShare({ files: [file] })) {
@@ -1249,8 +1430,7 @@ async function shareReading() {
     // Fallback for desktop / unsupported browsers: download a PNG image of the
     // result, and also copy the text summary to the clipboard.
     try {
-        if (typeof html2canvas === 'function') {
-            const canvas = await html2canvas(readingResult, { backgroundColor: '#030206', scale: 2 });
+        if (canvas) {
             const link = document.createElement('a');
             link.download = 'tarot-reading.png';
             link.href = canvas.toDataURL('image/png');
