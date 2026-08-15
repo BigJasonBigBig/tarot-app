@@ -950,6 +950,89 @@ main {
     border-top: 1px solid rgba(223, 186, 71, 0.12);
 }
 
+.natal-house-guide {
+    width: 100%;
+    margin-top: 1.6rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.natal-house-guide-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.natal-house-guide-intro {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    text-align: left;
+}
+
+.natal-house-row {
+    background: rgba(10, 6, 26, 0.5);
+    border: 1px solid rgba(223, 186, 71, 0.16);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    text-align: left;
+}
+
+.natal-house-heading {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.natal-house-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 186, 71, 0.5);
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-family: 'Cinzel', serif;
+    flex-shrink: 0;
+}
+
+.natal-house-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+}
+
+.natal-house-keyword {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    opacity: 0.85;
+}
+
+.natal-house-desc {
+    font-size: 0.82rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.natal-house-occupants {
+    margin-top: 0.5rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.12);
+    font-size: 0.78rem;
+    color: #dfba47;
+}
+
 .birthcard-result {
     display: flex;
     flex-wrap: wrap;
@@ -1768,10 +1851,49 @@ main {
     border-color: rgba(148, 163, 184, 0.35);
 }
 
+.deck-style-btn {
+    position: fixed;
+    top: 16px;
+    right: 64px;
+    z-index: 50;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    background: rgba(3, 2, 6, 0.6);
+    color: var(--gold);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.deck-style-btn:hover {
+    border-color: var(--gold);
+    transform: scale(1.06);
+}
+
+.deck-style-btn.ukiyo-active {
+    border-color: #e0663f;
+    color: #e0663f;
+}
+
 @media (max-width: 600px) {
     .sound-toggle-btn {
         top: 10px;
         right: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+
+    .deck-style-btn {
+        top: 10px;
+        right: 52px;
         width: 34px;
         height: 34px;
         font-size: 0.95rem;

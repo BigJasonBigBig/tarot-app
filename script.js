@@ -296,6 +296,34 @@ let audioCtx = null;
 let soundMuted = false;
 try { soundMuted = localStorage.getItem('tarotSoundMuted') === '1'; } catch (e) { /* ignore */ }
 
+// Deck art style — 'classic' (original artwork) or 'ukiyo' (Japanese
+// ukiyo-e style artwork), persisted across visits.
+let deckStyle = 'classic';
+try {
+    const savedDeckStyle = localStorage.getItem('tarotDeckStyle');
+    if (savedDeckStyle === 'ukiyo' || savedDeckStyle === 'classic') deckStyle = savedDeckStyle;
+} catch (e) { /* ignore */ }
+
+function cardImageFolder() {
+    return deckStyle === 'ukiyo' ? 'assets/cards-ukiyo' : 'assets/cards';
+}
+
+// Re-points every already-rendered card image (front faces + birth card) at
+// the currently selected deck style, so switching mid-session updates cards
+// that are already on screen instead of only affecting future draws.
+function refreshCardImagesForDeckStyle() {
+    document.querySelectorAll('img[data-card-id]').forEach(img => {
+        const id = img.getAttribute('data-card-id');
+        if (!id) return;
+        img.src = `${cardImageFolder()}/${id}.jpg`;
+        img.style.display = '';
+        const fallback = img.nextElementSibling;
+        if (fallback && fallback.classList && fallback.classList.contains('svg-fallback')) {
+            fallback.style.display = 'none';
+        }
+    });
+}
+
 function playDrawSound() {
     if (soundMuted) return;
     try {
@@ -524,11 +552,11 @@ calcBirthCardBtn.addEventListener('click', () => {
         return;
     }
 
-    const imagePath = `assets/cards/${card.id}.jpg`;
+    const imagePath = `${cardImageFolder()}/${card.id}.jpg`;
     birthCardResult.hidden = false;
     birthCardResult.innerHTML = `
         <div class="birthcard-card">
-            <img src="${imagePath}" alt="${card.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <img src="${imagePath}" alt="${card.name}" data-card-id="${card.id}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="svg-fallback" style="display: none; width: 100%; height: 100%;">${card.svg}</div>
         </div>
         <div class="birthcard-info">
@@ -753,15 +781,42 @@ function buildNatalWheelSVG(chart) {
 function renderNatalResult(chart) {
     const { ascendantSign, ascendantDegree, midheavenSign, midheavenDegree } = chart;
     const wheelSvg = buildNatalWheelSVG(chart);
+    const { HOUSE_MEANINGS } = window.TarotAstrology;
+
+    // Which houses actually have a planet in them, so the full 12-house
+    // reference below can flag "你的 X 在這裡" instead of reading as generic
+    // textbook filler.
+    const occupantsByHouse = {};
+    chart.planets.forEach(p => {
+        occupantsByHouse[p.house] = occupantsByHouse[p.house] || [];
+        occupantsByHouse[p.house].push(p);
+    });
 
     const planetRows = chart.planets.map(p => `
         <div class="natal-planet-row">
             <span class="natal-planet-symbol">${p.symbol}</span>
             <span class="natal-planet-name">${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''}</span>
-            <span class="natal-planet-pos">${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮</span>
-            <span class="natal-planet-meaning">${p.meaning}｜${p.houseMeaning}</span>
+            <span class="natal-planet-pos">${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮（${p.houseMeaning.name}）</span>
+            <span class="natal-planet-meaning">${p.meaning}｜${p.houseMeaning.keyword}</span>
         </div>
     `).join('');
+
+    const houseRows = HOUSE_MEANINGS.map(h => {
+        const occupants = occupantsByHouse[h.number] || [];
+        const occupantLine = occupants.length > 0
+            ? `<div class="natal-house-occupants">你的 ${occupants.map(p => `${p.symbol} ${p.label}`).join('、')} 落在這裡</div>`
+            : '';
+        return `
+        <div class="natal-house-row">
+            <div class="natal-house-heading">
+                <span class="natal-house-badge">${h.number}</span>
+                <span class="natal-house-name">${h.name}</span>
+                <span class="natal-house-keyword">${h.keyword}</span>
+            </div>
+            <p class="natal-house-desc">${h.description}</p>
+            ${occupantLine}
+        </div>`;
+    }).join('');
 
     natalResult.hidden = false;
     natalResult.innerHTML = `
@@ -775,6 +830,11 @@ function renderNatalResult(chart) {
             <div class="natal-angle-item"><strong>天頂 MC：</strong>${midheavenSign.symbol} ${midheavenSign.name} ${midheavenDegree.toFixed(1)}°</div>
         </div>
         <div class="natal-planet-list">${planetRows}</div>
+        <div class="natal-house-guide">
+            <h3 class="natal-house-guide-title">✦ 十二宮位詳解 ✦</h3>
+            <p class="natal-house-guide-intro">本命星盤把黃道分成 12 個「宮位」，代表人生的 12 個面向。哪一宮裡有行星，那個領域的能量就會被特別放大；就算某一宮沒有行星，這個宮位所在的星座、以及它的宮主星，仍然會影響這個領域怎麼展現，這裡先提供每個宮位的完整意義給你參考。</p>
+            ${houseRows}
+        </div>
     `;
 }
 
@@ -929,7 +989,7 @@ function drawCard() {
 
     // Web-optimized card artwork (compressed copies of the files in /cards).
     // Falls back to the built-in SVG illustration below if the image is missing.
-    const imagePath = `assets/cards/${cardData.id}.jpg`;
+    const imagePath = `${cardImageFolder()}/${cardData.id}.jpg`;
 
     // Set card face inside the slot with corner borders (still face-down for now)
     slotCardEl.innerHTML += `
@@ -942,7 +1002,7 @@ function drawCard() {
 
             <div class="card-header">${cardData.number}</div>
             <div class="card-illustration" style="padding: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-                <img src="${imagePath}" alt="${cardData.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="${imagePath}" alt="${cardData.name}" data-card-id="${cardData.id}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div class="svg-fallback" style="display: none; width: 100%; height: 100%;">
                     ${cardData.svg}
                 </div>
@@ -1477,6 +1537,27 @@ if (soundToggleBtn) {
         soundMuted = !soundMuted;
         try { localStorage.setItem('tarotSoundMuted', soundMuted ? '1' : '0'); } catch (e) { /* ignore */ }
         refreshSoundToggleUI();
+    });
+}
+
+// Deck style toggle — switches between the classic artwork and the
+// Japanese ukiyo-e style artwork, updating any cards already on screen.
+const deckStyleBtn = document.getElementById('deckStyleBtn');
+function refreshDeckStyleToggleUI() {
+    if (!deckStyleBtn) return;
+    const isUkiyo = deckStyle === 'ukiyo';
+    deckStyleBtn.textContent = isUkiyo ? '🎴' : '🃏';
+    deckStyleBtn.classList.toggle('ukiyo-active', isUkiyo);
+    deckStyleBtn.setAttribute('aria-label', isUkiyo ? '切換為經典牌組' : '切換為浮世繪牌組');
+    deckStyleBtn.setAttribute('title', isUkiyo ? '目前：浮世繪風格（點擊切換為經典風格）' : '目前：經典風格（點擊切換為浮世繪風格）');
+}
+if (deckStyleBtn) {
+    refreshDeckStyleToggleUI();
+    deckStyleBtn.addEventListener('click', () => {
+        deckStyle = deckStyle === 'ukiyo' ? 'classic' : 'ukiyo';
+        try { localStorage.setItem('tarotDeckStyle', deckStyle); } catch (e) { /* ignore */ }
+        refreshDeckStyleToggleUI();
+        refreshCardImagesForDeckStyle();
     });
 }
 
