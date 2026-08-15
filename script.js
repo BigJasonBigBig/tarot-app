@@ -360,6 +360,18 @@ const historyBackBtn = document.getElementById('historyBackBtn');
 const historyList = document.getElementById('historyList');
 const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 const shareResultBtn = document.getElementById('shareResultBtn');
+const viewNatalChart = document.getElementById('viewNatalChart');
+const natalChartLinkBtn = document.getElementById('natalChartLinkBtn');
+const natalChartBackBtn = document.getElementById('natalChartBackBtn');
+const natalDateInput = document.getElementById('natalDateInput');
+const natalTimeInput = document.getElementById('natalTimeInput');
+const natalCitySelect = document.getElementById('natalCitySelect');
+const natalManualRow = document.getElementById('natalManualRow');
+const natalLatInput = document.getElementById('natalLatInput');
+const natalLonInput = document.getElementById('natalLonInput');
+const natalUtcSelect = document.getElementById('natalUtcSelect');
+const calcNatalChartBtn = document.getElementById('calcNatalChartBtn');
+const natalResult = document.getElementById('natalResult');
 
 // Switches between the top-level screens: choose spread -> spread intro &
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
@@ -371,6 +383,7 @@ function showView(name) {
     viewKnowledge.hidden = name !== 'knowledge';
     viewBirthcard.hidden = name !== 'birthcard';
     viewHistory.hidden = name !== 'history';
+    viewNatalChart.hidden = name !== 'natal';
     if (name !== 'reading') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -527,6 +540,259 @@ calcBirthCardBtn.addEventListener('click', () => {
         </div>
     `;
 });
+
+// ---------------------------------------------------------------------
+// Natal Chart — real astronomical calculation via astrology.js /
+// astronomy-engine, rendered as an SVG wheel + a plain-language list.
+// ---------------------------------------------------------------------
+const NATAL_STORAGE_KEY = 'tarotNatalForm';
+
+function initNatalForm() {
+    if (!natalCitySelect || !window.TarotAstrology) return;
+
+    natalCitySelect.innerHTML = '';
+    window.TarotAstrology.CITY_PRESETS.forEach((city, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = city.label;
+        natalCitySelect.appendChild(opt);
+    });
+    const manualOpt = document.createElement('option');
+    manualOpt.value = 'manual';
+    manualOpt.textContent = '其他 / 手動輸入座標';
+    natalCitySelect.appendChild(manualOpt);
+
+    const UTC_OFFSETS = [-12, -11, -10, -9.5, -9, -8, -7, -6, -5, -4, -3.5, -3, -2, -1, 0,
+        1, 2, 3, 3.5, 4, 4.5, 5, 5.5, 5.75, 6, 6.5, 7, 8, 8.75, 9, 9.5, 10, 10.5, 11, 12, 12.75, 13, 14];
+    natalUtcSelect.innerHTML = '';
+    UTC_OFFSETS.forEach(off => {
+        const opt = document.createElement('option');
+        opt.value = String(off);
+        opt.textContent = `UTC${off >= 0 ? '+' : ''}${off}`;
+        if (off === 8) opt.selected = true;
+        natalUtcSelect.appendChild(opt);
+    });
+
+    natalCitySelect.addEventListener('change', () => {
+        natalManualRow.hidden = natalCitySelect.value !== 'manual';
+    });
+
+    natalDateInput.max = new Date().toISOString().slice(0, 10);
+
+    // Restore last-used inputs, same convenience as the birth-card form.
+    try {
+        const saved = JSON.parse(localStorage.getItem(NATAL_STORAGE_KEY) || 'null');
+        if (saved) {
+            if (saved.date) natalDateInput.value = saved.date;
+            if (saved.time) natalTimeInput.value = saved.time;
+            if (saved.city !== undefined) {
+                natalCitySelect.value = saved.city;
+                natalManualRow.hidden = saved.city !== 'manual';
+            }
+            if (saved.lat !== undefined) natalLatInput.value = saved.lat;
+            if (saved.lon !== undefined) natalLonInput.value = saved.lon;
+            if (saved.utc !== undefined) natalUtcSelect.value = saved.utc;
+        }
+    } catch (e) { /* ignore */ }
+}
+
+// Converts an ecliptic longitude into an on-screen angle (degrees, standard
+// math convention: 0°=east/3 o'clock, increasing counter-clockwise), such
+// that the Ascendant always sits at 180° (9 o'clock) — the standard way
+// natal wheels are drawn.
+function natalScreenAngle(elon, ascendant) {
+    return window.TarotAstrology.norm360(180 + elon - ascendant);
+}
+
+function natalPolarPoint(cx, cy, r, elon, ascendant) {
+    const rad = natalScreenAngle(elon, ascendant) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy - r * Math.sin(rad) };
+}
+
+// Builds an annular wedge (a "ring slice") as a sampled polygon, avoiding
+// any need to reason about SVG arc sweep-flag direction.
+function natalAnnularWedgePath(cx, cy, rInner, rOuter, elonStart, elonEnd, ascendant) {
+    const steps = 10;
+    let pts = [];
+    for (let i = 0; i <= steps; i++) {
+        const e = elonStart + (elonEnd - elonStart) * (i / steps);
+        pts.push(natalPolarPoint(cx, cy, rOuter, e, ascendant));
+    }
+    for (let i = steps; i >= 0; i--) {
+        const e = elonStart + (elonEnd - elonStart) * (i / steps);
+        pts.push(natalPolarPoint(cx, cy, rInner, e, ascendant));
+    }
+    return 'M ' + pts.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' L ') + ' Z';
+}
+
+// Spreads planets across a few concentric radius "bands" so ones that are
+// close together in the zodiac don't render on top of each other.
+function natalAssignPlanetBands(planets, ascendant) {
+    const bands = [136, 118, 100];
+    const minGapDeg = 8;
+    const lastAngleInBand = [null, null, null];
+    const sorted = [...planets].sort((a, b) => a.elon - b.elon);
+    const bandOf = {};
+    sorted.forEach(p => {
+        const angle = natalScreenAngle(p.elon, ascendant);
+        let chosen = 0;
+        for (let b = 0; b < bands.length; b++) {
+            if (lastAngleInBand[b] === null || Math.abs(((angle - lastAngleInBand[b] + 540) % 360) - 180) >= (180 - minGapDeg)) {
+                chosen = b;
+                break;
+            }
+            chosen = b; // fall back to the last band checked if all conflict
+        }
+        lastAngleInBand[chosen] = angle;
+        bandOf[p.body] = bands[chosen];
+    });
+    return bandOf;
+}
+
+function buildNatalWheelSVG(chart) {
+    const cx = 200, cy = 200;
+    const outerR = 190, zodiacInnerR = 155, houseInnerR = 42, tickR = 150;
+    const { ZODIAC_SIGNS } = window.TarotAstrology;
+    const asc = chart.ascendant;
+
+    let svg = `<svg viewBox="0 0 400 400" class="natal-wheel-svg" role="img" aria-label="本命星盤輪圖">`;
+
+    // Zodiac ring: 12 wedges, alternating shade so signs are easy to tell apart
+    ZODIAC_SIGNS.forEach((sign, i) => {
+        const elonStart = i * 30, elonEnd = i * 30 + 30;
+        const path = natalAnnularWedgePath(cx, cy, zodiacInnerR, outerR, elonStart, elonEnd, asc);
+        const fill = i % 2 === 0 ? 'rgba(223,186,71,0.07)' : 'rgba(223,186,71,0.02)';
+        svg += `<path d="${path}" fill="${fill}" stroke="rgba(223,186,71,0.35)" stroke-width="0.6"/>`;
+        const mid = natalPolarPoint(cx, cy, (zodiacInnerR + outerR) / 2, elonStart + 15, asc);
+        svg += `<text x="${mid.x.toFixed(1)}" y="${mid.y.toFixed(1)}" class="natal-sign-glyph" text-anchor="middle" dominant-baseline="middle">${sign.symbol}</text>`;
+    });
+
+    // House cusp lines + house numbers (Equal House: cusp i = Ascendant + i*30)
+    for (let i = 0; i < 12; i++) {
+        const cuspElon = asc + i * 30;
+        const p1 = natalPolarPoint(cx, cy, houseInnerR, cuspElon, asc);
+        const p2 = natalPolarPoint(cx, cy, zodiacInnerR, cuspElon, asc);
+        svg += `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="rgba(223,186,71,0.3)" stroke-width="0.6"/>`;
+        const numPos = natalPolarPoint(cx, cy, (houseInnerR + zodiacInnerR) / 2 - 10, cuspElon + 15, asc);
+        svg += `<text x="${numPos.x.toFixed(1)}" y="${numPos.y.toFixed(1)}" class="natal-house-num" text-anchor="middle" dominant-baseline="middle">${i + 1}</text>`;
+    }
+
+    // ASC / DSC / MC / IC axis lines, drawn thicker
+    const ascP1 = natalPolarPoint(cx, cy, houseInnerR, asc, asc);
+    const ascP2 = natalPolarPoint(cx, cy, outerR, asc, asc);
+    svg += `<line x1="${ascP1.x.toFixed(1)}" y1="${ascP1.y.toFixed(1)}" x2="${ascP2.x.toFixed(1)}" y2="${ascP2.y.toFixed(1)}" stroke="#dfba47" stroke-width="1.4"/>`;
+    const dscP2 = natalPolarPoint(cx, cy, outerR, asc + 180, asc);
+    svg += `<line x1="${cx}" y1="${cy}" x2="${dscP2.x.toFixed(1)}" y2="${dscP2.y.toFixed(1)}" stroke="rgba(223,186,71,0.5)" stroke-width="0.8"/>`;
+    const mcP2 = natalPolarPoint(cx, cy, outerR, chart.midheaven, asc);
+    svg += `<line x1="${cx}" y1="${cy}" x2="${mcP2.x.toFixed(1)}" y2="${mcP2.y.toFixed(1)}" stroke="#dfba47" stroke-width="1.4" stroke-dasharray="2 2"/>`;
+
+    const ascLabel = natalPolarPoint(cx, cy, outerR + 10, asc, asc);
+    svg += `<text x="${ascLabel.x.toFixed(1)}" y="${ascLabel.y.toFixed(1)}" class="natal-axis-label" text-anchor="middle" dominant-baseline="middle">ASC</text>`;
+    const mcLabel = natalPolarPoint(cx, cy, outerR + 10, chart.midheaven, asc);
+    svg += `<text x="${mcLabel.x.toFixed(1)}" y="${mcLabel.y.toFixed(1)}" class="natal-axis-label" text-anchor="middle" dominant-baseline="middle">MC</text>`;
+
+    // Inner boundary circle
+    svg += `<circle cx="${cx}" cy="${cy}" r="${houseInnerR}" fill="none" stroke="rgba(223,186,71,0.3)" stroke-width="0.6"/>`;
+
+    // Planets, spread across radius bands to avoid overlap, with a thin
+    // leader line back to their true position on the zodiac ring.
+    const bandOf = natalAssignPlanetBands(chart.planets, asc);
+    chart.planets.forEach(p => {
+        const band = bandOf[p.body];
+        const tick = natalPolarPoint(cx, cy, tickR, p.elon, asc);
+        const glyph = natalPolarPoint(cx, cy, band, p.elon, asc);
+        svg += `<line x1="${tick.x.toFixed(1)}" y1="${tick.y.toFixed(1)}" x2="${glyph.x.toFixed(1)}" y2="${glyph.y.toFixed(1)}" stroke="rgba(223,186,71,0.35)" stroke-width="0.5"/>`;
+        svg += `<circle cx="${glyph.x.toFixed(1)}" cy="${glyph.y.toFixed(1)}" r="9" fill="#06030e" stroke="${p.retrograde ? '#f87171' : '#dfba47'}" stroke-width="1"/>`;
+        svg += `<text x="${glyph.x.toFixed(1)}" y="${glyph.y.toFixed(1)}" class="natal-planet-glyph" text-anchor="middle" dominant-baseline="middle">${p.symbol}</text>`;
+    });
+
+    svg += `</svg>`;
+    return svg;
+}
+
+function renderNatalResult(chart) {
+    const { ascendantSign, ascendantDegree, midheavenSign, midheavenDegree } = chart;
+    const wheelSvg = buildNatalWheelSVG(chart);
+
+    const planetRows = chart.planets.map(p => `
+        <div class="natal-planet-row">
+            <span class="natal-planet-symbol">${p.symbol}</span>
+            <span class="natal-planet-name">${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''}</span>
+            <span class="natal-planet-pos">${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮</span>
+            <span class="natal-planet-meaning">${p.meaning}｜${p.houseMeaning}</span>
+        </div>
+    `).join('');
+
+    natalResult.hidden = false;
+    natalResult.innerHTML = `
+        <div class="natal-wheel-wrap">${wheelSvg}</div>
+        <div class="natal-angles">
+            <div class="natal-angle-item"><strong>上升星座 ASC：</strong>${ascendantSign.symbol} ${ascendantSign.name} ${ascendantDegree.toFixed(1)}°　—　${ascendantSign.trait}</div>
+            <div class="natal-angle-item"><strong>天頂 MC：</strong>${midheavenSign.symbol} ${midheavenSign.name} ${midheavenDegree.toFixed(1)}°</div>
+        </div>
+        <div class="natal-planet-list">${planetRows}</div>
+    `;
+}
+
+if (natalChartLinkBtn) {
+    natalChartLinkBtn.addEventListener('click', () => {
+        showView('natal');
+    });
+}
+if (natalChartBackBtn) natalChartBackBtn.addEventListener('click', () => showView('select'));
+
+if (calcNatalChartBtn) {
+    calcNatalChartBtn.addEventListener('click', () => {
+        const dateVal = natalDateInput.value;
+        const timeVal = natalTimeInput.value;
+        if (!dateVal || !timeVal) {
+            natalResult.hidden = false;
+            natalResult.innerHTML = `<p class="birthcard-error">請先填寫完整的出生日期與時間。</p>`;
+            return;
+        }
+
+        let lat, lon, utcOffset;
+        const cityVal = natalCitySelect.value;
+        if (cityVal === 'manual') {
+            lat = parseFloat(natalLatInput.value);
+            lon = parseFloat(natalLonInput.value);
+            utcOffset = parseFloat(natalUtcSelect.value);
+            if (Number.isNaN(lat) || Number.isNaN(lon) || Number.isNaN(utcOffset)) {
+                natalResult.hidden = false;
+                natalResult.innerHTML = `<p class="birthcard-error">請輸入完整的緯度、經度與時區。</p>`;
+                return;
+            }
+        } else {
+            const city = window.TarotAstrology.CITY_PRESETS[parseInt(cityVal, 10)];
+            if (!city) {
+                natalResult.hidden = false;
+                natalResult.innerHTML = `<p class="birthcard-error">請選擇出生地點。</p>`;
+                return;
+            }
+            lat = city.lat;
+            lon = city.lon;
+            utcOffset = city.utcOffset;
+        }
+
+        try {
+            localStorage.setItem(NATAL_STORAGE_KEY, JSON.stringify({
+                date: dateVal, time: timeVal, city: cityVal,
+                lat: natalLatInput.value, lon: natalLonInput.value, utc: natalUtcSelect.value
+            }));
+        } catch (e) { /* ignore */ }
+
+        try {
+            const chart = window.TarotAstrology.computeNatalChart({
+                localDateStr: dateVal, localTimeStr: timeVal,
+                utcOffsetHours: utcOffset, lat, lon
+            });
+            renderNatalResult(chart);
+        } catch (e) {
+            natalResult.hidden = false;
+            natalResult.innerHTML = `<p class="birthcard-error">計算時發生問題，請確認輸入內容後再試一次。</p>`;
+        }
+    });
+}
 
 function resetReading() {
     drawnCards = [];
@@ -1099,6 +1365,7 @@ function initBgEmblemEye() {
 window.addEventListener('DOMContentLoaded', () => {
     initSpreads();
     initTopicSelector();
+    initNatalForm();
     showView('select');
     initBgEmblemEye();
 });

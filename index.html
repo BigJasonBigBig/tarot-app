@@ -252,6 +252,47 @@
                 <button class="knowledge-link" id="knowledgeLinkBtn" type="button">📖 塔羅知識專區</button>
                 <button class="knowledge-link" id="birthCardLinkBtn" type="button">🔮 我的生日本命牌</button>
                 <button class="knowledge-link" id="historyLinkBtn" type="button">🕰 占卜歷史紀錄</button>
+                <button class="knowledge-link" id="natalChartLinkBtn" type="button">🪐 我的本命星盤</button>
+            </div>
+        </section>
+
+        <!-- Natal Chart view — real astronomical calculation, entirely client-side -->
+        <section class="view-panel view-natal" id="viewNatalChart" hidden>
+            <button class="back-link" id="natalChartBackBtn" type="button">← 返回選擇牌陣</button>
+            <h2 class="knowledge-title">✦ 我的本命星盤 ✦</h2>
+            <p class="intro-desc">輸入你的出生年月日、時間與地點，即時算出太陽、月亮與其餘八大行星當下實際落在哪個星座、哪一宮，並標出上升星座與天頂。所有計算都在你的瀏覽器裡完成，不會把資料傳到任何伺服器。</p>
+
+            <div class="natal-form">
+                <div class="natal-form-row">
+                    <label for="natalDateInput">出生日期</label>
+                    <input type="date" id="natalDateInput" class="birthdate-input">
+                </div>
+                <div class="natal-form-row">
+                    <label for="natalTimeInput">出生時間（越精確，上升星座越準）</label>
+                    <input type="time" id="natalTimeInput" class="birthdate-input">
+                </div>
+                <div class="natal-form-row">
+                    <label for="natalCitySelect">出生地點</label>
+                    <select id="natalCitySelect" class="birthdate-input">
+                        <!-- Filled in by JS from TarotAstrology.CITY_PRESETS, plus a manual-entry option -->
+                    </select>
+                </div>
+                <div class="natal-form-row natal-manual-row" id="natalManualRow" hidden>
+                    <label for="natalLatInput">緯度（北緯正、南緯負）</label>
+                    <input type="number" id="natalLatInput" class="birthdate-input" step="0.0001" placeholder="例：25.033">
+                    <label for="natalLonInput">經度（東經正、西經負）</label>
+                    <input type="number" id="natalLonInput" class="birthdate-input" step="0.0001" placeholder="例：121.565">
+                    <label for="natalUtcSelect">出生時的 UTC 時區</label>
+                    <select id="natalUtcSelect" class="birthdate-input">
+                        <!-- Filled in by JS -->
+                    </select>
+                </div>
+                <button class="action-btn" id="calcNatalChartBtn" type="button">計算我的本命星盤</button>
+                <p class="natal-disclaimer">提醒：這裡使用「等宮制」宮位系統，且時區採用該地標準時間，未自動校正日光節約時間（夏令時）；如果你出生的年代/地區當時有實施夏令時，上升星座可能會有幾度的落差。結果僅供參考娛樂。</p>
+            </div>
+
+            <div class="natal-result" id="natalResult" hidden>
+                <!-- Filled in by JS -->
             </div>
         </section>
 
@@ -388,6 +429,9 @@
     <script src="tarot-data.js"></script>
     <!-- Used only by the "分享 / 儲存結果" button to export the reading as an image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Self-hosted astronomy calculation library (MIT licensed), used only by the natal chart feature -->
+    <script src="assets/js/astronomy.browser.min.js"></script>
+    <script src="astrology.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
