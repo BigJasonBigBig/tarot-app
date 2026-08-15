@@ -1049,9 +1049,56 @@ if (shareResultBtn) {
     });
 }
 
+// ---------------------------------------------------------------------
+// Background sigil's all-seeing eye — the pupil looks in one of 8
+// directions (the 4 cardinal + 4 diagonal) at random, unpredictable
+// intervals, never picking the same direction twice in a row.
+// ---------------------------------------------------------------------
+function initBgEmblemEye() {
+    const pupil = document.getElementById('bgEmblemPupil');
+    if (!pupil) return;
+
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return; // stays centered, per the CSS override too
+
+    const reach = 6; // how far the pupil can drift from center, in SVG units
+    const directions = [
+        { dx: 0, dy: -reach },                                   // up
+        { dx: 0, dy: reach },                                    // down
+        { dx: -reach, dy: 0 },                                   // left
+        { dx: reach, dy: 0 },                                    // right
+        { dx: -reach * 0.7, dy: -reach * 0.7 },                  // up-left
+        { dx: reach * 0.7, dy: -reach * 0.7 },                   // up-right
+        { dx: -reach * 0.7, dy: reach * 0.7 },                   // down-left
+        { dx: reach * 0.7, dy: reach * 0.7 },                    // down-right
+    ];
+
+    let lastIndex = -1;
+    function lookRandomly() {
+        let index;
+        do {
+            index = Math.floor(Math.random() * directions.length);
+        } while (index === lastIndex);
+        lastIndex = index;
+
+        const dir = directions[index];
+        pupil.style.setProperty('--eye-dx', `${dir.dx}px`);
+        pupil.style.setProperty('--eye-dy', `${dir.dy}px`);
+
+        // Irregular pause before the next glance — anywhere from ~1.5s to ~5s —
+        // so the movement doesn't fall into a predictable rhythm.
+        const nextDelay = 1500 + Math.random() * 3500;
+        setTimeout(lookRandomly, nextDelay);
+    }
+
+    // Give it a beat before the first glance so it doesn't move immediately on load.
+    setTimeout(lookRandomly, 1200);
+}
+
 // Init on load
 window.addEventListener('DOMContentLoaded', () => {
     initSpreads();
     initTopicSelector();
     showView('select');
+    initBgEmblemEye();
 });
