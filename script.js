@@ -293,7 +293,11 @@ function startMeditation(onComplete) {
 
 // Initialize Web Audio API for atmospheric sound effects
 let audioCtx = null;
+let soundMuted = false;
+try { soundMuted = localStorage.getItem('tarotSoundMuted') === '1'; } catch (e) { /* ignore */ }
+
 function playDrawSound() {
+    if (soundMuted) return;
     try {
         if (!audioCtx) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -337,6 +341,7 @@ const viewIntro = document.getElementById('viewIntro');
 const viewReading = document.getElementById('viewReading');
 const viewKnowledge = document.getElementById('viewKnowledge');
 const viewBirthcard = document.getElementById('viewBirthcard');
+const viewHistory = document.getElementById('viewHistory');
 const introTitle = document.getElementById('introTitle');
 const introDesc = document.getElementById('introDesc');
 const introBackBtn = document.getElementById('introBackBtn');
@@ -350,6 +355,11 @@ const birthCardBackBtn = document.getElementById('birthCardBackBtn');
 const birthDateInput = document.getElementById('birthDateInput');
 const calcBirthCardBtn = document.getElementById('calcBirthCardBtn');
 const birthCardResult = document.getElementById('birthCardResult');
+const historyLinkBtn = document.getElementById('historyLinkBtn');
+const historyBackBtn = document.getElementById('historyBackBtn');
+const historyList = document.getElementById('historyList');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+const shareResultBtn = document.getElementById('shareResultBtn');
 
 // Switches between the top-level screens: choose spread -> spread intro &
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
@@ -360,6 +370,7 @@ function showView(name) {
     viewReading.hidden = name !== 'reading';
     viewKnowledge.hidden = name !== 'knowledge';
     viewBirthcard.hidden = name !== 'birthcard';
+    viewHistory.hidden = name !== 'history';
     if (name !== 'reading') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -467,6 +478,13 @@ function calcBirthCardIndex(dateStr) {
 
 birthDateInput.max = new Date().toISOString().slice(0, 10);
 
+// Remember the seeker's birth date across visits so they don't have to
+// re-type it every time they check their soul card.
+try {
+    const savedBirthDate = localStorage.getItem('tarotBirthDate');
+    if (savedBirthDate) birthDateInput.value = savedBirthDate;
+} catch (e) { /* localStorage unavailable, ignore */ }
+
 birthCardLinkBtn.addEventListener('click', () => {
     birthCardResult.hidden = true;
     birthCardResult.innerHTML = '';
@@ -481,6 +499,8 @@ calcBirthCardBtn.addEventListener('click', () => {
         birthCardResult.innerHTML = `<p class="birthcard-error">請先選擇你的出生年月日。</p>`;
         return;
     }
+
+    try { localStorage.setItem('tarotBirthDate', val); } catch (e) { /* ignore */ }
 
     const index = calcBirthCardIndex(val);
     const cardId = MAJOR_ARCANA_ORDER[index] || MAJOR_ARCANA_ORDER[0];
@@ -513,6 +533,7 @@ function resetReading() {
     readingResult.classList.remove('visible');
     actionContainer.style.display = 'none';
     revealHint.style.display = 'none';
+    if (shareResultBtn) shareResultBtn.hidden = true;
 
     // Re-shuffle a clean deck from global window.TAROT_CARDS
     const tarotSource = window.TAROT_CARDS || [];
@@ -687,6 +708,8 @@ function revealSingleCard(slotIndex) {
         revealHint.style.display = 'none';
         appendCombinationsIfAny();
         deckStatus.textContent = "星辰已為您指明道路。";
+        saveReadingToHistory();
+        if (shareResultBtn) shareResultBtn.hidden = false;
     } else {
         const remaining = drawnCards.filter(c => !c.revealed).length;
         deckStatus.textContent = `還有 ${remaining} 張牌尚未翻開，點擊查看更多解讀。`;
@@ -784,6 +807,190 @@ function appendCombinationsIfAny() {
     }
 }
 
+// ---------------------------------------------------------------------
+// Reading History — saved locally (localStorage only, never leaves the
+// browser). Each finished reading is stored as a compact record; full
+// interpretation text is re-derived on demand from tarot-data.js rather
+// than duplicated in storage.
+// ---------------------------------------------------------------------
+const HISTORY_KEY = 'tarotHistory';
+const MAX_HISTORY_ENTRIES = 20;
+
+function loadHistory() {
+    try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveReadingToHistory() {
+    if (!drawnCards.length || !drawnCards.every(c => c.revealed)) return;
+    const record = {
+        id: Date.now(),
+        dateLabel: new Date().toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+        spreadType: currentSpreadType,
+        spreadName: SPREADS[currentSpreadType] ? SPREADS[currentSpreadType].name : currentSpreadType,
+        topicKey: currentTopic,
+        topicLabel: (TOPICS[currentTopic] || TOPICS.general).label,
+        cards: drawnCards.map(c => ({ id: c.id, isReversed: !!c.isReversed }))
+    };
+    const history = loadHistory();
+    history.unshift(record);
+    try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY_ENTRIES)));
+    } catch (e) { /* storage full or unavailable, silently skip */ }
+}
+
+// Renders one history record's full card-by-card explanation, reusing
+// buildCardExplanation by briefly pointing the global spread/topic state
+// at this record's values (synchronous, no risk of interleaving).
+function renderHistoryDetail(record) {
+    const wrap = document.createElement('div');
+    wrap.classList.add('history-entry-detail');
+
+    const prevSpreadType = currentSpreadType;
+    const prevTopic = currentTopic;
+    currentSpreadType = SPREADS[record.spreadType] ? record.spreadType : prevSpreadType;
+    currentTopic = TOPICS[record.topicKey] ? record.topicKey : 'general';
+
+    const source = window.TAROT_CARDS || [];
+    record.cards.forEach((stored, index) => {
+        const base = source.find(c => c.id === stored.id);
+        if (!base) return;
+        const cardForExplanation = { ...base, isReversed: stored.isReversed, revealed: true };
+        wrap.appendChild(buildCardExplanation(cardForExplanation, index));
+    });
+
+    const combos = findCombinations(record.cards.map(stored => {
+        const base = source.find(c => c.id === stored.id) || {};
+        return { ...base, id: stored.id };
+    }));
+    if (combos.length > 0) {
+        const comboBox = document.createElement('div');
+        comboBox.classList.add('combo-box');
+        comboBox.innerHTML = `
+            <h3 class="combo-box-title">✦ 牌組特殊組合解讀 ✦</h3>
+            ${combos.map(c => `
+                <div class="combo-item">
+                    <span class="combo-pair">${c.names[0]} × ${c.names[1]}</span>
+                    <p>${c.text}</p>
+                </div>
+            `).join('')}
+        `;
+        wrap.appendChild(comboBox);
+    }
+
+    currentSpreadType = prevSpreadType;
+    currentTopic = prevTopic;
+    return wrap;
+}
+
+function renderHistoryList() {
+    if (!historyList) return;
+    const history = loadHistory();
+    historyList.innerHTML = '';
+
+    if (history.length === 0) {
+        historyList.innerHTML = `<p class="history-empty">尚無占卜紀錄，完成一次占卜後會自動保存在這裡。</p>`;
+        return;
+    }
+
+    const source = window.TAROT_CARDS || [];
+    history.forEach(record => {
+        const entry = document.createElement('div');
+        entry.classList.add('history-entry');
+
+        const names = record.cards.map(stored => {
+            const base = source.find(c => c.id === stored.id);
+            const name = base ? base.name : stored.id;
+            return stored.isReversed ? `${name}（逆）` : name;
+        }).join('、');
+
+        const header = document.createElement('button');
+        header.type = 'button';
+        header.classList.add('history-entry-header');
+        header.innerHTML = `
+            <span class="history-entry-date">${record.dateLabel}</span>
+            <span class="history-chip">${record.spreadName}</span>
+            <span class="history-chip">${record.topicLabel}</span>
+            <span class="history-card-names">${names}</span>
+        `;
+
+        let detailEl = null;
+        header.addEventListener('click', () => {
+            if (detailEl) {
+                detailEl.remove();
+                detailEl = null;
+                return;
+            }
+            detailEl = renderHistoryDetail(record);
+            entry.appendChild(detailEl);
+        });
+
+        entry.appendChild(header);
+        historyList.appendChild(entry);
+    });
+}
+
+// ---------------------------------------------------------------------
+// Share / save the finished reading
+// ---------------------------------------------------------------------
+function buildShareText() {
+    const spreadName = SPREADS[currentSpreadType] ? SPREADS[currentSpreadType].name : '';
+    const topicLabel = (TOPICS[currentTopic] || TOPICS.general).label;
+    const lines = drawnCards.map((c, i) => {
+        const slotName = SPREADS[currentSpreadType].slots[i];
+        const dir = c.isReversed ? '逆位' : '正位';
+        return `${slotName}：${c.name}（${dir}）`;
+    });
+    return `✦ 神祕星辰塔羅牌 ✦\n牌陣：${spreadName}　主題：${topicLabel}\n${lines.join('\n')}\n\n來自 神祕星辰塔羅 Celestial Tarot`;
+}
+
+async function shareReading() {
+    const shareText = buildShareText();
+
+    // Try the native share sheet first (mobile browsers mostly); it can share
+    // an image file directly if the browser supports file sharing.
+    if (navigator.share) {
+        try {
+            if (typeof html2canvas === 'function' && navigator.canShare) {
+                const canvas = await html2canvas(readingResult, { backgroundColor: '#030206', scale: 2 });
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const file = new File([blob], 'tarot-reading.png', { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: '我的塔羅占卜結果', text: shareText });
+                    return;
+                }
+            }
+            await navigator.share({ title: '我的塔羅占卜結果', text: shareText });
+            return;
+        } catch (e) {
+            // user cancelled the share sheet, or an image step failed — fall through to the download/copy path below
+        }
+    }
+
+    // Fallback for desktop / unsupported browsers: download a PNG image of the
+    // result, and also copy the text summary to the clipboard.
+    try {
+        if (typeof html2canvas === 'function') {
+            const canvas = await html2canvas(readingResult, { backgroundColor: '#030206', scale: 2 });
+            const link = document.createElement('a');
+            link.download = 'tarot-reading.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    } catch (e) { /* image export not available, text copy below still runs */ }
+
+    try {
+        await navigator.clipboard.writeText(shareText);
+        const original = shareResultBtn.textContent;
+        shareResultBtn.textContent = '已複製文字 + 下載圖片 ✓';
+        setTimeout(() => { shareResultBtn.textContent = original; }, 2200);
+    } catch (e) { /* clipboard not available; the image download above is still useful */ }
+}
+
 // Add event listener to the central card deck
 document.querySelector('.mystic-deck').addEventListener('click', () => {
     if (drawnCards.length < SPREADS[currentSpreadType].slots.length) {
@@ -800,7 +1007,47 @@ document.querySelector('.mystic-deck').addEventListener('keydown', (e) => {
     }
 });
 
+// Sound on/off toggle — persisted across visits
+const soundToggleBtn = document.getElementById('soundToggleBtn');
+function refreshSoundToggleUI() {
+    if (!soundToggleBtn) return;
+    soundToggleBtn.textContent = soundMuted ? '🔇' : '🔈';
+    soundToggleBtn.classList.toggle('muted', soundMuted);
+    soundToggleBtn.setAttribute('aria-pressed', soundMuted ? 'true' : 'false');
+    soundToggleBtn.setAttribute('aria-label', soundMuted ? '開啟音效' : '關閉音效');
+}
+if (soundToggleBtn) {
+    refreshSoundToggleUI();
+    soundToggleBtn.addEventListener('click', () => {
+        soundMuted = !soundMuted;
+        try { localStorage.setItem('tarotSoundMuted', soundMuted ? '1' : '0'); } catch (e) { /* ignore */ }
+        refreshSoundToggleUI();
+    });
+}
+
 resetBtn.addEventListener('click', resetReading);
+
+// Reading history view
+if (historyLinkBtn) {
+    historyLinkBtn.addEventListener('click', () => {
+        renderHistoryList();
+        showView('history');
+    });
+}
+if (historyBackBtn) historyBackBtn.addEventListener('click', () => showView('select'));
+if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', () => {
+        try { localStorage.removeItem(HISTORY_KEY); } catch (e) { /* ignore */ }
+        renderHistoryList();
+    });
+}
+
+// Share / save result button
+if (shareResultBtn) {
+    shareResultBtn.addEventListener('click', () => {
+        shareReading();
+    });
+}
 
 // Init on load
 window.addEventListener('DOMContentLoaded', () => {

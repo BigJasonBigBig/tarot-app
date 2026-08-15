@@ -5,12 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>神祕星辰塔羅牌 - 探索命運與潛意識</title>
     <meta name="description" content="一個神祕而精緻的塔羅牌占卜網頁，透過星辰的力量，為您解答過去、現在與未來的疑惑。">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <meta name="theme-color" content="#030206">
+
+    <!-- Open Graph / social preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bigjasonbigbig.github.io/tarot-app/">
+    <meta property="og:title" content="神祕星辰塔羅牌 - 探索命運與潛意識">
+    <meta property="og:description" content="一個神祕而精緻的塔羅牌占卜網頁，透過星辰的力量，為您解答過去、現在與未來的疑惑。">
+    <meta property="og:image" content="https://bigjasonbigbig.github.io/tarot-app/assets/cover.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="神祕星辰塔羅牌 - 探索命運與潛意識">
+    <meta name="twitter:description" content="一個神祕而精緻的塔羅牌占卜網頁，透過星辰的力量，為您解答過去、現在與未來的疑惑。">
+    <meta name="twitter:image" content="https://bigjasonbigbig.github.io/tarot-app/assets/cover.jpg">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Sound toggle — floating corner control, always available -->
+    <button class="sound-toggle-btn" id="soundToggleBtn" type="button" aria-pressed="false" aria-label="關閉音效">🔈</button>
+
     <!-- Starry & Nebula Cosmic Background -->
     <div class="universe-bg">
         <div class="nebula nebula-1"></div>
@@ -151,6 +174,20 @@
             <div class="landing-links">
                 <button class="knowledge-link" id="knowledgeLinkBtn" type="button">📖 塔羅知識專區</button>
                 <button class="knowledge-link" id="birthCardLinkBtn" type="button">🔮 我的生日本命牌</button>
+                <button class="knowledge-link" id="historyLinkBtn" type="button">🕰 占卜歷史紀錄</button>
+            </div>
+        </section>
+
+        <!-- Reading History view — past readings saved locally in this browser -->
+        <section class="view-panel view-history" id="viewHistory" hidden>
+            <button class="back-link" id="historyBackBtn" type="button">← 返回選擇牌陣</button>
+            <h2 class="knowledge-title">✦ 占卜歷史紀錄 ✦</h2>
+            <p class="intro-desc">這裡保存著你在這個瀏覽器上完成過的占卜紀錄，僅存在你自己的裝置裡，不會上傳到任何地方。清除瀏覽器資料或換裝置就會消失。</p>
+            <div class="history-list" id="historyList">
+                <!-- Filled in by JS -->
+            </div>
+            <div class="history-actions">
+                <button class="action-btn action-btn-secondary" id="clearHistoryBtn" type="button">清除所有歷史紀錄</button>
             </div>
         </section>
 
@@ -265,12 +302,15 @@
                 <div class="action-container" id="actionContainer" style="display: none;">
                     <button class="action-btn" id="resetBtn">重新占卜</button>
                     <button class="action-btn action-btn-secondary" id="backToSelectBtn">重新選擇牌陣</button>
+                    <button class="action-btn action-btn-secondary" id="shareResultBtn" type="button" hidden>分享 / 儲存結果</button>
                 </div>
             </section>
         </section>
     </main>
 
     <script src="tarot-data.js"></script>
+    <!-- Used only by the "分享 / 儲存結果" button to export the reading as an image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

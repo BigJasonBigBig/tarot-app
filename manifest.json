@@ -1,0 +1,20 @@
+{
+  "name": "神祕星辰塔羅牌 Celestial Tarot",
+  "short_name": "星辰塔羅",
+  "description": "一個神祕而精緻的塔羅牌占卜網頁，透過星辰的力量，為您解答過去、現在與未來的疑惑。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#030206",
+  "theme_color": "#030206",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

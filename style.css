@@ -828,6 +828,85 @@ main {
     color: #f87171;
 }
 
+/* Reading History view */
+.view-history {
+    max-width: 780px;
+    width: 100%;
+}
+
+.history-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+}
+
+.history-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    padding: 2rem 0;
+}
+
+.history-entry {
+    background: rgba(10, 6, 26, 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.history-entry-header {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 0.9rem;
+    padding: 1rem 1.3rem;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.history-entry-date {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    width: 100%;
+}
+
+.history-chip {
+    font-size: 0.78rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+.history-card-names {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    flex: 1 1 auto;
+}
+
+.history-entry-detail {
+    padding: 0 1.3rem 1.3rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.15);
+    margin-top: 0.2rem;
+    padding-top: 1rem;
+}
+
+.history-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
 /* Card Selection Area */
 .deck-container {
     perspective: 1000px;
@@ -964,12 +1043,19 @@ main {
 
 .tarot-card-container.revealed {
     cursor: default;
-    animation: none;
+    animation: cardRevealedGlow 4s ease-in-out infinite;
 }
 
 @keyframes cardInvitePulse {
     0%, 100% { filter: drop-shadow(0 0 0 transparent); }
     50% { filter: drop-shadow(0 0 16px var(--gold-glow)); }
+}
+
+/* Gentle breathing gold glow on cards that have already been revealed —
+   subtle on purpose since several of these may be visible at once in a spread. */
+@keyframes cardRevealedGlow {
+    0%, 100% { filter: drop-shadow(0 0 3px transparent); }
+    50%      { filter: drop-shadow(0 0 9px var(--gold-glow)); }
 }
 
 .card-face {
@@ -1043,6 +1129,13 @@ main {
     z-index: 4;
 }
 
+/* Auto-play the shimmer once the flip settles (flip transition is 0.8s),
+   so every reveal gets the effect without needing a hover. */
+.tarot-card.flipped .card-face.front::after {
+    animation: foilShimmer 1.8s ease-out 0.8s 1 both;
+}
+
+/* Hovering a revealed card still replays the shimmer on demand. */
 .tarot-card.flipped:hover .card-face.front::after {
     animation: foilShimmer 1.8s ease-out forwards;
 }
@@ -1050,6 +1143,33 @@ main {
 @keyframes foilShimmer {
     0% { left: -150%; }
     100% { left: 150%; }
+}
+
+/* Twinkling star sparkles over a revealed card face — a few fixed points
+   rendered as radial-gradient layers on one pseudo-element, gently pulsing. */
+.card-face.front::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(circle, rgba(223, 186, 71, 0.85) 0%, rgba(223, 186, 71, 0) 70%),
+        radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+    background-repeat: no-repeat;
+    background-size: 6px 6px, 5px 5px, 4px 4px;
+    background-position: 18% 22%, 78% 65%, 62% 15%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.tarot-card.flipped .card-face.front::before {
+    animation: twinkleDot 3.6s ease-in-out 1.2s infinite;
+}
+
+@keyframes twinkleDot {
+    0%, 100% { opacity: 0; transform: scale(0.85); }
+    50%      { opacity: 0.85; transform: scale(1.1); }
 }
 
 /* Position text elements absolutely over SVG frames */
@@ -1374,6 +1494,48 @@ main {
     filter: none;
 }
 
+/* Floating sound on/off toggle — always reachable, top-right corner */
+.sound-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 50;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    background: rgba(3, 2, 6, 0.6);
+    color: var(--gold);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.sound-toggle-btn:hover {
+    border-color: var(--gold);
+    transform: scale(1.06);
+}
+
+.sound-toggle-btn.muted {
+    color: var(--text-muted);
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+@media (max-width: 600px) {
+    .sound-toggle-btn {
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -1407,5 +1569,35 @@ main {
     .tarot-card-container {
         width: 120px;
         height: 205px;
+    }
+}
+
+/* Respect users who've asked their system for reduced motion — keep the
+   flip transition (it carries essential information: which card was drawn)
+   but strip out every purely decorative looping/ambient animation. */
+@media (prefers-reduced-motion: reduce) {
+    .nebula,
+    .universe-bg::before,
+    .mystic-veil,
+    .mist-layer,
+    .meditation-topic,
+    .cloud,
+    .ghost-fire,
+    .mystic-emblem-rotor,
+    .mystic-emblem-eye,
+    .cover-art,
+    .tarot-card-container.unrevealed,
+    .tarot-card-container.revealed,
+    .card-face.front::after,
+    .tarot-card.flipped .card-face.front::after,
+    .card-face.front::before {
+        animation: none !important;
+    }
+
+    .tarot-card,
+    .spread-btn,
+    .topic-btn,
+    .action-btn {
+        transition-duration: 0.01ms !important;
     }
 }
