@@ -810,6 +810,210 @@ main {
     animation: fadeInUp 0.7s ease forwards;
 }
 
+/* Colorful "breathing" tile grid — replaces the old accordion. Every fact
+   about the chart (wheel / ASC / MC / 10 planets / 12 houses) is its own
+   small tile, laid out left-to-right top-to-bottom, gently pulsing, and
+   popping open to reveal full detail on hover (desktop) or tap (touch). */
+.natal-tile-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    grid-auto-rows: 104px;
+    gap: 0.6rem;
+}
+
+.natal-tile {
+    position: relative;
+    border-radius: 14px;
+    border: 1.5px solid var(--tile-color, var(--gold));
+    background: rgba(10, 6, 26, 0.78);
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    animation: natalTileBreathe 4.2s ease-in-out infinite;
+    transition: transform 0.35s cubic-bezier(0.34, 1.3, 0.4, 1), box-shadow 0.35s ease;
+    transform-origin: center center;
+}
+
+.natal-tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--tile-color, var(--gold));
+    opacity: 0.13;
+    pointer-events: none;
+}
+
+.natal-tile-wheel {
+    grid-column: span 2;
+    grid-row: span 2;
+    animation-duration: 6.5s;
+}
+
+@keyframes natalTileBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+}
+
+.natal-tile:hover,
+.natal-tile.active,
+.natal-tile:focus-visible {
+    transform: scale(1.9);
+    z-index: 30;
+    animation-play-state: paused;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--tile-color, var(--gold));
+}
+
+.natal-tile-wheel:hover,
+.natal-tile-wheel.active,
+.natal-tile-wheel:focus-visible {
+    transform: scale(1.3);
+}
+
+.natal-tile-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.4rem;
+    text-align: center;
+    transition: opacity 0.2s ease;
+}
+
+.natal-tile:hover .natal-tile-face,
+.natal-tile.active .natal-tile-face,
+.natal-tile:focus-visible .natal-tile-face {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* The wheel tile's face IS the chart artwork, not a placeholder icon —
+   keep it visible even when expanded (only the legend detail fades in). */
+.natal-tile-wheel:hover .natal-tile-face,
+.natal-tile-wheel.active .natal-tile-face,
+.natal-tile-wheel:focus-visible .natal-tile-face {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.natal-tile-icon {
+    font-size: 1.5rem;
+    color: var(--tile-color, var(--gold));
+}
+
+.natal-tile-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--tile-color, var(--gold));
+    color: var(--tile-color, var(--gold));
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+}
+
+.natal-tile-label {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    line-height: 1.3;
+}
+
+.natal-tile-detail {
+    position: absolute;
+    inset: 0;
+    padding: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
+    font-size: 0.68rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    opacity: 0;
+    overflow-y: auto;
+    background: rgba(6, 4, 16, 0.96);
+    transition: opacity 0.25s ease 0.05s;
+    pointer-events: none;
+}
+
+.natal-tile:hover .natal-tile-detail,
+.natal-tile.active .natal-tile-detail,
+.natal-tile:focus-visible .natal-tile-detail {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.natal-tile-wheel .natal-tile-detail {
+    inset: auto 0 0 0;
+    background: linear-gradient(0deg, rgba(6, 4, 16, 0.92) 55%, transparent);
+    padding: 0.5rem 0.7rem;
+}
+
+.natal-tile-wheel .natal-tile-detail .natal-legend {
+    margin-top: 0;
+    justify-content: center;
+    font-size: 0.62rem;
+    gap: 0.3rem 0.7rem;
+}
+
+.natal-tile-detail-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.76rem;
+    color: var(--tile-color, var(--gold));
+    letter-spacing: 0.5px;
+}
+
+.natal-tile-keyword {
+    color: var(--text-light);
+    opacity: 0.85;
+}
+
+.natal-tile-occupants {
+    margin-top: 0.2rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.15);
+    color: #dfba47;
+}
+
+.natal-tile-wheel-svg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+}
+
+.natal-tile-wheel-svg svg {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 480px) {
+    .natal-tile-grid {
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        grid-auto-rows: 84px;
+        gap: 0.45rem;
+    }
+
+    .natal-tile:hover,
+    .natal-tile.active,
+    .natal-tile:focus-visible {
+        transform: scale(2.3);
+    }
+
+    .natal-tile-wheel:hover,
+    .natal-tile-wheel.active,
+    .natal-tile-wheel:focus-visible {
+        transform: scale(1.5);
+    }
+}
+
 .natal-accordion {
     display: flex;
     flex-direction: column;
@@ -2053,7 +2257,8 @@ main {
     .tarot-card-container.revealed,
     .card-face.front::after,
     .tarot-card.flipped .card-face.front::after,
-    .card-face.front::before {
+    .card-face.front::before,
+    .natal-tile {
         animation: none !important;
     }
 
@@ -2066,7 +2271,10 @@ main {
     .natal-house-body,
     .natal-house-chevron,
     .natal-block,
-    .natal-house-row {
+    .natal-house-row,
+    .natal-tile,
+    .natal-tile-face,
+    .natal-tile-detail {
         transition-duration: 0.01ms !important;
     }
 

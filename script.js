@@ -778,128 +778,140 @@ function buildNatalWheelSVG(chart) {
     return svg;
 }
 
+// Vivid, varied colors cycled across every tile so the grid reads as
+// colorful/lively rather than the site's usual muted gold-on-black.
+const NATAL_TILE_PALETTE = [
+    '#f97316', '#f43f5e', '#eab308', '#22c55e', '#06b6d4', '#3b82f6',
+    '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#84cc16', '#0ea5e9',
+    '#a855f7', '#ef4444', '#22d3ee', '#fb7185'
+];
+function natalTileColor(i) {
+    return NATAL_TILE_PALETTE[i % NATAL_TILE_PALETTE.length];
+}
+
 function renderNatalResult(chart) {
     const { ascendantSign, ascendantDegree, midheavenSign, midheavenDegree } = chart;
     const wheelSvg = buildNatalWheelSVG(chart);
     const { HOUSE_MEANINGS } = window.TarotAstrology;
 
-    // Which houses actually have a planet in them, so the full 12-house
-    // reference below can flag "你的 X 在這裡" instead of reading as generic
-    // textbook filler.
+    // Which houses actually have a planet in them, so each house tile can
+    // flag "你的 X 在這裡" instead of reading as generic textbook filler.
     const occupantsByHouse = {};
     chart.planets.forEach(p => {
         occupantsByHouse[p.house] = occupantsByHouse[p.house] || [];
         occupantsByHouse[p.house].push(p);
     });
 
-    const planetRows = chart.planets.map(p => `
-        <div class="natal-planet-row">
-            <span class="natal-planet-symbol">${p.symbol}</span>
-            <span class="natal-planet-name">${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''}</span>
-            <span class="natal-planet-pos">${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮（${p.houseMeaning.name}）</span>
-            <span class="natal-planet-meaning">${p.meaning}｜${p.houseMeaning.keyword}</span>
-        </div>
-    `).join('');
+    let tileIndex = 0;
+    const nextColor = () => natalTileColor(tileIndex++);
+    const tiles = [];
 
-    const houseRows = HOUSE_MEANINGS.map(h => {
+    // Wheel tile — bigger (spans 2x2), artwork always visible, legend fades
+    // in as an overlay strip along the bottom when hovered/tapped.
+    tiles.push(`
+        <div class="natal-tile natal-tile-wheel" style="--tile-color:${nextColor()}" tabindex="0">
+            <div class="natal-tile-face">
+                <div class="natal-tile-wheel-svg">${wheelSvg}</div>
+            </div>
+            <div class="natal-tile-detail">
+                <span class="natal-legend">
+                    <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#38bdf8"></i>調和相位</span>
+                    <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#f87171"></i>緊張相位</span>
+                </span>
+            </div>
+        </div>
+    `);
+
+    tiles.push(`
+        <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+            <div class="natal-tile-face">
+                <span class="natal-tile-icon">${ascendantSign.symbol}</span>
+                <span class="natal-tile-label">上升 ASC</span>
+            </div>
+            <div class="natal-tile-detail">
+                <strong class="natal-tile-detail-title">上升星座 ASC</strong>
+                <p>${ascendantSign.symbol} ${ascendantSign.name} ${ascendantDegree.toFixed(1)}°</p>
+                <p>${ascendantSign.trait}</p>
+            </div>
+        </div>
+    `);
+
+    tiles.push(`
+        <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+            <div class="natal-tile-face">
+                <span class="natal-tile-icon">${midheavenSign.symbol}</span>
+                <span class="natal-tile-label">天頂 MC</span>
+            </div>
+            <div class="natal-tile-detail">
+                <strong class="natal-tile-detail-title">天頂 MC</strong>
+                <p>${midheavenSign.symbol} ${midheavenSign.name} ${midheavenDegree.toFixed(1)}°</p>
+            </div>
+        </div>
+    `);
+
+    chart.planets.forEach(p => {
+        tiles.push(`
+            <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+                <div class="natal-tile-face">
+                    <span class="natal-tile-icon">${p.symbol}</span>
+                    <span class="natal-tile-label">${p.label}${p.retrograde ? ' R' : ''}</span>
+                </div>
+                <div class="natal-tile-detail">
+                    <strong class="natal-tile-detail-title">${p.symbol} ${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''}</strong>
+                    <p>${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮（${p.houseMeaning.name}）</p>
+                    <p>${p.meaning}｜${p.houseMeaning.keyword}</p>
+                </div>
+            </div>
+        `);
+    });
+
+    HOUSE_MEANINGS.forEach(h => {
         const occupants = occupantsByHouse[h.number] || [];
         const occupantLine = occupants.length > 0
-            ? `<div class="natal-house-occupants">你的 ${occupants.map(p => `${p.symbol} ${p.label}`).join('、')} 落在這裡</div>`
+            ? `<p class="natal-tile-occupants">你的 ${occupants.map(p => `${p.symbol} ${p.label}`).join('、')} 落在這裡</p>`
             : '';
-        return `
-        <div class="natal-house-row">
-            <button class="natal-house-heading" type="button" aria-expanded="false">
-                <span class="natal-house-badge">${h.number}</span>
-                <span class="natal-house-name">${h.name}</span>
-                <span class="natal-house-keyword">${h.keyword}</span>
-                <span class="natal-house-chevron">▾</span>
-            </button>
-            <div class="natal-house-body">
-                <p class="natal-house-desc">${h.description}</p>
-                ${occupantLine}
+        tiles.push(`
+            <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+                <div class="natal-tile-face">
+                    <span class="natal-tile-badge">${h.number}</span>
+                    <span class="natal-tile-label">${h.name}</span>
+                </div>
+                <div class="natal-tile-detail">
+                    <strong class="natal-tile-detail-title">第${h.number}宮・${h.name}</strong>
+                    <p class="natal-tile-keyword">${h.keyword}</p>
+                    <p>${h.description}</p>
+                    ${occupantLine}
+                </div>
             </div>
-        </div>`;
-    }).join('');
+        `);
+    });
 
-    // Result is split into click-to-expand blocks (rather than one long
-    // scroll) so the seeker can jump straight to what they want to read.
+    // Whole chart is laid out as one grid of tiles (left-to-right,
+    // top-to-bottom) instead of a long scroll — each tile gently "breathes"
+    // and pops open on hover/tap to reveal its detail.
     natalResult.hidden = false;
-    natalResult.innerHTML = `
-        <div class="natal-accordion">
-            <div class="natal-block expanded" data-block="wheel">
-                <button class="natal-block-header" type="button" aria-expanded="true">
-                    <span class="natal-block-title">✦ 星盤輪圖</span>
-                    <span class="natal-block-chevron">▾</span>
-                </button>
-                <div class="natal-block-body">
-                    <div class="natal-wheel-wrap">${wheelSvg}</div>
-                    <div class="natal-legend">
-                        <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#38bdf8"></i>調和相位（六分／三分）</span>
-                        <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#f87171"></i>緊張相位（四分／對分）</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="natal-block" data-block="angles">
-                <button class="natal-block-header" type="button" aria-expanded="false">
-                    <span class="natal-block-title">✦ 上升星座與天頂</span>
-                    <span class="natal-block-chevron">▾</span>
-                </button>
-                <div class="natal-block-body">
-                    <div class="natal-angles">
-                        <div class="natal-angle-item"><strong>上升星座 ASC：</strong>${ascendantSign.symbol} ${ascendantSign.name} ${ascendantDegree.toFixed(1)}°　—　${ascendantSign.trait}</div>
-                        <div class="natal-angle-item"><strong>天頂 MC：</strong>${midheavenSign.symbol} ${midheavenSign.name} ${midheavenDegree.toFixed(1)}°</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="natal-block" data-block="planets">
-                <button class="natal-block-header" type="button" aria-expanded="false">
-                    <span class="natal-block-title">✦ 十大行星位置</span>
-                    <span class="natal-block-chevron">▾</span>
-                </button>
-                <div class="natal-block-body">
-                    <div class="natal-planet-list">${planetRows}</div>
-                </div>
-            </div>
-
-            <div class="natal-block" data-block="houses">
-                <button class="natal-block-header" type="button" aria-expanded="false">
-                    <span class="natal-block-title">✦ 十二宮位詳解</span>
-                    <span class="natal-block-chevron">▾</span>
-                </button>
-                <div class="natal-block-body">
-                    <p class="natal-house-guide-intro">本命星盤把黃道分成 12 個「宮位」，代表人生的 12 個面向。哪一宮裡有行星，那個領域的能量就會被特別放大；就算某一宮沒有行星，這個宮位所在的星座、以及它的宮主星，仍然會影響這個領域怎麼展現。點下面任一宮位可展開詳細說明。</p>
-                    <div class="natal-house-guide-list">${houseRows}</div>
-                </div>
-            </div>
-        </div>
-    `;
+    natalResult.innerHTML = `<div class="natal-tile-grid">${tiles.join('')}</div>`;
 }
 
-// Click delegation for the natal-result accordion: expands/collapses the
-// four top-level blocks (wheel / angles / planets / houses) and, inside the
-// houses block, each individual house row — added once since natalResult's
-// innerHTML is fully rebuilt on every calculation.
-function handleNatalAccordionClick(e) {
-    const blockHeader = e.target.closest('.natal-block-header');
-    if (blockHeader) {
-        const block = blockHeader.closest('.natal-block');
-        if (!block) return;
-        const expanded = block.classList.toggle('expanded');
-        blockHeader.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        return;
-    }
-    const houseHeading = e.target.closest('.natal-house-heading');
-    if (houseHeading) {
-        const row = houseHeading.closest('.natal-house-row');
-        if (!row) return;
-        const expanded = row.classList.toggle('expanded');
-        houseHeading.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        return;
-    }
+// Click/tap delegation for the natal tile grid — desktop gets the CSS
+// :hover pop-open for free, but touch devices have no hover, so tapping a
+// tile toggles the same "active" (expanded) state via JS. Added once since
+// natalResult's innerHTML is fully rebuilt on every calculation.
+function handleNatalTileToggle(e) {
+    const tile = e.target.closest && e.target.closest('.natal-tile');
+    if (!tile) return;
+    tile.classList.toggle('active');
 }
-if (natalResult) natalResult.addEventListener('click', handleNatalAccordionClick);
+if (natalResult) {
+    natalResult.addEventListener('click', handleNatalTileToggle);
+    natalResult.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const tile = e.target.closest && e.target.closest('.natal-tile');
+        if (!tile) return;
+        e.preventDefault();
+        tile.classList.toggle('active');
+    });
+}
 
 if (natalChartLinkBtn) {
     natalChartLinkBtn.addEventListener('click', () => {
