@@ -882,6 +882,18 @@ function renderNatalResult(chart) {
     HOUSE_MEANINGS.forEach(h => {
         const occupants = occupantsByHouse[h.number] || [];
         const hasOccupants = occupants.length > 0;
+        // Each occupying planet gets its own combo write-up right here too
+        // (not just on the planet's own tile) — so browsing by house also
+        // answers "my Pluto is here, so what does that actually mean?"
+        // without having to go hunt down the planet's tile separately.
+        const occupantDetails = occupants.map(p => {
+            const combo = (PLANET_HOUSE_INSIGHTS[p.body] || {})[h.number];
+            return `
+                <div class="natal-tile-occupant-detail">
+                    <strong class="natal-tile-subhead">${p.symbol} ${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''} 落在這裡：</strong>
+                    <span>${combo || (p.meaning + '。')}</span>
+                </div>`;
+        }).join('');
         tiles.push(`
             <div class="natal-tile${hasOccupants ? '' : ' natal-tile-house-empty'}" style="--tile-color:${nextColor()}" tabindex="0">
                 <div class="natal-tile-face">
@@ -896,7 +908,7 @@ function renderNatalResult(chart) {
                     <p class="natal-tile-keyword">${h.keyword}</p>
                     <p>${h.description}</p>
                     ${hasOccupants
-                        ? `<p class="natal-tile-occupants">你的 ${occupants.map(p => `${p.symbol} ${p.label}`).join('、')} 落在這裡</p>`
+                        ? `<div class="natal-tile-occupants">${occupantDetails}</div>`
                         : `<p class="natal-tile-occupants natal-tile-occupants-empty">這一宮目前沒有你的行星坐落，僅供對照參考——宮頭星座與宮主星仍會影響這個領域怎麼展現。</p>`}
                 </div>
             </div>
