@@ -995,6 +995,22 @@ body.theme-ukiyo .view-mode-select {
     pointer-events: none;
 }
 
+/* Inner matting line + carved/embossed bevel — a second, thinner frame set
+   a few pixels in from the tile's outer border, like an ornate picture
+   frame. Uses its own box-shadow (not the animated one on .natal-tile
+   itself) so the breathing animation doesn't fight it. */
+.natal-tile::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(223, 186, 71, 0.32);
+    border-radius: 9px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
 .natal-tile-wheel {
     flex-basis: 232px;
     width: 232px;
@@ -1210,6 +1226,28 @@ body.theme-ukiyo .view-mode-select {
 
 .natal-spotlight.active .natal-spotlight-panel {
     transform: scale(1);
+}
+
+/* Wheel mode: the natal wheel is the one tile worth seeing big, so its
+   spotlight expands to fill nearly the whole screen instead of the compact
+   card used for every other (mostly text) tile. Toggled by openNatalTile()
+   in script.js, only when the wheel tile itself was the one opened. */
+.natal-spotlight.wheel-mode {
+    padding: 3vh 3vw;
+}
+
+.natal-spotlight.wheel-mode .natal-spotlight-panel {
+    width: min(94vw, 860px);
+    max-height: 94vh;
+}
+
+.natal-spotlight.wheel-mode .natal-spotlight-inner {
+    max-height: 94vh;
+}
+
+.natal-spotlight.wheel-mode .natal-spotlight-wheel-svg {
+    width: min(80vh, 88vw, 760px);
+    margin: 0 auto;
 }
 
 .natal-spotlight-close {
@@ -2136,6 +2174,49 @@ body.theme-ukiyo .view-mode-select {
     0%, 100% { opacity: 0; transform: scale(0.85); }
     50%      { opacity: 0.85; transform: scale(1.1); }
 }
+
+/* Ornate corner brackets — small gold filigree accents that frame both a
+   tarot card's face and a natal-chart tile, so the edge reads as carved /
+   gallery-framed rather than a plain flat border. Falls back to gold when
+   no --tile-color is set (e.g. on tarot cards). */
+.corner-decor {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    z-index: 3;
+    filter: drop-shadow(0 0 2px rgba(223, 186, 71, 0.45));
+}
+
+.corner-decor::before,
+.corner-decor::after {
+    content: '';
+    position: absolute;
+    background: var(--tile-color, var(--gold));
+    opacity: 0.85;
+}
+
+.corner-decor::before {
+    width: 100%;
+    height: 2px;
+}
+
+.corner-decor::after {
+    width: 2px;
+    height: 100%;
+}
+
+.corner-decor.corner-tl { top: 6px; left: 6px; }
+.corner-decor.corner-tl::before, .corner-decor.corner-tl::after { top: 0; left: 0; }
+
+.corner-decor.corner-tr { top: 6px; right: 6px; }
+.corner-decor.corner-tr::before, .corner-decor.corner-tr::after { top: 0; right: 0; }
+
+.corner-decor.corner-bl { bottom: 6px; left: 6px; }
+.corner-decor.corner-bl::before, .corner-decor.corner-bl::after { bottom: 0; left: 0; }
+
+.corner-decor.corner-br { bottom: 6px; right: 6px; }
+.corner-decor.corner-br::before, .corner-decor.corner-br::after { bottom: 0; right: 0; }
 
 /* Position text elements absolutely over SVG frames */
 .card-header {

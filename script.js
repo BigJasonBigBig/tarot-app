@@ -853,11 +853,22 @@ function renderNatalResult(chart) {
     const nextColor = () => natalTileColor(tileIndex++);
     const tiles = [];
 
+    // Small ornate corner brackets — same decorative language as the (also
+    // now-styled) tarot card corners — dropped into every tile so the frame
+    // reads as carved/gallery-framed instead of a plain flat rounded box.
+    const cornerDecorHTML = `
+        <div class="corner-decor corner-tl"></div>
+        <div class="corner-decor corner-tr"></div>
+        <div class="corner-decor corner-bl"></div>
+        <div class="corner-decor corner-br"></div>
+    `;
+
     // Wheel tile — bigger, artwork always visible on the small tile; on
     // hover/tap the spotlight shows a larger copy of the same wheel plus
     // the aspect-color legend, centered on screen.
     tiles.push(`
         <div class="natal-tile natal-tile-wheel" style="--tile-color:${nextColor()}" tabindex="0">
+            ${cornerDecorHTML}
             <div class="natal-tile-face">
                 <div class="natal-tile-wheel-svg">${wheelSvg}</div>
             </div>
@@ -874,6 +885,7 @@ function renderNatalResult(chart) {
 
     tiles.push(`
         <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+            ${cornerDecorHTML}
             <div class="natal-tile-face">
                 <span class="natal-tile-icon">${ascendantSign.symbol}</span>
                 <span class="natal-tile-label">上升 ASC</span>
@@ -889,6 +901,7 @@ function renderNatalResult(chart) {
 
     tiles.push(`
         <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+            ${cornerDecorHTML}
             <div class="natal-tile-face">
                 <span class="natal-tile-icon">${midheavenSign.symbol}</span>
                 <span class="natal-tile-label">天頂 MC</span>
@@ -907,6 +920,7 @@ function renderNatalResult(chart) {
         const combo = (PLANET_HOUSE_INSIGHTS[p.body] || {})[p.house];
         tiles.push(`
             <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+                ${cornerDecorHTML}
                 <div class="natal-tile-face">
                     <span class="natal-tile-icon">${p.symbol}</span>
                     <span class="natal-tile-label">${p.label}${p.retrograde ? ' R' : ''}</span>
@@ -941,6 +955,7 @@ function renderNatalResult(chart) {
         }).join('');
         tiles.push(`
             <div class="natal-tile${hasOccupants ? '' : ' natal-tile-house-empty'}" style="--tile-color:${nextColor()}" tabindex="0">
+                ${cornerDecorHTML}
                 <div class="natal-tile-face">
                     <span class="natal-tile-badge">${h.number}</span>
                     <span class="natal-tile-label">${h.name}</span>
@@ -1000,6 +1015,11 @@ function openNatalTile(tile) {
     if (color) panel.style.setProperty('--tile-color', color);
     tile.classList.add('active');
     spotlight.classList.add('active');
+
+    // The wheel is the one tile worth seeing big — its spotlight expands to
+    // fill nearly the whole screen instead of the compact card used for
+    // every other (mostly text) tile.
+    spotlight.classList.toggle('wheel-mode', tile.classList.contains('natal-tile-wheel'));
 }
 
 function closeNatalSpotlight() {
