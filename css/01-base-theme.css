@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap');
+
+:root {
+    --bg-dark: #030206;
+    --bg-glow: #0d0620;
+    --panel-rgb: 10, 6, 26;
+    --panel-rgb-strong: 3, 2, 6;
+    --panel-rgb-alt: 8, 5, 20;
+    --bg-card: #000000;
+    --gold: #dfba47;
+    --gold-dim: #997e2f;
+    --gold-glow: rgba(223, 186, 71, 0.45);
+    --purple-glow: rgba(139, 92, 246, 0.3);
+    --cyan-glow: rgba(6, 182, 212, 0.25);
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-width: 170px;
+    --card-height: 290px;
+}
+
+/* Japanese ukiyo-e theme — applied to <body> when the seeker picks that
+   deck style (see applyDeckStyle() in script.js). Because almost the whole
+   site is already built on the custom properties above (var(--gold),
+   var(--panel-rgb), etc.), overriding them here is enough to re-theme the
+   background, borders, and accent colors everywhere at once, without
+   touching every individual rule. Palette is inspired by traditional
+   woodblock prints: deep indigo night, vermillion lacquer red, warm ivory
+   and ink. */
+body.theme-ukiyo {
+    --bg-dark: #170d0a;
+    --bg-glow: #2c1712;
+    --panel-rgb: 38, 20, 14;
+    --panel-rgb-strong: 20, 10, 7;
+    --panel-rgb-alt: 32, 17, 12;
+    --gold: #d9552e;
+    --gold-dim: #8f3423;
+    --gold-glow: rgba(217, 85, 46, 0.45);
+    --purple-glow: rgba(196, 90, 41, 0.28);
+    --cyan-glow: rgba(24, 90, 120, 0.28);
+    --text-light: #f5ece0;
+    --text-muted: #b6a08e;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Cosmic Ambient Background with Breathing Effect.
+   Now uses a real photographed tarot-table backdrop per style: a classic
+   Waite-style velvet spread cloth, or a Japanese ukiyo-e style one. A dark
+   radial tint sits on top so foreground text/panels stay readable. */
+.universe-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(13, 6, 32, 0.35) 0%, rgba(3, 2, 6, 0.82) 100%),
+        url('assets/bg-waite.jpg') center center / cover no-repeat,
+        var(--bg-dark);
+    overflow: hidden;
+}
+
+body.theme-ukiyo .universe-bg {
+    background:
+        radial-gradient(circle at 50% 50%, rgba(44, 23, 18, 0.35) 0%, rgba(20, 10, 7, 0.82) 100%),
+        url('assets/bg-ukiyo.jpg') center center / cover no-repeat,
+        var(--bg-dark);
+}
+
+/* Natal chart screen gets its own starry-sky backdrop (still per style),
+   swapped in via body.view-natal-active (set by showView() in script.js). */
+body.view-natal-active .universe-bg {
+    background:
+        radial-gradient(circle at 50% 50%, rgba(13, 6, 32, 0.35) 0%, rgba(3, 2, 6, 0.82) 100%),
+        url('assets/bg-waite-natal.jpg') center center / cover no-repeat,
+        var(--bg-dark);
+}
+
+body.theme-ukiyo.view-natal-active .universe-bg {
+    background:
+        radial-gradient(circle at 50% 50%, rgba(44, 23, 18, 0.35) 0%, rgba(20, 10, 7, 0.82) 100%),
+        url('assets/bg-ukiyo-natal.jpg') center center / cover no-repeat,
+        var(--bg-dark);
+}
+
+.universe-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(white, rgba(255,255,255,.15) 2px, transparent 40px),
+        radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 30px);
+    background-size: 550px 550px, 350px 350px;
+    opacity: 0.2;
+    animation: starsRotate 240s linear infinite;
+}
+
+.nebula {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
+    filter: blur(95px);
+    mix-blend-mode: screen;
+    animation: nebulaFloat 25s ease-in-out infinite alternate, breathingGlow 12s ease-in-out infinite alternate;
+}
+
+.nebula-1 {
+    top: -15%;
+    left: -15%;
+}
+
+.nebula-2 {
+    bottom: -15%;
+    right: -15%;
+    background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
+    animation-delay: -12.5s;
+    animation-duration: 30s, 14s;
+}
+
+@keyframes starsRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes nebulaFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 30px) scale(1.1); }
+}
+
+@keyframes breathingGlow {
+    0% {
+        opacity: 0.2;
+        filter: blur(85px) brightness(0.7);
+    }
+    100% {
+        opacity: 0.55;
+        filter: blur(105px) brightness(1.15);
+    }
+}
+
+/* Giant faint mystic sigil watermark — sits behind every screen so the
+   background reads as a rich dark surface instead of flat black. Purely
+   decorative, so it's marked aria-hidden and never blocks clicks. */
+.bg-emblem {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 145vmin;
+    height: 145vmin;
+    transform: translate(-50%, -50%);
+    z-index: -3;
+    opacity: 0.13;
+    pointer-events: none;
+}
+
+.bg-emblem svg {
+    width: 100%;
+    height: 100%;
+}
+
+.bg-emblem-star-outer {
+    transform-origin: 200px 200px;
+    animation: bgEmblemSpin 200s linear infinite;
+}
+
+.bg-emblem-star-inner {
+    transform-origin: 200px 200px;
+    animation: bgEmblemSpin 140s linear infinite reverse;
+}
+
+@keyframes bgEmblemSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* The iris/pupil group is nudged around by JS (see initBgEmblemEye in
+   script.js) to one of 8 directions at random, unpredictable intervals —
+   this transition just smooths each move into a gentle glide. */
+.bg-emblem-pupil {
+    transform: translate(var(--eye-dx, 0px), var(--eye-dy, 0px));
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 600px) {
+    .bg-emblem {
+        opacity: 0.09;
+    }
+}
+
+/* Floating Mystic Veil Overlay */
+.mystic-veil {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    pointer-events: none;
+    background: linear-gradient(
+        125deg,
+        rgba(139, 92, 246, 0.02) 0%,
+        rgba(59, 130, 246, 0.03) 25%,
+        rgba(6, 182, 212, 0.02) 50%,
+        rgba(139, 92, 246, 0.04) 75%,
+        rgba(59, 130, 246, 0.02) 100%
+    );
+    background-size: 300% 300%;
+    filter: blur(8px);
+    animation: veilMove 22s ease-in-out infinite alternate;
+}
+
+@keyframes veilMove {
+    0% {
+        background-position: 0% 50%;
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        background-position: 100% 50%;
+        opacity: 0.8;
+        transform: scale(1.03);
+    }
+    100% {
+        background-position: 50% 100%;
+        opacity: 0.5;
+        transform: scale(1);
+    }
+}
+
+/* Meditation Overlay: mist + slowly rising/fading focus prompts */
+.meditation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 45%, rgba(24, 16, 46, 0.95) 0%, rgba(4, 2, 9, 0.985) 100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.9s ease;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.meditation-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mist-layer {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    background:
+        radial-gradient(circle at 35% 40%, rgba(255, 255, 255, 0.07) 0%, transparent 55%),
+        radial-gradient(circle at 65% 65%, rgba(196, 181, 253, 0.06) 0%, transparent 55%),
+        radial-gradient(circle at 50% 20%, rgba(223, 186, 71, 0.05) 0%, transparent 50%);
+    filter: blur(34px);
+    animation: mistDrift 20s ease-in-out infinite alternate;
+}
+
+.mist-layer-2 {
+    animation-duration: 26s;
+    animation-delay: -7s;
+    opacity: 0.75;
+}
+
+.mist-layer-3 {
+    animation-duration: 32s;
+    animation-delay: -14s;
+    opacity: 0.55;
+}
+
+@keyframes mistDrift {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(4%, -3%) scale(1.08); }
+    100% { transform: translate(-3%, 3%) scale(1.04); }
+}
+
+.meditation-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 90vw;
+    width: 600px;
+    padding: 0 1.5rem;
+}

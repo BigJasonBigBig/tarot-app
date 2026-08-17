@@ -28,7 +28,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap">
-    <link rel="stylesheet" href="style.css">
+    <!-- Cache-busting: every local stylesheet/script below is fetched with a
+         ?v= version query string so GitHub Pages' CDN and visitors'
+         browsers always pick up the latest deploy instead of serving a
+         stale cached copy. Whenever a file is edited, bump its ?v= (any
+         change works, e.g. today's date+time). -->
+    <!-- style.css was split into these ordered pieces for maintainability
+         (each under ~320 lines instead of one ~2800-line file). Order
+         matters for CSS cascade — keep this exact sequence. -->
+    <link rel="stylesheet" href="css/01-base-theme.css?v=202608171200">
+    <link rel="stylesheet" href="css/02-landing-header.css?v=202608171200">
+    <link rel="stylesheet" href="css/03-spread-selector.css?v=202608171200">
+    <link rel="stylesheet" href="css/04-birthcard-natal1.css?v=202608171200">
+    <link rel="stylesheet" href="css/05-natal2.css?v=202608171200">
+    <link rel="stylesheet" href="css/06-natal3-knowledge-history.css?v=202608171200">
+    <link rel="stylesheet" href="css/07-tarot-card-deck.css?v=202608171200">
+    <link rel="stylesheet" href="css/08-reading-result.css?v=202608171200">
+    <link rel="stylesheet" href="css/09-toggles-modal-responsive.css?v=202608171200">
 </head>
 <body>
     <!-- Sound toggle — floating corner control, always available -->
@@ -449,8 +465,14 @@
                 </div>
             </div>
 
+            <!-- Scatter tray: each drawn card lands here at a random tilt, so on
+                 mobile there's no need to scroll to find the next empty slot.
+                 Once every card is drawn, this hides and the real spread layout
+                 (below, with each card in its meaningful position) fades in. -->
+            <div class="draw-scatter-tray" id="drawScatterTray" aria-hidden="true"></div>
+
             <!-- The actual Spread Board where cards will be drawn into -->
-            <div class="spread-board" id="spreadBoard">
+            <div class="spread-board" id="spreadBoard" hidden>
                 <!-- Dynamically populated card slots -->
             </div>
 
@@ -471,10 +493,23 @@
         </section>
     </main>
 
-    <script src="tarot-data.js"></script>
+    <script src="tarot-data.js?v=202608170747"></script>
     <!-- Self-hosted astronomy calculation library (MIT licensed), used only by the natal chart feature -->
     <script src="assets/js/astronomy.browser.min.js"></script>
-    <script src="astrology.js"></script>
-    <script src="script.js"></script>
+    <script src="astrology.js?v=202608170747"></script>
+    <!-- script.js was split into these ordered pieces for maintainability
+         (each under ~520 lines instead of one ~1900-line file). They're all
+         plain classic scripts sharing one global scope, exactly like before
+         — order matters (later files call functions/reference consts
+         defined in earlier ones), so keep this exact sequence. -->
+    <script src="js/data-tarot-content.js?v=202608171200"></script>
+    <script src="js/theme-and-helpers.js?v=202608171200"></script>
+    <script src="js/view-routing.js?v=202608171200"></script>
+    <script src="js/birthcard.js?v=202608171200"></script>
+    <script src="js/natal-chart.js?v=202608171200"></script>
+    <script src="js/tarot-reading.js?v=202608171200"></script>
+    <script src="js/history.js?v=202608171200"></script>
+    <script src="js/share.js?v=202608171200"></script>
+    <script src="js/ui-init.js?v=202608171200"></script>
 </body>
 </html>

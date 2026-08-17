@@ -1,0 +1,305 @@
+.back-link:hover {
+    color: var(--gold);
+}
+
+.intro-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.7rem;
+    color: var(--gold);
+    text-shadow: 0 0 14px var(--gold-glow);
+    margin-bottom: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.intro-desc {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    margin-bottom: 2.5rem;
+}
+
+.topic-lead {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+}
+
+.topic-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+    margin-bottom: 2.5rem;
+}
+
+.topic-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(var(--panel-rgb), 0.7);
+    border: 1px solid rgba(223, 186, 71, 0.3);
+    border-radius: 24px;
+    color: var(--text-light);
+    font-family: 'Cinzel', serif;
+    padding: 0.6rem 1.3rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.topic-btn-icon {
+    color: var(--gold);
+}
+
+.topic-btn:hover, .topic-btn.active {
+    border-color: var(--gold);
+    background: rgba(22, 14, 54, 0.85);
+    box-shadow: 0 0 14px var(--gold-glow);
+    color: var(--gold);
+}
+
+/* Central mystical crest above the spread selector: a slowly rotating
+   compass-star sigil with an all-seeing eye at its core. */
+.mystic-emblem {
+    width: 156px;
+    height: 156px;
+    margin: 0 auto 0.8rem;
+    animation: emblemBreathe 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Hero cover art on the landing screen (falls back to the mystic-emblem
+   sigil above if the image fails to load). */
+.cover-art-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+}
+
+.cover-art {
+    width: 190px;
+    max-width: 65%;
+    height: auto;
+    border-radius: 14px;
+    border: 2px solid rgba(223, 186, 71, 0.5);
+    box-shadow: 0 0 30px var(--gold-glow), 0 15px 35px rgba(0, 0, 0, 0.7);
+    animation: emblemBreathe 6s ease-in-out infinite;
+}
+
+.mystic-emblem svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.mystic-emblem-rotor {
+    transform-origin: 100px 100px;
+    animation: emblemRotate 90s linear infinite;
+}
+
+.mystic-emblem-eye {
+    transform-origin: 100px 100px;
+    animation: emblemEyeGlow 4s ease-in-out infinite;
+}
+
+@keyframes emblemBreathe {
+    0%, 100% { filter: drop-shadow(0 0 6px var(--gold-glow)); }
+    50%      { filter: drop-shadow(0 0 18px var(--gold-glow)); }
+}
+
+@keyframes emblemRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes emblemEyeGlow {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+}
+
+/* Entry links into the Tarot Knowledge / Birthday Card views, shown on the landing screen */
+.landing-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.8rem;
+}
+
+/* Mode-select screen: two equally formal, full-weight choices (tarot vs
+   natal chart) rather than one being a small link under the other. */
+.mode-select-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.mode-select-option {
+    flex: 1 1 240px;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1.5px solid rgba(223, 186, 71, 0.35);
+    border-radius: 18px;
+    padding: 1.8rem 1.4rem;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mode-select-option:hover,
+.mode-select-option:focus-visible {
+    transform: translateY(-5px);
+    border-color: var(--gold);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 18px var(--gold-glow);
+}
+
+.mode-select-icon {
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.mode-select-label {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+}
+
+.mode-select-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+    .mode-select-option {
+        flex-basis: 100%;
+        padding: 1.4rem 1.2rem;
+    }
+}
+
+.knowledge-link {
+    background: none;
+    border: 1px solid rgba(223, 186, 71, 0.3);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 0.5rem 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.landing-links .knowledge-link {
+    margin-top: 0;
+}
+
+.knowledge-link:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* Birthday Card view (numerology life/soul card calculator) */
+.view-birthcard {
+    max-width: 640px;
+    text-align: center;
+}
+
+.birthcard-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.birthcard-form label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.birthdate-input {
+    background: rgba(var(--panel-rgb), 0.7);
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-family: 'Montserrat', sans-serif;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    color-scheme: dark;
+}
+
+.birthdate-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* Natal Chart view */
+.view-natal {
+    max-width: 720px;
+    width: 100%;
+}
+
+.natal-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin: 1.5rem 0 2rem;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.natal-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+}
+
+.natal-form-row label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.natal-manual-row {
+    gap: 0.6rem;
+    padding: 0.9rem;
+    border: 1px dashed rgba(223, 186, 71, 0.3);
+    border-radius: 10px;
+}
+
+.natal-disclaimer {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    text-align: left;
+}
+
+.natal-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: fadeInUp 0.7s ease forwards;
+}

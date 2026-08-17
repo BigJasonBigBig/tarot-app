@@ -1,0 +1,312 @@
+/* Colorful "breathing" tile grid — replaces the old accordion. Every fact
+   about the chart (wheel / ASC / MC / 10 planets / 12 houses) is its own
+   small tile, laid out left-to-right top-to-bottom, gently pulsing. Hovering
+   (desktop) or tapping (touch) a tile shows its full detail centered on
+   screen via the shared spotlight overlay below, instead of growing the
+   tile itself in place — that way a tile near the grid's edge never gets
+   its detail text clipped off-screen. */
+.natal-tile-caption {
+    width: 100%;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    text-align: left;
+    background: rgba(var(--panel-rgb), 0.5);
+    border: 1px solid rgba(223, 186, 71, 0.18);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+}
+
+.natal-tile-caption strong {
+    color: var(--gold);
+}
+
+.natal-tile-grid {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.natal-tile {
+    position: relative;
+    flex: 0 0 104px;
+    width: 104px;
+    height: 104px;
+    border-radius: 14px;
+    border: 1.5px solid var(--tile-color, var(--gold));
+    background: rgba(var(--panel-rgb), 0.78);
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    animation: natalTileBreathe 3.6s ease-in-out infinite;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transform-origin: center center;
+}
+
+.natal-tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--tile-color, var(--gold));
+    opacity: 0.13;
+    pointer-events: none;
+}
+
+/* Inner matting line + carved/embossed bevel — a second, thinner frame set
+   a few pixels in from the tile's outer border, like an ornate picture
+   frame. Uses its own box-shadow (not the animated one on .natal-tile
+   itself) so the breathing animation doesn't fight it. */
+.natal-tile::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(223, 186, 71, 0.32);
+    border-radius: 9px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+.natal-tile-wheel {
+    flex-basis: 232px;
+    width: 232px;
+    height: 232px;
+    animation-duration: 5.5s;
+}
+
+@keyframes natalTileBreathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+    50% { transform: scale(1.07); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+}
+
+/* Modest local feedback right where the cursor is — the full detail opens
+   in the centered spotlight, not inline, so this tile only needs a gentle
+   "this one" highlight rather than growing large enough to hold text. */
+.natal-tile:hover,
+.natal-tile.active,
+.natal-tile:focus-visible {
+    transform: scale(1.12);
+    z-index: 30;
+    animation-play-state: paused;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--tile-color, var(--gold));
+}
+
+.natal-tile-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.4rem;
+    text-align: center;
+}
+
+.natal-tile-icon {
+    font-size: 1.5rem;
+    color: var(--tile-color, var(--gold));
+}
+
+.natal-tile-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--tile-color, var(--gold));
+    color: var(--tile-color, var(--gold));
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+}
+
+.natal-tile-label {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    line-height: 1.3;
+}
+
+.natal-tile-face-occupants {
+    font-size: 0.7rem;
+    color: var(--tile-color, var(--gold));
+    letter-spacing: 1px;
+}
+
+.natal-tile-face-empty {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    opacity: 0.75;
+}
+
+/* Houses with none of your planets are dimmed/desaturated by default so
+   the "personally relevant" tiles (colorful, planet symbols shown) stand
+   out at a glance without needing to hover anything. */
+.natal-tile-house-empty {
+    opacity: 0.6;
+    filter: saturate(0.45);
+}
+
+.natal-tile-house-empty:hover,
+.natal-tile-house-empty.active,
+.natal-tile-house-empty:focus-visible {
+    opacity: 1;
+    filter: none;
+}
+
+/* Content used to populate the spotlight overlay — never shown inside the
+   small tile itself. */
+.natal-tile-detail {
+    display: none;
+}
+
+.natal-tile-detail-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.76rem;
+    color: var(--tile-color, var(--gold));
+    letter-spacing: 0.5px;
+}
+
+.natal-tile-keyword {
+    color: var(--text-light);
+    opacity: 0.85;
+}
+
+.natal-tile-subhead {
+    color: var(--tile-color, var(--gold));
+    font-weight: 600;
+}
+
+.natal-tile-occupants {
+    margin-top: 0.2rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.15);
+    color: #dfba47;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.natal-tile-occupants-empty {
+    color: var(--text-muted);
+    border-top-color: rgba(223, 186, 71, 0.12);
+}
+
+.natal-tile-occupant-detail {
+    color: var(--text-muted);
+}
+
+.natal-tile-occupant-detail + .natal-tile-occupant-detail {
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(223, 186, 71, 0.12);
+}
+
+.natal-tile-retro-note {
+    font-style: italic;
+    opacity: 0.85;
+    border-top: 1px dashed rgba(223, 186, 71, 0.15);
+    padding-top: 0.35rem;
+    margin-top: 0.1rem;
+}
+
+.natal-tile-wheel-svg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+}
+
+.natal-tile-wheel-svg svg {
+    width: 100%;
+    height: 100%;
+}
+
+.natal-spotlight-wheel-svg {
+    width: min(320px, 78vw);
+    margin: 0 auto;
+}
+
+/* Shared centered overlay — whichever tile is clicked/tapped, its cloned
+   detail content is dropped in here and shown dead-center on screen so it
+   always has room to breathe, regardless of where the source tile sits in
+   the grid. Opening/closing is click-driven only (see script.js) so moving
+   the mouse to read a long entry never dismisses it — only the explicit
+   close button, clicking the dimmed backdrop, or Escape does. */
+.natal-spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6vh 5vw;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.natal-spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--panel-rgb-strong), 0.62);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.natal-spotlight.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.natal-spotlight.active::before {
+    opacity: 1;
+}
+
+.natal-spotlight-panel {
+    position: relative;
+    width: min(400px, 88vw);
+    max-height: 82vh;
+    background: rgba(var(--panel-rgb-alt), 0.97);
+    border: 2px solid var(--tile-color, var(--gold));
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.85);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+.natal-spotlight.active .natal-spotlight-panel {
+    transform: scale(1);
+}
+
+/* Wheel mode: the natal wheel is the one tile worth seeing big, so its
+   spotlight expands to fill nearly the whole screen instead of the compact
+   card used for every other (mostly text) tile. Toggled by openNatalTile()
+   in script.js, only when the wheel tile itself was the one opened. */
+.natal-spotlight.wheel-mode {
+    padding: 3vh 3vw;
+}
+
+.natal-spotlight.wheel-mode .natal-spotlight-panel {
+    width: min(94vw, 860px);
+    max-height: 94vh;
+}
+
+.natal-spotlight.wheel-mode .natal-spotlight-inner {
+    max-height: 94vh;
+}
+
+.natal-spotlight.wheel-mode .natal-spotlight-wheel-svg {
+    width: min(80vh, 88vw, 760px);
+    margin: 0 auto;
+}

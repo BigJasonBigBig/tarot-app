@@ -1,0 +1,309 @@
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px var(--gold-glow);
+    filter: brightness(1.1);
+}
+
+.action-btn-secondary {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-light);
+}
+
+.action-btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    filter: none;
+}
+
+/* Floating sound on/off toggle — always reachable, top-right corner */
+.sound-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 50;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    background: rgba(var(--panel-rgb-strong), 0.6);
+    color: var(--gold);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.sound-toggle-btn:hover {
+    border-color: var(--gold);
+    transform: scale(1.06);
+}
+
+.sound-toggle-btn.muted {
+    color: var(--text-muted);
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+.deck-style-btn {
+    position: fixed;
+    top: 16px;
+    right: 64px;
+    z-index: 50;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    background: rgba(var(--panel-rgb-strong), 0.6);
+    color: var(--gold);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.deck-style-btn:hover {
+    border-color: var(--gold);
+    transform: scale(1.06);
+}
+
+.deck-style-btn.ukiyo-active {
+    border-color: #e0663f;
+    color: #e0663f;
+}
+
+@media (max-width: 600px) {
+    .sound-toggle-btn {
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+
+    .deck-style-btn {
+        top: 10px;
+        right: 52px;
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Deck-style choice modal — shown at the start of every visit, on top of
+   absolutely everything else, until the seeker picks a style. */
+.deck-style-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6vh 5vw;
+    background: radial-gradient(circle at 50% 40%, rgba(24, 16, 46, 0.97) 0%, rgba(var(--panel-rgb-strong), 0.99) 100%);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.deck-style-modal.dismissed {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.deck-style-modal-inner {
+    width: min(560px, 100%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+.deck-style-modal-title {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+}
+
+.deck-style-modal-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: -0.8rem;
+}
+
+.deck-style-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.2rem;
+    width: 100%;
+}
+
+.deck-style-option {
+    flex: 1 1 200px;
+    max-width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1.5px solid rgba(223, 186, 71, 0.35);
+    border-radius: 16px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.deck-style-option:hover,
+.deck-style-option:focus-visible {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.deck-style-option.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(223, 186, 71, 0.35);
+}
+
+.deck-style-option.selected .deck-style-option-label::after {
+    content: ' ✓';
+    color: var(--gold);
+}
+
+.deck-style-option-img-wrap {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+    display: block;
+}
+
+.deck-style-option-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.deck-style-option-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 480px) {
+    .deck-style-modal-title {
+        font-size: 1.2rem;
+    }
+
+    .deck-style-option {
+        flex-basis: 140px;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .spread-selector {
+        gap: 0.8rem;
+    }
+    
+    .spread-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .spread-board {
+        gap: 1.5rem;
+    }
+    
+    .tarot-card-container {
+        width: 120px;
+        height: 205px;
+    }
+}
+
+/* Respect users who've asked their system for reduced motion — keep the
+   flip transition (it carries essential information: which card was drawn)
+   but strip out every purely decorative looping/ambient animation. */
+@media (prefers-reduced-motion: reduce) {
+    .nebula,
+    .universe-bg::before,
+    .mystic-veil,
+    .bg-emblem-star-outer,
+    .bg-emblem-star-inner,
+    .mist-layer,
+    .meditation-topic,
+    .cloud,
+    .ghost-fire,
+    .mystic-emblem-rotor,
+    .mystic-emblem-eye,
+    .cover-art,
+    .tarot-card-container.unrevealed,
+    .tarot-card-container.revealed,
+    .card-face.front::after,
+    .tarot-card.flipped .card-face.front::after,
+    .card-face.front::before,
+    .natal-tile,
+    .spread-board.settling {
+        animation: none !important;
+    }
+
+    .scatter-card {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .tarot-card,
+    .spread-btn,
+    .topic-btn,
+    .action-btn,
+    .natal-block-body,
+    .natal-block-chevron,
+    .natal-house-body,
+    .natal-house-chevron,
+    .natal-block,
+    .natal-house-row,
+    .natal-tile,
+    .natal-tile-face,
+    .natal-spotlight,
+    .natal-spotlight::before,
+    .natal-spotlight-panel,
+    .deck-style-modal,
+    .deck-style-option {
+        transition-duration: 0.01ms !important;
+    }
+
+    .bg-emblem-pupil {
+        transform: translate(0px, 0px) !important;
+        transition: none !important;
+    }
+}

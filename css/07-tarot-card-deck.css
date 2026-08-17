@@ -1,0 +1,318 @@
+.deck-card {
+    position: absolute;
+    width: 140px;
+    height: 240px;
+    background: var(--bg-card);
+    border: none; /* Borders are inside SVGs now */
+    border-radius: 12px;
+    box-shadow: -6px 6px 18px rgba(0,0,0,0.7);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    overflow: hidden;
+}
+
+.deck-card:hover {
+    transform: scale(1.05) translateY(-10px);
+    box-shadow: 0 0 22px var(--gold-glow);
+}
+
+/* Exquisite Card Back SVG Container */
+.card-back-pattern {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-back-pattern svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* The Drawn Card Spread Board */
+.spread-board {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin: 2rem 0;
+    min-height: 320px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.spread-board[hidden],
+.draw-scatter-tray[hidden] {
+    display: none !important;
+}
+
+/* Once every card is drawn, the real (meaningful-position) spread board
+   fades/settles into view. */
+.spread-board.settling {
+    animation: spreadSettleIn 0.6s ease forwards;
+}
+
+@keyframes spreadSettleIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scatter tray: shown only while actively drawing. Each card that comes off
+   the deck lands here at a random tilt (visual flourish + doubles as a
+   progress readout — no need to scroll to find the next empty slot). */
+.draw-scatter-tray {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 0.55rem;
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto 1.6rem;
+}
+
+.scatter-card {
+    width: 54px;
+    height: 84px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    animation: scatterCardIn 0.5s cubic-bezier(0.25, 0.8, 0.3, 1.15) forwards;
+}
+
+.scatter-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@keyframes scatterCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.5) rotate(0deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(var(--scatter-rot, 0deg));
+    }
+}
+
+.slot-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+.slot-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Tarot 3D Flip Mechanics */
+.tarot-card-container {
+    width: var(--card-width);
+    height: var(--card-height);
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+/* Empty slot shown before a card has actually been drawn into it —
+   an outline only, so nothing that looks like a dealt card appears early. */
+.tarot-card-placeholder {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed rgba(223, 186, 71, 0.25);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.tarot-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tarot-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.tarot-card.reversed.flipped {
+    transform: rotateY(180deg) rotateZ(180deg);
+}
+
+/* A card that's been dealt face-down and is waiting to be opened —
+   gently pulses to invite the seeker to click it. */
+.tarot-card-container.unrevealed {
+    animation: cardInvitePulse 2.4s ease-in-out infinite;
+}
+
+.tarot-card-container.revealed {
+    cursor: default;
+    animation: cardRevealedGlow 4s ease-in-out infinite;
+}
+
+@keyframes cardInvitePulse {
+    0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+    50% { filter: drop-shadow(0 0 16px var(--gold-glow)); }
+}
+
+/* Gentle breathing gold glow on cards that have already been revealed —
+   subtle on purpose since several of these may be visible at once in a spread. */
+@keyframes cardRevealedGlow {
+    0%, 100% { filter: drop-shadow(0 0 3px transparent); }
+    50%      { filter: drop-shadow(0 0 9px var(--gold-glow)); }
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    border: none; /* Borders are drawn inside SVGs */
+    box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+    overflow: hidden;
+}
+
+/* Card Back */
+.card-face.back {
+    background: radial-gradient(circle at 30% 40%, rgba(236, 72, 153, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 70% 30%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 50% 70%, rgba(139, 92, 246, 0.4) 0%, transparent 65%),
+                #06030e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.card-face.back .inner-pattern {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-face.back .inner-pattern svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Card Front - VIBRANT COSMIC NEBULA */
+.card-face.front {
+    background: radial-gradient(circle at 20% 30%, rgba(236, 72, 153, 0.55) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.55) 0%, transparent 60%),
+                radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.6) 0%, transparent 65%),
+                #06030e;
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0; /* Align SVGs to edges */
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.35);
+}
+
+/* Dynamic Foil Shimmer Effect over SVGs */
+.card-face.front::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 250%;
+    height: 100%;
+    background: linear-gradient(
+        110deg,
+        rgba(255, 255, 255, 0) 30%,
+        rgba(223, 186, 71, 0.12) 45%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(223, 186, 71, 0.12) 55%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* Auto-play the shimmer once the flip settles (flip transition is 0.8s),
+   so every reveal gets the effect without needing a hover. */
+.tarot-card.flipped .card-face.front::after {
+    animation: foilShimmer 1.8s ease-out 0.8s 1 both;
+}
+
+/* Hovering a revealed card still replays the shimmer on demand. */
+.tarot-card.flipped:hover .card-face.front::after {
+    animation: foilShimmer 1.8s ease-out forwards;
+}
+
+@keyframes foilShimmer {
+    0% { left: -150%; }
+    100% { left: 150%; }
+}
+
+/* Twinkling star sparkles over a revealed card face — a few fixed points
+   rendered as radial-gradient layers on one pseudo-element, gently pulsing. */
+.card-face.front::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(circle, rgba(223, 186, 71, 0.85) 0%, rgba(223, 186, 71, 0) 70%),
+        radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+    background-repeat: no-repeat;
+    background-size: 6px 6px, 5px 5px, 4px 4px;
+    background-position: 18% 22%, 78% 65%, 62% 15%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.tarot-card.flipped .card-face.front::before {
+    animation: twinkleDot 3.6s ease-in-out 1.2s infinite;
+}
+
+@keyframes twinkleDot {
+    0%, 100% { opacity: 0; transform: scale(0.85); }
+    50%      { opacity: 0.85; transform: scale(1.1); }
+}
+
+/* Ornate corner brackets — small gold filigree accents that frame both a
+   tarot card's face and a natal-chart tile, so the edge reads as carved /
+   gallery-framed rather than a plain flat border. Falls back to gold when
+   no --tile-color is set (e.g. on tarot cards). */
+.corner-decor {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    z-index: 3;
+    filter: drop-shadow(0 0 2px rgba(223, 186, 71, 0.45));
+}
+
+.corner-decor::before,
+.corner-decor::after {
+    content: '';
+    position: absolute;
+    background: var(--tile-color, var(--gold));
+    opacity: 0.85;
+}
+
+.corner-decor::before {
+    width: 100%;
+    height: 2px;
+}

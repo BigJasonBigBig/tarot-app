@@ -1,0 +1,313 @@
+.natal-house-heading {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+    font: inherit;
+}
+
+.natal-house-heading:hover {
+    background: rgba(223, 186, 71, 0.05);
+}
+
+.natal-house-chevron {
+    margin-left: auto;
+    color: var(--gold);
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.natal-house-row.expanded .natal-house-chevron {
+    transform: rotate(180deg);
+}
+
+.natal-house-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 186, 71, 0.5);
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-family: 'Cinzel', serif;
+    flex-shrink: 0;
+}
+
+.natal-house-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+}
+
+.natal-house-keyword {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    opacity: 0.85;
+}
+
+.natal-house-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.25s ease;
+    padding: 0 0.9rem;
+}
+
+.natal-house-row.expanded .natal-house-body {
+    max-height: 600px;
+    padding: 0.1rem 0.9rem 0.9rem;
+}
+
+.natal-house-desc {
+    font-size: 0.82rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.natal-house-occupants {
+    margin-top: 0.5rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.12);
+    font-size: 0.78rem;
+    color: #dfba47;
+}
+
+.birthcard-result {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: left;
+    animation: fadeInUp 0.7s ease forwards;
+}
+
+.birthcard-card {
+    width: 150px;
+    height: 255px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+    position: relative;
+}
+
+.birthcard-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.birthcard-info {
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.birthcard-info h3 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.birthcard-info p {
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: var(--text-light);
+}
+
+.birthcard-keywords {
+    font-style: italic;
+    color: #38bdf8;
+}
+
+.birthcard-error {
+    color: #f87171;
+    font-size: 0.9rem;
+}
+
+/* Tarot Knowledge view */
+.view-knowledge {
+    max-width: 780px;
+    width: 100%;
+}
+
+.knowledge-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    text-shadow: 0 0 14px var(--gold-glow);
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.knowledge-section {
+    width: 100%;
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 12px;
+    padding: 1.4rem 1.7rem;
+    margin-bottom: 1.3rem;
+}
+
+.knowledge-section h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 0.7rem;
+}
+
+.knowledge-section p {
+    font-size: 0.92rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    margin-bottom: 0.6rem;
+}
+
+.knowledge-section p:last-child {
+    margin-bottom: 0;
+}
+
+.knowledge-section ul {
+    margin: 0.4rem 0 0.6rem 1.3rem;
+    color: var(--text-light);
+    font-size: 0.92rem;
+    line-height: 1.85;
+}
+
+.knowledge-disclaimer {
+    border-color: rgba(248, 113, 113, 0.35);
+}
+
+.knowledge-disclaimer h3 {
+    color: #f87171;
+}
+
+/* Reading History view */
+.view-history {
+    max-width: 780px;
+    width: 100%;
+}
+
+.history-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+}
+
+.history-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    padding: 2rem 0;
+}
+
+.history-entry {
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.history-entry-header {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 0.9rem;
+    padding: 1rem 1.3rem;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.history-entry-date {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    width: 100%;
+}
+
+.history-chip {
+    font-size: 0.78rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+.history-card-names {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    flex: 1 1 auto;
+}
+
+.history-entry-detail {
+    padding: 0 1.3rem 1.3rem;
+    border-top: 1px solid rgba(223, 186, 71, 0.15);
+    margin-top: 0.2rem;
+    padding-top: 1rem;
+}
+
+.history-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* Card Selection Area */
+.deck-container {
+    perspective: 1000px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.deck-status {
+    font-size: 0.95rem;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+    min-height: 1.2rem;
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+    text-shadow: 0 0 8px rgba(223,186,71,0.3);
+}
+
+/* Card Deck Display */
+.mystic-deck {
+    position: relative;
+    width: 320px;
+    height: 260px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
