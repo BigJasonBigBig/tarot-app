@@ -836,7 +836,8 @@ function renderNatalResult(chart) {
             <div class="natal-tile-detail">
                 <strong class="natal-tile-detail-title">上升星座 ASC</strong>
                 <p>${ascendantSign.symbol} ${ascendantSign.name} ${ascendantDegree.toFixed(1)}°</p>
-                <p>${ascendantSign.trait}</p>
+                <p>上升星座（Ascendant）是你出生當下、東方地平線正在升起的星座，代表你給別人的第一印象、外在行為模式，以及剛接觸新環境時最直覺的反應方式——很多時候比太陽星座更貼近你日常展現出來的「表面性格」。</p>
+                <p>你的上升在${ascendantSign.name}，這股特質會${ascendantSign.trait}。</p>
             </div>
         </div>
     `);
@@ -850,6 +851,8 @@ function renderNatalResult(chart) {
             <div class="natal-tile-detail">
                 <strong class="natal-tile-detail-title">天頂 MC</strong>
                 <p>${midheavenSign.symbol} ${midheavenSign.name} ${midheavenDegree.toFixed(1)}°</p>
+                <p>天頂（Midheaven, MC）是本命盤最高點，象徵你的社會形象、事業方向與想在世界上留下的成就與名聲，也常與人生中扮演權威角色的長輩（例如父母其中一方）有關。</p>
+                <p>你的天頂在${midheavenSign.name}，這股特質會${midheavenSign.trait}。</p>
             </div>
         </div>
     `);
@@ -864,7 +867,10 @@ function renderNatalResult(chart) {
                 <div class="natal-tile-detail">
                     <strong class="natal-tile-detail-title">${p.symbol} ${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''}</strong>
                     <p>${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮（${p.houseMeaning.name}）</p>
-                    <p>${p.meaning}｜${p.houseMeaning.keyword}</p>
+                    <p>${p.meaning}</p>
+                    <p>落在${p.sign.name}，這股特質會${p.sign.trait}。</p>
+                    <p>而落在第 ${p.house} 宮（${p.houseMeaning.name}），具體會展現在：${p.houseMeaning.keyword}。${p.houseMeaning.description}</p>
+                    ${p.retrograde ? '<p class="natal-tile-retro-note">這顆星目前是逆行狀態，它的能量常會轉向內在，需要多一層反思、重新整理過後才會展現出來，而不是直接向外行動。</p>' : ''}
                 </div>
             </div>
         `);

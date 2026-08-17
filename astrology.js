@@ -23,31 +23,31 @@
 //   Ascendant a few degrees. This is disclosed in the UI.
 
 const ZODIAC_SIGNS = [
-    { name: '牡羊座', en: 'Aries', symbol: '♈\uFE0E', element: '火', trait: '衝勁十足、直接坦率，喜歡當開路先鋒' },
-    { name: '金牛座', en: 'Taurus', symbol: '♉\uFE0E', element: '土', trait: '穩定務實、重視感官享受與安全感' },
-    { name: '雙子座', en: 'Gemini', symbol: '♊\uFE0E', element: '風', trait: '好奇多變、思路敏捷，熱愛交流資訊' },
-    { name: '巨蟹座', en: 'Cancer', symbol: '♋\uFE0E', element: '水', trait: '重感情、顧家戀舊，內心敏感細膩' },
-    { name: '獅子座', en: 'Leo', symbol: '♌\uFE0E', element: '火', trait: '自信大方、渴望被看見，天生的舞台魅力' },
-    { name: '處女座', en: 'Virgo', symbol: '♍\uFE0E', element: '土', trait: '講求細節與效率，追求完美與實用並重' },
-    { name: '天秤座', en: 'Libra', symbol: '♎\uFE0E', element: '風', trait: '重視和諧與美感，擅長權衡與協調' },
-    { name: '天蠍座', en: 'Scorpio', symbol: '♏\uFE0E', element: '水', trait: '情感濃烈深沉，洞察力強、不輕易顯露底牌' },
-    { name: '射手座', en: 'Sagittarius', symbol: '♐\uFE0E', element: '火', trait: '樂觀自由、嚮往遠方，喜歡探索與哲思' },
-    { name: '摩羯座', en: 'Capricorn', symbol: '♑\uFE0E', element: '土', trait: '腳踏實地、目標導向，願意為長期成果努力' },
-    { name: '水瓶座', en: 'Aquarius', symbol: '♒\uFE0E', element: '風', trait: '獨立特立、重視理念，關心群體與未來' },
-    { name: '雙魚座', en: 'Pisces', symbol: '♓\uFE0E', element: '水', trait: '富同理心與想像力，容易與他人情緒共感' }
+    { name: '牡羊座', en: 'Aries', symbol: '♈\uFE0E', element: '火', trait: '衝勁十足、直接坦率，凡事喜歡搶頭香、當開路先鋒，速度與行動力永遠優先於長考' },
+    { name: '金牛座', en: 'Taurus', symbol: '♉\uFE0E', element: '土', trait: '穩定務實、重視感官享受與安全感，步調不疾不徐，一旦決定方向就很難被輕易動搖' },
+    { name: '雙子座', en: 'Gemini', symbol: '♊\uFE0E', element: '風', trait: '好奇多變、思路敏捷，熱愛交流資訊與嘗試新鮮事，容易同時對很多事情感興趣' },
+    { name: '巨蟹座', en: 'Cancer', symbol: '♋\uFE0E', element: '水', trait: '重感情、顧家戀舊，內心敏感細膩，習慣先照顧好身邊親近的人，才有安全感做其他事' },
+    { name: '獅子座', en: 'Leo', symbol: '♌\uFE0E', element: '火', trait: '自信大方、渴望被看見，帶有天生的舞台魅力，喜歡在自己在乎的領域裡發光發熱' },
+    { name: '處女座', en: 'Virgo', symbol: '♍\uFE0E', element: '土', trait: '講求細節與效率，追求完美與實用並重，習慣先分析清楚、抓出問題再行動' },
+    { name: '天秤座', en: 'Libra', symbol: '♎\uFE0E', element: '風', trait: '重視和諧與美感，擅長權衡與協調，做決定前常常會多方考量各種立場' },
+    { name: '天蠍座', en: 'Scorpio', symbol: '♏\uFE0E', element: '水', trait: '情感濃烈深沉，洞察力強、不輕易顯露底牌，一旦投入就會全心全意、不留餘地' },
+    { name: '射手座', en: 'Sagittarius', symbol: '♐\uFE0E', element: '火', trait: '樂觀自由、嚮往遠方，喜歡探索與哲思，討厭被瑣碎細節或框架綁住' },
+    { name: '摩羯座', en: 'Capricorn', symbol: '♑\uFE0E', element: '土', trait: '腳踏實地、目標導向，願意為長期成果努力，習慣先把責任扛起來再談其他' },
+    { name: '水瓶座', en: 'Aquarius', symbol: '♒\uFE0E', element: '風', trait: '獨立特立、重視理念，關心群體與未來，喜歡用跟別人不一樣的角度看事情' },
+    { name: '雙魚座', en: 'Pisces', symbol: '♓\uFE0E', element: '水', trait: '富同理心與想像力，容易與他人情緒共感，感受細膩但也容易被情緒牽著走' }
 ];
 
 const PLANETS_META = [
-    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '自我核心、生命力與存在感', retrogradeCapable: false, color: '#f5b942' },
-    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '情緒模式、內在安全感與直覺', retrogradeCapable: false, color: '#b8c4d9' },
-    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '思考方式、表達與溝通習慣', retrogradeCapable: true, color: '#f97316' },
-    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '愛與美的品味、人際吸引力', retrogradeCapable: true, color: '#f472b6' },
-    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '行動力、慾望與競爭方式', retrogradeCapable: true, color: '#ef4444' },
-    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '擴張、機運與信念系統', retrogradeCapable: true, color: '#a78bfa' },
-    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '限制、責任與長期修煉的課題', retrogradeCapable: true, color: '#94a3b8' },
-    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '突破、獨立與革新的衝動', retrogradeCapable: true, color: '#22d3ee' },
-    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '夢想、靈性與模糊不清的渴望', retrogradeCapable: true, color: '#60a5fa' },
-    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '蛻變、深層力量與生死課題', retrogradeCapable: true, color: '#c0392b' }
+    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '太陽代表你最核心的自我認同、生命力來源與想要被世界看見的樣子，是整張命盤裡最基本的「主角能量」，也象徵你有意識想要活成的那個人。', retrogradeCapable: false, color: '#f5b942' },
+    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '月亮反映你最私密的情緒反應模式、內在安全感的來源，以及你在放鬆或壓力之下最真實的直覺反應，是外人不容易一眼看穿、卻主宰你日常心情起伏的那一面。', retrogradeCapable: false, color: '#b8c4d9' },
+    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '水星掌管你接收與處理資訊的方式、說話與書寫的風格，以及你如何學習新事物、與人交換想法——簡單說，就是你「腦袋運作」的方式。', retrogradeCapable: true, color: '#f97316' },
+    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '金星描述你在感情與美感上的品味、什麼樣的人事物容易吸引你，以及你表達愛意、享受生活的方式，也影響你如何經營人際關係中的和諧感。', retrogradeCapable: true, color: '#f472b6' },
+    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '火星代表你的行動力、慾望驅動與面對衝突時的本能反應，是你主動出擊、爭取想要的東西時展現出來的原始能量。', retrogradeCapable: true, color: '#ef4444' },
+    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '木星象徵擴張、幸運與信念系統，代表你在哪些領域容易得到機會與成長，也反映你對人生意義與價值觀的整體樂觀程度。', retrogradeCapable: true, color: '#a78bfa' },
+    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '土星代表限制、責任與需要長期努力才能修煉出來的課題，這裡常常是你最容易自我要求、也最容易感到壓力的地方，卻也是累積扎實成果的關鍵。', retrogradeCapable: true, color: '#94a3b8' },
+    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '天王星帶來突破、獨立與求新求變的衝動，這個位置容易展現出不按牌理出牌、渴望自由與革新的一面，有時也會帶來突如其來的轉折。', retrogradeCapable: true, color: '#22d3ee' },
+    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '海王星象徵夢想、靈性直覺與難以言喻的渴望，這裡容易模糊界線、充滿想像力，也可能是你容易理想化、需要學會分辨現實與幻想的領域。', retrogradeCapable: true, color: '#60a5fa' },
+    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '冥王星代表深層的蛻變力量、隱藏的慾望與生死交關般的課題，這個位置往往牽涉到你最深層、甚至連自己都不容易察覺的心理驅動力。', retrogradeCapable: true, color: '#c0392b' }
 ];
 
 // Full write-up for each of the 12 houses: the traditional Chinese house
