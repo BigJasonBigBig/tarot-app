@@ -59,7 +59,10 @@ body {
     align-items: center;
 }
 
-/* Cosmic Ambient Background with Breathing Effect */
+/* Cosmic Ambient Background with Breathing Effect.
+   Now uses a real photographed tarot-table backdrop per style: a classic
+   Waite-style velvet spread cloth, or a Japanese ukiyo-e style one. A dark
+   radial tint sits on top so foreground text/panels stay readable. */
 .universe-bg {
     position: fixed;
     top: 0;
@@ -67,8 +70,18 @@ body {
     width: 100%;
     height: 100%;
     z-index: -3;
-    background: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-dark) 100%);
+    background:
+        radial-gradient(circle at 50% 50%, rgba(13, 6, 32, 0.35) 0%, rgba(3, 2, 6, 0.82) 100%),
+        url('assets/bg-waite.jpg') center center / cover no-repeat,
+        var(--bg-dark);
     overflow: hidden;
+}
+
+body.theme-ukiyo .universe-bg {
+    background:
+        radial-gradient(circle at 50% 50%, rgba(44, 23, 18, 0.35) 0%, rgba(20, 10, 7, 0.82) 100%),
+        url('assets/bg-ukiyo.jpg') center center / cover no-repeat,
+        var(--bg-dark);
 }
 
 .universe-bg::before {
