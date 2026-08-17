@@ -35,6 +35,30 @@
     <button class="sound-toggle-btn" id="soundToggleBtn" type="button" aria-pressed="false" aria-label="關閉音效">🔈</button>
     <button class="deck-style-btn" id="deckStyleBtn" type="button" title="目前：經典風格（點擊切換為浮世繪風格）" aria-label="切換為浮世繪牌組">🃏</button>
 
+    <!-- Deck-style choice — shown at the very start of every visit, before
+         anything else is usable, so the seeker consciously picks a look
+         rather than discovering the toggle button by accident. -->
+    <div class="deck-style-modal" id="deckStyleModal" role="dialog" aria-modal="true" aria-label="選擇塔羅牌風格">
+        <div class="deck-style-modal-inner">
+            <h2 class="deck-style-modal-title">選擇你的塔羅風格</h2>
+            <p class="deck-style-modal-sub">之後隨時可以用右上角的按鈕切換</p>
+            <div class="deck-style-options">
+                <button class="deck-style-option" data-style="classic" type="button">
+                    <span class="deck-style-option-img-wrap">
+                        <img src="assets/cover.jpg" alt="經典星辰風封面" class="deck-style-option-img" onerror="this.style.display='none';">
+                    </span>
+                    <span class="deck-style-option-label">✦ 經典星辰風</span>
+                </button>
+                <button class="deck-style-option" data-style="ukiyo" type="button">
+                    <span class="deck-style-option-img-wrap">
+                        <img src="assets/cover-ukiyo.jpg" alt="日本浮世繪風封面" class="deck-style-option-img" onerror="this.style.display='none';">
+                    </span>
+                    <span class="deck-style-option-label">🌊 日本浮世繪風</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Starry & Nebula Cosmic Background -->
     <div class="universe-bg">
         <div class="nebula nebula-1"></div>
@@ -159,7 +183,7 @@
                 <div class="ghost-fire gf-5 gf-green"></div>
             </div>
             <div class="cover-art-wrap">
-                <img src="assets/cover.jpg" alt="神秘星辰塔羅 Celestial Tarot" class="cover-art" onerror="this.style.display='none'; document.getElementById('mysticEmblemFallback').style.display='block';">
+                <img src="assets/cover.jpg" alt="神秘星辰塔羅 Celestial Tarot" class="cover-art" id="coverArtImg" onerror="this.style.display='none'; document.getElementById('mysticEmblemFallback').style.display='block';">
             </div>
             <div class="mystic-emblem" id="mysticEmblemFallback" style="display:none;" aria-hidden="true">
                 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">

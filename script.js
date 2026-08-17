@@ -303,9 +303,21 @@ try {
     const savedDeckStyle = localStorage.getItem('tarotDeckStyle');
     if (savedDeckStyle === 'ukiyo' || savedDeckStyle === 'classic') deckStyle = savedDeckStyle;
 } catch (e) { /* ignore */ }
+// Apply immediately (before the rest of the DOM/JS finishes setting up) so
+// a returning visitor's chosen theme is already in effect the instant the
+// page paints, rather than flashing the classic colors first.
+document.body.classList.toggle('theme-ukiyo', deckStyle === 'ukiyo');
 
 function cardImageFolder() {
     return deckStyle === 'ukiyo' ? 'assets/cards-ukiyo' : 'assets/cards';
+}
+
+function cardBackPath() {
+    return deckStyle === 'ukiyo' ? 'assets/card-back-ukiyo.jpg' : 'assets/card-back.jpg';
+}
+
+function coverArtPath() {
+    return deckStyle === 'ukiyo' ? 'assets/cover-ukiyo.jpg' : 'assets/cover.jpg';
 }
 
 // Re-points every already-rendered card image (front faces + birth card) at
@@ -322,6 +334,24 @@ function refreshCardImagesForDeckStyle() {
             fallback.style.display = 'none';
         }
     });
+    document.querySelectorAll('img[data-card-back]').forEach(img => {
+        img.src = cardBackPath();
+        img.style.display = '';
+    });
+    const coverImg = document.getElementById('coverArtImg');
+    if (coverImg) coverImg.src = coverArtPath();
+}
+
+// One entry point for switching deck style everywhere it matters: the
+// stored preference, the toggle button's icon/label, every rendered card
+// image/back/cover already on screen, and — for the Japanese style — the
+// site's overall color theme (see body.theme-ukiyo in style.css).
+function applyDeckStyle(style) {
+    deckStyle = (style === 'ukiyo') ? 'ukiyo' : 'classic';
+    try { localStorage.setItem('tarotDeckStyle', deckStyle); } catch (e) { /* ignore */ }
+    document.body.classList.toggle('theme-ukiyo', deckStyle === 'ukiyo');
+    refreshDeckStyleToggleUI();
+    refreshCardImagesForDeckStyle();
 }
 
 function playDrawSound() {
@@ -917,74 +947,90 @@ function renderNatalResult(chart) {
 
     // Whole chart is laid out as one grid of tiles (left-to-right,
     // top-to-bottom) instead of a long scroll — each tile gently "breathes",
-    // and hovering/tapping it shows its full detail centered on screen via
+    // and clicking/tapping it shows its full detail centered on screen via
     // the shared spotlight overlay (rather than growing in place, which
-    // gets clipped near the grid's edges).
+    // gets clipped near the grid's edges). Click-only (not hover) so seekers
+    // can move the mouse around to read long entries without it vanishing.
     natalResult.hidden = false;
     natalResult.innerHTML = `
-        <p class="natal-tile-caption">💫 星盤輪圖、上升、天頂與 10 顆行星都是你獨有的計算結果。十二宮位中，<strong>顏色飽滿、標出行星符號</strong>的代表你的行星真的落在那一宮；<strong>顏色黯淡、標示「無行星」</strong>的宮位目前沒有你的行星坐落，僅供對照參考。</p>
+        <p class="natal-tile-caption">💫 星盤輪圖、上升、天頂與 10 顆行星都是你獨有的計算結果。十二宮位中，<strong>顏色飽滿、標出行星符號</strong>的代表你的行星真的落在那一宮；<strong>顏色黯淡、標示「無行星」</strong>的宮位目前沒有你的行星坐落，僅供對照參考。點擊任一方塊可放大查看，點右上角關閉或點方塊外側可收合。</p>
         <div class="natal-tile-grid">${tiles.join('')}</div>
         <div class="natal-spotlight" id="natalSpotlight">
-            <div class="natal-spotlight-inner" id="natalSpotlightInner"></div>
+            <div class="natal-spotlight-panel" id="natalSpotlightPanel">
+                <button class="natal-spotlight-close" type="button" aria-label="關閉">✕</button>
+                <div class="natal-spotlight-inner" id="natalSpotlightInner"></div>
+            </div>
         </div>
     `;
-
-    // Hover (desktop) shows the spotlight immediately; mouseenter/mouseleave
-    // don't bubble so each tile gets its own listener rather than relying on
-    // the delegated click handler below.
-    natalResult.querySelectorAll('.natal-tile').forEach(tile => {
-        tile.addEventListener('mouseenter', () => showNatalSpotlight(tile));
-        tile.addEventListener('mouseleave', () => hideNatalSpotlight());
-        tile.addEventListener('focus', () => showNatalSpotlight(tile));
-        tile.addEventListener('blur', () => hideNatalSpotlight());
-    });
 }
 
 // Populates and reveals the centered spotlight card with a given tile's
 // detail content (cloned, not moved, so the small tile itself is untouched
-// and keeps breathing in place).
-function showNatalSpotlight(tile) {
+// and keeps breathing in place). Marks the tile itself as "active" so the
+// caller can tell which tile (if any) is currently open.
+function openNatalTile(tile) {
     const spotlight = document.getElementById('natalSpotlight');
+    const panel = document.getElementById('natalSpotlightPanel');
     const inner = document.getElementById('natalSpotlightInner');
-    if (!spotlight || !inner) return;
+    if (!spotlight || !panel || !inner) return;
     const detailEl = tile.querySelector('.natal-tile-detail');
     if (!detailEl) return;
+
+    const prevActive = document.querySelector('.natal-tile.active');
+    if (prevActive && prevActive !== tile) prevActive.classList.remove('active');
+
     inner.innerHTML = detailEl.innerHTML;
+    inner.scrollTop = 0;
     const color = tile.style.getPropertyValue('--tile-color');
-    if (color) inner.style.setProperty('--tile-color', color);
+    if (color) panel.style.setProperty('--tile-color', color);
+    tile.classList.add('active');
     spotlight.classList.add('active');
 }
-function hideNatalSpotlight() {
+
+function closeNatalSpotlight() {
     const spotlight = document.getElementById('natalSpotlight');
     if (spotlight) spotlight.classList.remove('active');
+    const activeTile = document.querySelector('.natal-tile.active');
+    if (activeTile) activeTile.classList.remove('active');
 }
 
-// Click/tap delegation for the natal tile grid — desktop gets the spotlight
-// via hover for free (above), but touch devices have no hover, so tapping a
-// tile toggles the same spotlight via JS. Added once since natalResult's
-// innerHTML is fully rebuilt on every calculation.
+// Click/tap delegation for the natal tile grid: clicking a tile opens the
+// spotlight, clicking it again (or the close button, or the dimmed area
+// outside the card) closes it. Added once since natalResult's innerHTML is
+// fully rebuilt on every calculation.
 function handleNatalTileToggle(e) {
+    if (e.target.closest && e.target.closest('.natal-spotlight-close')) {
+        closeNatalSpotlight();
+        return;
+    }
+    // Clicked the dimmed backdrop itself (not the card inside it) -> close.
+    if (e.target.id === 'natalSpotlight') {
+        closeNatalSpotlight();
+        return;
+    }
     const tile = e.target.closest && e.target.closest('.natal-tile');
     if (!tile) return;
-    const isActive = tile.classList.toggle('active');
-    if (isActive) {
-        showNatalSpotlight(tile);
+    if (tile.classList.contains('active')) {
+        closeNatalSpotlight();
     } else {
-        hideNatalSpotlight();
+        openNatalTile(tile);
     }
 }
 if (natalResult) {
     natalResult.addEventListener('click', handleNatalTileToggle);
     natalResult.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeNatalSpotlight();
+            return;
+        }
         if (e.key !== 'Enter' && e.key !== ' ') return;
         const tile = e.target.closest && e.target.closest('.natal-tile');
         if (!tile) return;
         e.preventDefault();
-        const isActive = tile.classList.toggle('active');
-        if (isActive) {
-            showNatalSpotlight(tile);
+        if (tile.classList.contains('active')) {
+            closeNatalSpotlight();
         } else {
-            hideNatalSpotlight();
+            openNatalTile(tile);
         }
     });
 }
@@ -1084,7 +1130,7 @@ function resetReading() {
     // Dynamically update static deck cards on reset to use the new beautiful card backs
     const staticDecks = document.querySelectorAll('.deck-card');
     staticDecks.forEach(deck => {
-        deck.innerHTML = `<img src="assets/card-back.jpg" alt="牌背" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="card-back-pattern" style="display: none;">${CARD_BACK_SVG}</div>`;
+        deck.innerHTML = `<img src="${cardBackPath()}" alt="牌背" data-card-back style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="card-back-pattern" style="display: none;">${CARD_BACK_SVG}</div>`;
     });
 
     // Keep the deck disabled and show the meditation overlay first, so the
@@ -1131,7 +1177,7 @@ function drawCard() {
     slotContainerEl.innerHTML = `
         <div class="tarot-card">
             <div class="card-face back">
-                <img src="assets/card-back.jpg" alt="牌背" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <img src="${cardBackPath()}" alt="牌背" data-card-back style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div class="inner-pattern" style="display: none;">${CARD_BACK_SVG}</div>
             </div>
         </div>
@@ -1705,10 +1751,22 @@ function refreshDeckStyleToggleUI() {
 if (deckStyleBtn) {
     refreshDeckStyleToggleUI();
     deckStyleBtn.addEventListener('click', () => {
-        deckStyle = deckStyle === 'ukiyo' ? 'classic' : 'ukiyo';
-        try { localStorage.setItem('tarotDeckStyle', deckStyle); } catch (e) { /* ignore */ }
-        refreshDeckStyleToggleUI();
-        refreshCardImagesForDeckStyle();
+        applyDeckStyle(deckStyle === 'ukiyo' ? 'classic' : 'ukiyo');
+    });
+}
+
+// Deck-style choice modal — asked at the start of every visit, before
+// anything else is usable. Picking a style applies it immediately (see
+// applyDeckStyle) and dismisses the modal; the corner toggle button above
+// remains available afterward for switching mid-session.
+const deckStyleModal = document.getElementById('deckStyleModal');
+if (deckStyleModal) {
+    deckStyleModal.querySelectorAll('.deck-style-option').forEach(btn => {
+        btn.classList.toggle('selected', btn.getAttribute('data-style') === deckStyle);
+        btn.addEventListener('click', () => {
+            applyDeckStyle(btn.getAttribute('data-style'));
+            deckStyleModal.classList.add('dismissed');
+        });
     });
 }
 
