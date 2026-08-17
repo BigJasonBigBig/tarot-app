@@ -794,8 +794,10 @@ function renderNatalResult(chart) {
     const wheelSvg = buildNatalWheelSVG(chart);
     const { HOUSE_MEANINGS } = window.TarotAstrology;
 
-    // Which houses actually have a planet in them, so each house tile can
-    // flag "你的 X 在這裡" instead of reading as generic textbook filler.
+    // Which houses actually have a planet in them. Only up to 10 of the 12
+    // houses can ever hold one of the 10 classical planets, so some houses
+    // are always "empty" — that's normal, not a bug, but it needs to be
+    // obvious on the tile itself rather than only after opening it.
     const occupantsByHouse = {};
     chart.planets.forEach(p => {
         occupantsByHouse[p.house] = occupantsByHouse[p.house] || [];
@@ -806,17 +808,20 @@ function renderNatalResult(chart) {
     const nextColor = () => natalTileColor(tileIndex++);
     const tiles = [];
 
-    // Wheel tile — bigger (spans 2x2), artwork always visible, legend fades
-    // in as an overlay strip along the bottom when hovered/tapped.
+    // Wheel tile — bigger, artwork always visible on the small tile; on
+    // hover/tap the spotlight shows a larger copy of the same wheel plus
+    // the aspect-color legend, centered on screen.
     tiles.push(`
         <div class="natal-tile natal-tile-wheel" style="--tile-color:${nextColor()}" tabindex="0">
             <div class="natal-tile-face">
                 <div class="natal-tile-wheel-svg">${wheelSvg}</div>
             </div>
             <div class="natal-tile-detail">
+                <strong class="natal-tile-detail-title">✦ 星盤輪圖</strong>
+                <div class="natal-spotlight-wheel-svg">${wheelSvg}</div>
                 <span class="natal-legend">
-                    <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#38bdf8"></i>調和相位</span>
-                    <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#f87171"></i>緊張相位</span>
+                    <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#38bdf8"></i>調和相位（六分／三分）</span>
+                    <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#f87171"></i>緊張相位（四分／對分）</span>
                 </span>
             </div>
         </div>
@@ -867,40 +872,85 @@ function renderNatalResult(chart) {
 
     HOUSE_MEANINGS.forEach(h => {
         const occupants = occupantsByHouse[h.number] || [];
-        const occupantLine = occupants.length > 0
-            ? `<p class="natal-tile-occupants">你的 ${occupants.map(p => `${p.symbol} ${p.label}`).join('、')} 落在這裡</p>`
-            : '';
+        const hasOccupants = occupants.length > 0;
         tiles.push(`
-            <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
+            <div class="natal-tile${hasOccupants ? '' : ' natal-tile-house-empty'}" style="--tile-color:${nextColor()}" tabindex="0">
                 <div class="natal-tile-face">
                     <span class="natal-tile-badge">${h.number}</span>
                     <span class="natal-tile-label">${h.name}</span>
+                    ${hasOccupants
+                        ? `<span class="natal-tile-face-occupants">${occupants.map(p => p.symbol).join(' ')}</span>`
+                        : `<span class="natal-tile-face-empty">無行星</span>`}
                 </div>
                 <div class="natal-tile-detail">
                     <strong class="natal-tile-detail-title">第${h.number}宮・${h.name}</strong>
                     <p class="natal-tile-keyword">${h.keyword}</p>
                     <p>${h.description}</p>
-                    ${occupantLine}
+                    ${hasOccupants
+                        ? `<p class="natal-tile-occupants">你的 ${occupants.map(p => `${p.symbol} ${p.label}`).join('、')} 落在這裡</p>`
+                        : `<p class="natal-tile-occupants natal-tile-occupants-empty">這一宮目前沒有你的行星坐落，僅供對照參考——宮頭星座與宮主星仍會影響這個領域怎麼展現。</p>`}
                 </div>
             </div>
         `);
     });
 
     // Whole chart is laid out as one grid of tiles (left-to-right,
-    // top-to-bottom) instead of a long scroll — each tile gently "breathes"
-    // and pops open on hover/tap to reveal its detail.
+    // top-to-bottom) instead of a long scroll — each tile gently "breathes",
+    // and hovering/tapping it shows its full detail centered on screen via
+    // the shared spotlight overlay (rather than growing in place, which
+    // gets clipped near the grid's edges).
     natalResult.hidden = false;
-    natalResult.innerHTML = `<div class="natal-tile-grid">${tiles.join('')}</div>`;
+    natalResult.innerHTML = `
+        <p class="natal-tile-caption">💫 星盤輪圖、上升、天頂與 10 顆行星都是你獨有的計算結果。十二宮位中，<strong>顏色飽滿、標出行星符號</strong>的代表你的行星真的落在那一宮；<strong>顏色黯淡、標示「無行星」</strong>的宮位目前沒有你的行星坐落，僅供對照參考。</p>
+        <div class="natal-tile-grid">${tiles.join('')}</div>
+        <div class="natal-spotlight" id="natalSpotlight">
+            <div class="natal-spotlight-inner" id="natalSpotlightInner"></div>
+        </div>
+    `;
+
+    // Hover (desktop) shows the spotlight immediately; mouseenter/mouseleave
+    // don't bubble so each tile gets its own listener rather than relying on
+    // the delegated click handler below.
+    natalResult.querySelectorAll('.natal-tile').forEach(tile => {
+        tile.addEventListener('mouseenter', () => showNatalSpotlight(tile));
+        tile.addEventListener('mouseleave', () => hideNatalSpotlight());
+        tile.addEventListener('focus', () => showNatalSpotlight(tile));
+        tile.addEventListener('blur', () => hideNatalSpotlight());
+    });
 }
 
-// Click/tap delegation for the natal tile grid — desktop gets the CSS
-// :hover pop-open for free, but touch devices have no hover, so tapping a
-// tile toggles the same "active" (expanded) state via JS. Added once since
-// natalResult's innerHTML is fully rebuilt on every calculation.
+// Populates and reveals the centered spotlight card with a given tile's
+// detail content (cloned, not moved, so the small tile itself is untouched
+// and keeps breathing in place).
+function showNatalSpotlight(tile) {
+    const spotlight = document.getElementById('natalSpotlight');
+    const inner = document.getElementById('natalSpotlightInner');
+    if (!spotlight || !inner) return;
+    const detailEl = tile.querySelector('.natal-tile-detail');
+    if (!detailEl) return;
+    inner.innerHTML = detailEl.innerHTML;
+    const color = tile.style.getPropertyValue('--tile-color');
+    if (color) inner.style.setProperty('--tile-color', color);
+    spotlight.classList.add('active');
+}
+function hideNatalSpotlight() {
+    const spotlight = document.getElementById('natalSpotlight');
+    if (spotlight) spotlight.classList.remove('active');
+}
+
+// Click/tap delegation for the natal tile grid — desktop gets the spotlight
+// via hover for free (above), but touch devices have no hover, so tapping a
+// tile toggles the same spotlight via JS. Added once since natalResult's
+// innerHTML is fully rebuilt on every calculation.
 function handleNatalTileToggle(e) {
     const tile = e.target.closest && e.target.closest('.natal-tile');
     if (!tile) return;
-    tile.classList.toggle('active');
+    const isActive = tile.classList.toggle('active');
+    if (isActive) {
+        showNatalSpotlight(tile);
+    } else {
+        hideNatalSpotlight();
+    }
 }
 if (natalResult) {
     natalResult.addEventListener('click', handleNatalTileToggle);
@@ -909,7 +959,12 @@ if (natalResult) {
         const tile = e.target.closest && e.target.closest('.natal-tile');
         if (!tile) return;
         e.preventDefault();
-        tile.classList.toggle('active');
+        const isActive = tile.classList.toggle('active');
+        if (isActive) {
+            showNatalSpotlight(tile);
+        } else {
+            hideNatalSpotlight();
+        }
     });
 }
 
