@@ -170,8 +170,10 @@
 
     <!-- Main Section -->
     <main>
-        <!-- STEP 1: Landing — choose a spread type -->
-        <section class="view-panel view-select" id="viewSelect">
+        <!-- STEP 0: Mode select — the true landing screen. Choose between a
+             tarot reading or the natal chart tool, each a formal, equal-weight
+             option (not a small link tucked under the other). -->
+        <section class="view-panel view-mode-select" id="viewModeSelect">
             <div class="night-sky-decor" aria-hidden="true">
                 <div class="cloud cloud-1"></div>
                 <div class="cloud cloud-2"></div>
@@ -269,21 +271,39 @@
                 </svg>
             </div>
 
-            <p class="view-lead">選擇一種占卜方式</p>
-            <div class="spread-selector" id="spreadSelector">
-                <!-- Dynamically populated by JS -->
+            <p class="view-lead">你想做什麼？</p>
+            <div class="mode-select-options">
+                <button class="mode-select-option" id="modeSelectTarotBtn" type="button">
+                    <span class="mode-select-icon">🔮</span>
+                    <span class="mode-select-label">塔羅占卜</span>
+                    <span class="mode-select-desc">抽牌解讀，探索你的潛意識與命運指引</span>
+                </button>
+                <button class="mode-select-option" id="modeSelectNatalBtn" type="button">
+                    <span class="mode-select-icon">🪐</span>
+                    <span class="mode-select-label">我的本命星盤</span>
+                    <span class="mode-select-desc">輸入出生資訊，計算行星落點、上升與宮位</span>
+                </button>
             </div>
+
             <div class="landing-links">
                 <button class="knowledge-link" id="knowledgeLinkBtn" type="button">📖 塔羅知識專區</button>
                 <button class="knowledge-link" id="birthCardLinkBtn" type="button">🔮 我的生日本命牌</button>
                 <button class="knowledge-link" id="historyLinkBtn" type="button">🕰 占卜歷史紀錄</button>
-                <button class="knowledge-link" id="natalChartLinkBtn" type="button">🪐 我的本命星盤</button>
+            </div>
+        </section>
+
+        <!-- STEP 1: Landing — choose a spread type -->
+        <section class="view-panel view-select" id="viewSelect" hidden>
+            <button class="back-link" id="selectBackToModeBtn" type="button">← 返回首頁</button>
+            <p class="view-lead">選擇一種占卜方式</p>
+            <div class="spread-selector" id="spreadSelector">
+                <!-- Dynamically populated by JS -->
             </div>
         </section>
 
         <!-- Natal Chart view — real astronomical calculation, entirely client-side -->
         <section class="view-panel view-natal" id="viewNatalChart" hidden>
-            <button class="back-link" id="natalChartBackBtn" type="button">← 返回選擇牌陣</button>
+            <button class="back-link" id="natalChartBackBtn" type="button">← 返回首頁</button>
             <h2 class="knowledge-title">✦ 我的本命星盤 ✦</h2>
             <p class="intro-desc">輸入你的出生年月日、時間與地點，即時算出太陽、月亮與其餘八大行星當下實際落在哪個星座、哪一宮，並標出上升星座與天頂。所有計算都在你的瀏覽器裡完成，不會把資料傳到任何伺服器。</p>
 
@@ -323,7 +343,7 @@
 
         <!-- Reading History view — past readings saved locally in this browser -->
         <section class="view-panel view-history" id="viewHistory" hidden>
-            <button class="back-link" id="historyBackBtn" type="button">← 返回選擇牌陣</button>
+            <button class="back-link" id="historyBackBtn" type="button">← 返回首頁</button>
             <h2 class="knowledge-title">✦ 占卜歷史紀錄 ✦</h2>
             <p class="intro-desc">這裡保存著你在這個瀏覽器上完成過的占卜紀錄，僅存在你自己的裝置裡，不會上傳到任何地方。清除瀏覽器資料或換裝置就會消失。</p>
             <div class="history-list" id="historyList">
@@ -336,7 +356,7 @@
 
         <!-- Birthday Card view — numerology-based "life/soul card" calculator -->
         <section class="view-panel view-birthcard" id="viewBirthcard" hidden>
-            <button class="back-link" id="birthCardBackBtn" type="button">← 返回選擇牌陣</button>
+            <button class="back-link" id="birthCardBackBtn" type="button">← 返回首頁</button>
             <h2 class="knowledge-title">✦ 生日本命牌 ✦</h2>
             <p class="intro-desc">將你的出生年、月、日所有數字相加，逐步化簡到 22 張大阿爾克那的範圍內，就能找到專屬於你的「本命牌」——象徵這一生最核心的課題與能量原型。這是命理占卜衍生出的小工具，結果僅供參考娛樂。</p>
 
@@ -353,7 +373,7 @@
 
         <!-- Tarot Knowledge view — accessible from the landing screen -->
         <section class="view-panel view-knowledge" id="viewKnowledge" hidden>
-            <button class="back-link" id="knowledgeBackBtn" type="button">← 返回選擇牌陣</button>
+            <button class="back-link" id="knowledgeBackBtn" type="button">← 返回首頁</button>
             <h2 class="knowledge-title">✦ 塔羅知識專區 ✦</h2>
 
             <div class="knowledge-section">

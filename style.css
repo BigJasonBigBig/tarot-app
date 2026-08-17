@@ -419,7 +419,8 @@ main {
 }
 
 /* ---- Night-sky landing screen: dark backdrop + drifting clouds + ghost fire ---- */
-.view-select {
+.view-select,
+.view-mode-select {
     position: relative;
     overflow: hidden;
     padding: 2.4rem 1.2rem 2.8rem;
@@ -432,7 +433,8 @@ main {
     border: 1px solid rgba(223, 186, 71, 0.12);
 }
 
-body.theme-ukiyo .view-select {
+body.theme-ukiyo .view-select,
+body.theme-ukiyo .view-mode-select {
     background:
         radial-gradient(circle at 22% 12%, rgba(196, 90, 41, 0.18) 0%, transparent 55%),
         radial-gradient(ellipse at 50% 105%, rgba(32, 17, 12, 0.7) 0%, transparent 70%),
@@ -447,7 +449,8 @@ body.theme-ukiyo .view-select {
     pointer-events: none;
 }
 
-.view-select > *:not(.night-sky-decor) {
+.view-select > *:not(.night-sky-decor),
+.view-mode-select > *:not(.night-sky-decor) {
     position: relative;
     z-index: 1;
 }
@@ -728,6 +731,67 @@ body.theme-ukiyo .view-select {
     justify-content: center;
     gap: 1rem;
     margin-top: 1.8rem;
+}
+
+/* Mode-select screen: two equally formal, full-weight choices (tarot vs
+   natal chart) rather than one being a small link under the other. */
+.mode-select-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.mode-select-option {
+    flex: 1 1 240px;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1.5px solid rgba(223, 186, 71, 0.35);
+    border-radius: 18px;
+    padding: 1.8rem 1.4rem;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mode-select-option:hover,
+.mode-select-option:focus-visible {
+    transform: translateY(-5px);
+    border-color: var(--gold);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 18px var(--gold-glow);
+}
+
+.mode-select-icon {
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.mode-select-label {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+}
+
+.mode-select-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+    .mode-select-option {
+        flex-basis: 100%;
+        padding: 1.4rem 1.2rem;
+    }
 }
 
 .knowledge-link {

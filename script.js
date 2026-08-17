@@ -394,6 +394,10 @@ const revealHint = document.getElementById('revealHint');
 const actionContainer = document.getElementById('actionContainer');
 const resetBtn = document.getElementById('resetBtn');
 
+const viewModeSelect = document.getElementById('viewModeSelect');
+const modeSelectTarotBtn = document.getElementById('modeSelectTarotBtn');
+const modeSelectNatalBtn = document.getElementById('modeSelectNatalBtn');
+const selectBackToModeBtn = document.getElementById('selectBackToModeBtn');
 const viewSelect = document.getElementById('viewSelect');
 const viewIntro = document.getElementById('viewIntro');
 const viewReading = document.getElementById('viewReading');
@@ -435,6 +439,7 @@ const natalResult = document.getElementById('natalResult');
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
 // -> birthday card calculator.
 function showView(name) {
+    viewModeSelect.hidden = name !== 'mode';
     viewSelect.hidden = name !== 'select';
     viewIntro.hidden = name !== 'intro';
     viewReading.hidden = name !== 'reading';
@@ -446,6 +451,12 @@ function showView(name) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
+
+// Mode-select screen (the true landing page): choose between a tarot
+// reading or the natal chart tool, as two equally formal top-level options.
+if (modeSelectTarotBtn) modeSelectTarotBtn.addEventListener('click', () => showView('select'));
+if (modeSelectNatalBtn) modeSelectNatalBtn.addEventListener('click', () => showView('natal'));
+if (selectBackToModeBtn) selectBackToModeBtn.addEventListener('click', () => showView('mode'));
 
 // Setup Spread Buttons (landing screen)
 function initSpreads() {
@@ -520,7 +531,7 @@ backToSelectBtn.addEventListener('click', () => {
 });
 
 knowledgeLinkBtn.addEventListener('click', () => showView('knowledge'));
-knowledgeBackBtn.addEventListener('click', () => showView('select'));
+knowledgeBackBtn.addEventListener('click', () => showView('mode'));
 
 // ---------------------------------------------------------------------------
 // Birthday Card: a numerology-style "life/soul card" calculator. Sums every
@@ -561,7 +572,7 @@ birthCardLinkBtn.addEventListener('click', () => {
     birthCardResult.innerHTML = '';
     showView('birthcard');
 });
-birthCardBackBtn.addEventListener('click', () => showView('select'));
+birthCardBackBtn.addEventListener('click', () => showView('mode'));
 
 calcBirthCardBtn.addEventListener('click', () => {
     const val = birthDateInput.value;
@@ -1040,7 +1051,7 @@ if (natalChartLinkBtn) {
         showView('natal');
     });
 }
-if (natalChartBackBtn) natalChartBackBtn.addEventListener('click', () => showView('select'));
+if (natalChartBackBtn) natalChartBackBtn.addEventListener('click', () => showView('mode'));
 
 if (calcNatalChartBtn) {
     calcNatalChartBtn.addEventListener('click', () => {
@@ -1779,7 +1790,7 @@ if (historyLinkBtn) {
         showView('history');
     });
 }
-if (historyBackBtn) historyBackBtn.addEventListener('click', () => showView('select'));
+if (historyBackBtn) historyBackBtn.addEventListener('click', () => showView('mode'));
 if (clearHistoryBtn) {
     clearHistoryBtn.addEventListener('click', () => {
         try { localStorage.removeItem(HISTORY_KEY); } catch (e) { /* ignore */ }
@@ -1845,6 +1856,6 @@ window.addEventListener('DOMContentLoaded', () => {
     initSpreads();
     initTopicSelector();
     initNatalForm();
-    showView('select');
+    showView('mode');
     initBgEmblemEye();
 });
