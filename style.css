@@ -973,6 +973,11 @@ main {
     opacity: 0.85;
 }
 
+.natal-tile-subhead {
+    color: var(--tile-color, var(--gold));
+    font-weight: 600;
+}
+
 .natal-tile-occupants {
     margin-top: 0.2rem;
     padding-top: 0.3rem;

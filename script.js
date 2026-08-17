@@ -857,7 +857,9 @@ function renderNatalResult(chart) {
         </div>
     `);
 
+    const { PLANET_HOUSE_INSIGHTS } = window.TarotAstrology;
     chart.planets.forEach(p => {
+        const combo = (PLANET_HOUSE_INSIGHTS[p.body] || {})[p.house];
         tiles.push(`
             <div class="natal-tile" style="--tile-color:${nextColor()}" tabindex="0">
                 <div class="natal-tile-face">
@@ -867,9 +869,10 @@ function renderNatalResult(chart) {
                 <div class="natal-tile-detail">
                     <strong class="natal-tile-detail-title">${p.symbol} ${p.label}${p.retrograde ? '<span class="natal-retro-badge">R 逆行</span>' : ''}</strong>
                     <p>${p.sign.symbol} ${p.sign.name} ${p.degree.toFixed(1)}°　第 ${p.house} 宮（${p.houseMeaning.name}）</p>
-                    <p>${p.meaning}</p>
-                    <p>落在${p.sign.name}，這股特質會${p.sign.trait}。</p>
-                    <p>而落在第 ${p.house} 宮（${p.houseMeaning.name}），具體會展現在：${p.houseMeaning.keyword}。${p.houseMeaning.description}</p>
+                    <p><strong class="natal-tile-subhead">${p.label}代表：</strong>${p.meaning}</p>
+                    <p><strong class="natal-tile-subhead">落在${p.sign.name}：</strong>這股特質會${p.sign.trait}。</p>
+                    <p><strong class="natal-tile-subhead">第 ${p.house} 宮（${p.houseMeaning.name}）代表：</strong>${p.houseMeaning.keyword}。${p.houseMeaning.description}</p>
+                    ${combo ? `<p><strong class="natal-tile-subhead">${p.label}落在${p.houseMeaning.name}：</strong>${combo}</p>` : ''}
                     ${p.retrograde ? '<p class="natal-tile-retro-note">這顆星目前是逆行狀態，它的能量常會轉向內在，需要多一層反思、重新整理過後才會展現出來，而不是直接向外行動。</p>' : ''}
                 </div>
             </div>
