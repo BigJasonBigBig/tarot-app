@@ -84,6 +84,22 @@ body.theme-ukiyo .universe-bg {
         var(--bg-dark);
 }
 
+/* Natal chart screen gets its own starry-sky backdrop (still per style),
+   swapped in via body.view-natal-active (set by showView() in script.js). */
+body.view-natal-active .universe-bg {
+    background:
+        radial-gradient(circle at 50% 50%, rgba(13, 6, 32, 0.35) 0%, rgba(3, 2, 6, 0.82) 100%),
+        url('assets/bg-waite-natal.jpg') center center / cover no-repeat,
+        var(--bg-dark);
+}
+
+body.theme-ukiyo.view-natal-active .universe-bg {
+    background:
+        radial-gradient(circle at 50% 50%, rgba(44, 23, 18, 0.35) 0%, rgba(20, 10, 7, 0.82) 100%),
+        url('assets/bg-ukiyo-natal.jpg') center center / cover no-repeat,
+        var(--bg-dark);
+}
+
 .universe-bg::before {
     content: '';
     position: absolute;
@@ -1875,6 +1891,65 @@ body.theme-ukiyo .view-mode-select {
     width: 100%;
 }
 
+.spread-board[hidden],
+.draw-scatter-tray[hidden] {
+    display: none !important;
+}
+
+/* Once every card is drawn, the real (meaningful-position) spread board
+   fades/settles into view. */
+.spread-board.settling {
+    animation: spreadSettleIn 0.6s ease forwards;
+}
+
+@keyframes spreadSettleIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scatter tray: shown only while actively drawing. Each card that comes off
+   the deck lands here at a random tilt (visual flourish + doubles as a
+   progress readout — no need to scroll to find the next empty slot). */
+.draw-scatter-tray {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 0.55rem;
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto 1.6rem;
+}
+
+.scatter-card {
+    width: 54px;
+    height: 84px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    animation: scatterCardIn 0.5s cubic-bezier(0.25, 0.8, 0.3, 1.15) forwards;
+}
+
+.scatter-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@keyframes scatterCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.5) rotate(0deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(var(--scatter-rot, 0deg));
+    }
+}
+
 .slot-container {
     display: flex;
     flex-direction: column;
@@ -2637,8 +2712,15 @@ body.theme-ukiyo .view-mode-select {
     .card-face.front::after,
     .tarot-card.flipped .card-face.front::after,
     .card-face.front::before,
-    .natal-tile {
+    .natal-tile,
+    .spread-board.settling {
         animation: none !important;
+    }
+
+    .scatter-card {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
     }
 
     .tarot-card,

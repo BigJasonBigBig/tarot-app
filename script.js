@@ -447,6 +447,10 @@ function showView(name) {
     viewBirthcard.hidden = name !== 'birthcard';
     viewHistory.hidden = name !== 'history';
     viewNatalChart.hidden = name !== 'natal';
+    // Lets the site background swap to the natal-chart-specific starry-sky
+    // artwork (see body.view-natal-active .universe-bg in style.css) while
+    // every other screen keeps the regular tarot-table backdrop.
+    document.body.classList.toggle('view-natal-active', name === 'natal');
     if (name !== 'reading') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1121,11 +1125,15 @@ function resetReading() {
         [shuffledDeck[i], shuffledDeck[j]] = [shuffledDeck[j], shuffledDeck[i]];
     }
 
-    // Build the visual slots on the board
+    // Build the visual slots on the board. This board isn't shown yet — while
+    // drawing, the seeker sees the scatter tray instead (no need to scroll to
+    // find the next empty slot); the board only fades in, already fully laid
+    // out in its meaningful positions, once every card has been drawn.
     const spreadDef = SPREADS[currentSpreadType];
     const slots = spreadDef.slots;
     spreadBoard.innerHTML = '';
     spreadBoard.className = 'spread-board' + (spreadDef.layoutClass ? ` ${spreadDef.layoutClass}` : '') + ` slots-${slots.length}`;
+    spreadBoard.hidden = true;
     slots.forEach((slotName, index) => {
         const slotContainer = document.createElement('div');
         slotContainer.classList.add('slot-container');
@@ -1137,6 +1145,12 @@ function resetReading() {
         `;
         spreadBoard.appendChild(slotContainer);
     });
+
+    const scatterTray = document.getElementById('drawScatterTray');
+    if (scatterTray) {
+        scatterTray.innerHTML = '';
+        scatterTray.hidden = false;
+    }
 
     // Dynamically update static deck cards on reset to use the new beautiful card backs
     const staticDecks = document.querySelectorAll('.deck-card');
@@ -1219,17 +1233,41 @@ function drawCard() {
         </div>
     `;
 
+    // Drop a small face-down card into the scatter tray at a random tilt —
+    // purely a drawing-ceremony visual (the real slot above already has the
+    // actual card, in its real meaningful position, ready for later).
+    const scatterTray = document.getElementById('drawScatterTray');
+    if (scatterTray) {
+        const scatterEl = document.createElement('div');
+        scatterEl.className = 'scatter-card';
+        const scatterRot = (Math.random() * 32 - 16).toFixed(1); // -16deg..+16deg
+        scatterEl.style.setProperty('--scatter-rot', `${scatterRot}deg`);
+        scatterEl.innerHTML = `<img src="${cardBackPath()}" alt="牌背" data-card-back onerror="this.style.display='none';">`;
+        scatterTray.appendChild(scatterEl);
+    }
+
     // Update instruction
+    const deckEl = document.querySelector('.mystic-deck');
     if (drawnCards.length < totalSlots) {
-        deckStatus.textContent = `請點擊牌堆抽取第 ${drawnCards.length + 1} 張牌`;
+        const remaining = totalSlots - drawnCards.length;
+        deckStatus.textContent = `請點擊牌堆抽取第 ${drawnCards.length + 1} 張牌・還要抽 ${remaining} 張`;
     } else {
-        deckStatus.textContent = "所有的牌已經就位。請依序點擊每一張牌，翻開屬於你的命運訊息。";
-        const deckEl = document.querySelector('.mystic-deck');
+        deckStatus.textContent = "所有的牌已經就位，正在排列牌陣...";
         deckEl.style.pointerEvents = 'none';
         deckEl.style.opacity = '0.5';
         deckEl.setAttribute('tabindex', '-1');
         deckEl.setAttribute('aria-disabled', 'true');
-        enterRevealPhase();
+
+        // Brief pause so the last scattered card is visible for a beat, then
+        // swap the scatter tray out for the real spread board — every card
+        // is already sitting in its correct, meaningful position.
+        setTimeout(() => {
+            if (scatterTray) scatterTray.hidden = true;
+            spreadBoard.hidden = false;
+            spreadBoard.classList.add('settling');
+            deckStatus.textContent = "所有的牌已經就位。請依序點擊每一張牌，翻開屬於你的命運訊息。";
+            enterRevealPhase();
+        }, 650);
     }
 }
 
