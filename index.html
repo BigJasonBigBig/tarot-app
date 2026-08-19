@@ -45,6 +45,7 @@
     <link rel="stylesheet" href="css/07-tarot-card-deck.css?v=202608171200">
     <link rel="stylesheet" href="css/08-reading-result.css?v=202608171200">
     <link rel="stylesheet" href="css/09-toggles-modal-responsive.css?v=202608171200">
+    <link rel="stylesheet" href="css/10-ziwei-chart.css?v=202608191300">
 </head>
 <body>
     <!-- Sound toggle — floating corner control, always available -->
@@ -299,6 +300,11 @@
                     <span class="mode-select-label">我的本命星盤</span>
                     <span class="mode-select-desc">輸入出生資訊，計算行星落點、上升與宮位</span>
                 </button>
+                <button class="mode-select-option" id="modeSelectZiweiBtn" type="button">
+                    <span class="mode-select-icon">🀄</span>
+                    <span class="mode-select-label">紫微斗數命盤</span>
+                    <span class="mode-select-desc">輸入農曆生日與時辰，排出十二宮命盤與主星</span>
+                </button>
             </div>
 
             <div class="landing-links">
@@ -353,6 +359,38 @@
             </div>
 
             <div class="natal-result" id="natalResult" hidden>
+                <!-- Filled in by JS -->
+            </div>
+        </section>
+
+        <!-- Zi Wei Dou Shu (紫微斗數) chart view — pure calculation from the
+             lunar calendar, entirely client-side, no data leaves the browser. -->
+        <section class="view-panel view-ziwei" id="viewZiwei" hidden>
+            <button class="back-link" id="ziweiChartBackBtn" type="button">← 返回首頁</button>
+            <h2 class="knowledge-title">✦ 紫微斗數命盤 ✦</h2>
+            <p class="intro-desc">輸入你的國曆出生年月日、時間與性別，即時排出你的紫微斗數命盤：命宮、身宮、五行局、十四主星、六吉六煞與四化飛星，全部在你的瀏覽器裡完成計算，不會把資料傳到任何伺服器。</p>
+
+            <div class="ziwei-form">
+                <div class="ziwei-form-row">
+                    <label for="ziweiDateInput">出生日期（國曆）</label>
+                    <input type="date" id="ziweiDateInput" class="birthdate-input">
+                </div>
+                <div class="ziwei-form-row">
+                    <label for="ziweiTimeInput">出生時間（用來換算成十二時辰）</label>
+                    <input type="time" id="ziweiTimeInput" class="birthdate-input">
+                </div>
+                <div class="ziwei-form-row">
+                    <label>性別</label>
+                    <div class="ziwei-gender-options">
+                        <label class="ziwei-gender-option"><input type="radio" name="ziweiGender" value="male" checked> 男</label>
+                        <label class="ziwei-gender-option"><input type="radio" name="ziweiGender" value="female"> 女</label>
+                    </div>
+                </div>
+                <button class="action-btn" id="calcZiweiChartBtn" type="button">排出我的紫微命盤</button>
+                <p class="ziwei-disclaimer">提醒：農曆與閏月的換算依「定朔定氣」天文演算法計算，命宮/身宮/五行局/星曜安法採用最主流的排法；不同流派在少數細節上可能略有出入。結果僅供參考娛樂，不是專業論命服務。</p>
+            </div>
+
+            <div class="ziwei-result" id="ziweiResult" hidden>
                 <!-- Filled in by JS -->
             </div>
         </section>
@@ -497,16 +535,22 @@
     <!-- Self-hosted astronomy calculation library (MIT licensed), used only by the natal chart feature -->
     <script src="assets/js/astronomy.browser.min.js"></script>
     <script src="astrology.js?v=202608170747"></script>
+    <!-- Zi Wei Dou Shu (紫微斗數) calculation modules — pure functions, no
+         DOM, reuse the Astronomy library above for the lunar calendar. -->
+    <script src="js/ziwei-lunar.js?v=202608191300"></script>
+    <script src="js/ziwei-placement.js?v=202608191300"></script>
     <!-- script.js was split into these ordered pieces for maintainability
          (each under ~520 lines instead of one ~1900-line file). They're all
          plain classic scripts sharing one global scope, exactly like before
          — order matters (later files call functions/reference consts
          defined in earlier ones), so keep this exact sequence. -->
     <script src="js/data-tarot-content.js?v=202608171200"></script>
+    <script src="js/data-ziwei-content.js?v=202608191300"></script>
     <script src="js/theme-and-helpers.js?v=202608171200"></script>
-    <script src="js/view-routing.js?v=202608171200"></script>
+    <script src="js/view-routing.js?v=202608191300"></script>
     <script src="js/birthcard.js?v=202608171200"></script>
     <script src="js/natal-chart.js?v=202608171200"></script>
+    <script src="js/ziwei-chart.js?v=202608191300"></script>
     <script src="js/tarot-reading.js?v=202608171200"></script>
     <script src="js/history.js?v=202608171200"></script>
     <script src="js/share.js?v=202608171200"></script>
