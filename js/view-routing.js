@@ -11,6 +11,7 @@ const resetBtn = document.getElementById('resetBtn');
 const viewModeSelect = document.getElementById('viewModeSelect');
 const modeSelectTarotBtn = document.getElementById('modeSelectTarotBtn');
 const modeSelectNatalBtn = document.getElementById('modeSelectNatalBtn');
+const modeSelectZiweiBtn = document.getElementById('modeSelectZiweiBtn');
 const selectBackToModeBtn = document.getElementById('selectBackToModeBtn');
 const viewSelect = document.getElementById('viewSelect');
 const viewIntro = document.getElementById('viewIntro');
@@ -48,6 +49,12 @@ const natalLonInput = document.getElementById('natalLonInput');
 const natalUtcSelect = document.getElementById('natalUtcSelect');
 const calcNatalChartBtn = document.getElementById('calcNatalChartBtn');
 const natalResult = document.getElementById('natalResult');
+const viewZiwei = document.getElementById('viewZiwei');
+const ziweiChartBackBtn = document.getElementById('ziweiChartBackBtn');
+const ziweiDateInput = document.getElementById('ziweiDateInput');
+const ziweiTimeInput = document.getElementById('ziweiTimeInput');
+const calcZiweiChartBtn = document.getElementById('calcZiweiChartBtn');
+const ziweiResult = document.getElementById('ziweiResult');
 
 // Switches between the top-level screens: choose spread -> spread intro &
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
@@ -61,6 +68,7 @@ function showView(name) {
     viewBirthcard.hidden = name !== 'birthcard';
     viewHistory.hidden = name !== 'history';
     viewNatalChart.hidden = name !== 'natal';
+    viewZiwei.hidden = name !== 'ziwei';
     // Lets the site background swap to the natal-chart-specific starry-sky
     // artwork (see body.view-natal-active .universe-bg in style.css) while
     // every other screen keeps the regular tarot-table backdrop.
@@ -74,6 +82,7 @@ function showView(name) {
 // reading or the natal chart tool, as two equally formal top-level options.
 if (modeSelectTarotBtn) modeSelectTarotBtn.addEventListener('click', () => showView('select'));
 if (modeSelectNatalBtn) modeSelectNatalBtn.addEventListener('click', () => showView('natal'));
+if (modeSelectZiweiBtn) modeSelectZiweiBtn.addEventListener('click', () => showView('ziwei'));
 if (selectBackToModeBtn) selectBackToModeBtn.addEventListener('click', () => showView('mode'));
 
 // Setup Spread Buttons (landing screen)

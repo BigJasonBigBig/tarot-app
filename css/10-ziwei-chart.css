@@ -1,0 +1,297 @@
+/* -----------------------------------------------------------------------
+   Zi Wei Dou Shu (紫微斗數) chart — traditional 4x4 border-grid layout.
+   Reuses the natal-chart tile/spotlight system (.natal-tile, .natal-tile-
+   detail, .natal-spotlight, etc. from css/04-birthcard-natal1.css) for all
+   visual/interaction styling — a ziwei tile is simply `.natal-tile
+   .ziwei-tile`, so it inherits the breathing animation, hover/active
+   glow, carved-frame border, and detail/spotlight plumbing for free. Only
+   the 4x4 grid placement and a few ziwei-specific face elements are new.
+   ----------------------------------------------------------------------- */
+
+.ziwei-form {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.ziwei-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
+}
+
+.ziwei-form-row label {
+    font-size: 0.82rem;
+    color: var(--gold);
+    letter-spacing: 0.3px;
+}
+
+.ziwei-gender-options {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.ziwei-gender-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.8rem;
+    border: 1.5px solid rgba(223, 186, 71, 0.3);
+    border-radius: 10px;
+    background: rgba(var(--panel-rgb), 0.5);
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.ziwei-gender-option input {
+    accent-color: var(--gold);
+}
+
+.ziwei-gender-option.checked {
+    border-color: var(--gold);
+    background: rgba(223, 186, 71, 0.14);
+    color: var(--gold);
+}
+
+.ziwei-disclaimer {
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    opacity: 0.85;
+}
+
+/* --- Summary strip: 農曆生日/生年干支/五行局/命身宮位置, shown above the grid --- */
+.ziwei-summary {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 0.9rem;
+    background: rgba(var(--panel-rgb), 0.55);
+    border: 1px solid rgba(223, 186, 71, 0.22);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.9rem;
+}
+
+.ziwei-summary-item {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+}
+
+.ziwei-summary-item strong {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.3px;
+}
+
+/* --- The 4x4 traditional grid itself --- */
+.ziwei-grid {
+    width: min(640px, 96vw);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+/* Reset the flex-tile sizing from .natal-tile so ziwei tiles fill their
+   assigned grid cell instead of using a fixed pixel size. Placement
+   (grid-column/grid-row) is set inline per tile by JS, from
+   ZIWEI_BRANCH_GRID_POS. */
+.ziwei-tile {
+    width: 100%;
+    height: 100%;
+    flex: none;
+    animation-duration: 4.2s;
+}
+
+.ziwei-tile .natal-tile-face {
+    padding: 0.35rem;
+    gap: 0.15rem;
+}
+
+.ziwei-palace-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+}
+
+.ziwei-palace-branch {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+.ziwei-tile-stars {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.15rem;
+    font-size: 0.62rem;
+    line-height: 1.3;
+    color: var(--text-light);
+    max-height: 3.2em;
+    overflow: hidden;
+}
+
+.ziwei-tile-star-main {
+    color: var(--tile-color, var(--gold));
+    font-weight: 600;
+}
+
+.ziwei-tile-sihua-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    font-size: 0.55rem;
+    font-weight: 700;
+    margin-left: 0.15rem;
+    color: #0a0714;
+}
+
+.ziwei-sihua-lu { background: #4ade80; }
+.ziwei-sihua-quan { background: #38bdf8; }
+.ziwei-sihua-ke { background: #facc15; }
+.ziwei-sihua-ji { background: #f87171; }
+
+/* 命宮/身宮 get a distinct marker on the tile face since they're the two
+   most important palaces on the whole chart. */
+.ziwei-tile-life-badge,
+.ziwei-tile-body-badge {
+    position: absolute;
+    top: 0.3rem;
+    font-size: 0.6rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.ziwei-tile-life-badge {
+    left: 0.3rem;
+    background: var(--gold);
+    color: #0a0714;
+}
+
+.ziwei-tile-body-badge {
+    right: 0.3rem;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    background: rgba(10, 7, 20, 0.7);
+}
+
+/* --- Center info block: not a clickable tile, just a static summary card
+   sitting in the 2x2 hole in the middle of the grid. --- */
+.ziwei-center {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-align: center;
+    padding: 0.5rem;
+    border: 1.5px solid rgba(223, 186, 71, 0.4);
+    border-radius: 12px;
+    background: rgba(var(--panel-rgb), 0.72);
+}
+
+.ziwei-center-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+}
+
+.ziwei-center-line {
+    font-size: 0.66rem;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+/* --- Sihua legend, shown under the grid --- */
+.ziwei-sihua-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.1rem;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 0.9rem;
+}
+
+.ziwei-sihua-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* --- Detail panel content (inside the shared .natal-spotlight) --- */
+.ziwei-detail-stars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.ziwei-detail-star-row {
+    padding: 0.55rem 0.7rem;
+    background: rgba(var(--panel-rgb), 0.55);
+    border: 1px solid rgba(223, 186, 71, 0.18);
+    border-radius: 8px;
+}
+
+.ziwei-detail-star-name {
+    color: var(--tile-color, var(--gold));
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+    .ziwei-grid {
+        gap: 0.3rem;
+    }
+
+    .ziwei-palace-name {
+        font-size: 0.62rem;
+    }
+
+    .ziwei-tile-stars {
+        font-size: 0.54rem;
+    }
+
+    .ziwei-center-title {
+        font-size: 0.68rem;
+    }
+
+    .ziwei-center-line {
+        font-size: 0.56rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .ziwei-grid {
+        width: 98vw;
+    }
+
+    .ziwei-tile-stars {
+        max-height: 2.6em;
+    }
+}
