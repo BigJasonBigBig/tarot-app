@@ -235,11 +235,85 @@
         };
     }
 
+    // ---------------------------------------------------------------
+    // Phase 6: 格局判斷 (八格 Pattern Determination) — the eight most
+    // common, least-disputed patterns, derived from the month branch's
+    // hidden stems and which of them "透干" (also appears as one of the
+    // year/month/hour stems). Method (cross-checked against published
+    // sources on 月令取格):
+    //   1. 先看月支「本氣」是否透干（出現在年干/月干/時干之一）；若是，
+    //      以本氣之十神定格局。
+    //   2. 若本氣未透，改看月支所藏的其餘（中氣/餘氣）是否透干；若有，
+    //      以該透干之神定格局（若多個都透，取藏干表中排序較前、較主要
+    //      的那一個）。
+    //   3. 若一個都沒透，仍以本氣為格局依據（"不透亦用本氣"）。
+    // 十神 -> 格局名稱對照：正官->正官格, 七殺->七殺格, 正財->正財格,
+    // 偏財->偏財格, 食神->食神格, 傷官->傷官格, 正印->正印格, 偏印->偏印格。
+    // 比肩/劫財本身不屬於這八格，但為了讓每種日主都有結果而非留白，這裡
+    // 用同樣傳統、爭議很小的建祿格（比肩坐月令）／羊刃格・月劫格（劫財
+    // 坐月令，陽干稱羊刃、陰干傳統稱月劫）標示。更進階、流派分歧更大的
+    // 特殊格局（從格、化氣格等）不在這次範圍內，per bazi-plan.md。
+    // ---------------------------------------------------------------
+    const PATTERN_NAMES = {
+        '正官': '正官格',
+        '七殺': '七殺格',
+        '正財': '正財格',
+        '偏財': '偏財格',
+        '食神': '食神格',
+        '傷官': '傷官格',
+        '正印': '正印格',
+        '偏印': '偏印格',
+    };
+
+    function determineGeJuBasis(fourPillars) {
+        const monthBranchIndex = fourPillars.month.branchIndex;
+        const hidden = BRANCH_HIDDEN_STEMS[monthBranchIndex];
+        const transparentStems = [fourPillars.year.stemIndex, fourPillars.month.stemIndex, fourPillars.hour.stemIndex];
+
+        for (let i = 0; i < hidden.length; i++) {
+            if (transparentStems.indexOf(hidden[i]) !== -1) {
+                return { stemIndex: hidden[i], isPrimary: i === 0, transparent: true };
+            }
+        }
+        // 都沒透干，仍以本氣為依據
+        return { stemIndex: hidden[0], isPrimary: true, transparent: false };
+    }
+
+    function computeGeJu(fourPillars) {
+        const dm = fourPillars.day.stemIndex;
+        const monthBranchIndex = fourPillars.month.branchIndex;
+        const hidden = BRANCH_HIDDEN_STEMS[monthBranchIndex];
+        const basis = determineGeJuBasis(fourPillars);
+        const god = tenGod(dm, basis.stemIndex);
+
+        let patternName;
+        if (PATTERN_NAMES[god]) {
+            patternName = PATTERN_NAMES[god];
+        } else if (god === '比肩') {
+            patternName = '建祿格';
+        } else if (god === '劫財') {
+            patternName = stemIsYang(dm) ? '羊刃格' : '月劫格';
+        } else {
+            throw new Error('computeGeJu: unreachable ten-god value ' + god);
+        }
+
+        return {
+            patternName: patternName,
+            basisStemIndex: basis.stemIndex,
+            basisStem: HEAVENLY_STEMS[basis.stemIndex],
+            basisTenGod: god,
+            basisIsPrimary: basis.isPrimary,
+            basisIsTransparent: basis.transparent,
+            monthBranchHiddenStems: hidden.slice(),
+        };
+    }
+
     const api = {
         computeTenGods: computeTenGods,
         computeDayMasterStrength: computeDayMasterStrength,
         computeDaYunPillars: computeDaYunPillars,
         liuNianPillar: liuNianPillar,
+        computeGeJu: computeGeJu,
         tenGod: tenGod,
         stemElement: stemElement,
         stemIsYang: stemIsYang,
@@ -252,6 +326,8 @@
             TEN_GOD_NAMES: TEN_GOD_NAMES,
             isSupportive: isSupportive,
             ganzhi60IndexFromStemBranch: ganzhi60IndexFromStemBranch,
+            determineGeJuBasis: determineGeJuBasis,
+            PATTERN_NAMES: PATTERN_NAMES,
         },
     };
 

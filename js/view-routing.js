@@ -55,6 +55,13 @@ const ziweiDateInput = document.getElementById('ziweiDateInput');
 const ziweiTimeInput = document.getElementById('ziweiTimeInput');
 const calcZiweiChartBtn = document.getElementById('calcZiweiChartBtn');
 const ziweiResult = document.getElementById('ziweiResult');
+const modeSelectBaziBtn = document.getElementById('modeSelectBaziBtn');
+const viewBazi = document.getElementById('viewBazi');
+const baziChartBackBtn = document.getElementById('baziChartBackBtn');
+const baziDateInput = document.getElementById('baziDateInput');
+const baziTimeInput = document.getElementById('baziTimeInput');
+const calcBaziChartBtn = document.getElementById('calcBaziChartBtn');
+const baziResult = document.getElementById('baziResult');
 
 // Switches between the top-level screens: choose spread -> spread intro &
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
@@ -69,6 +76,7 @@ function showView(name) {
     viewHistory.hidden = name !== 'history';
     viewNatalChart.hidden = name !== 'natal';
     viewZiwei.hidden = name !== 'ziwei';
+    viewBazi.hidden = name !== 'bazi';
     // Lets the site background swap to the natal-chart-specific starry-sky
     // artwork (see body.view-natal-active .universe-bg in style.css) while
     // every other screen keeps the regular tarot-table backdrop.
@@ -83,6 +91,7 @@ function showView(name) {
 if (modeSelectTarotBtn) modeSelectTarotBtn.addEventListener('click', () => showView('select'));
 if (modeSelectNatalBtn) modeSelectNatalBtn.addEventListener('click', () => showView('natal'));
 if (modeSelectZiweiBtn) modeSelectZiweiBtn.addEventListener('click', () => showView('ziwei'));
+if (modeSelectBaziBtn) modeSelectBaziBtn.addEventListener('click', () => showView('bazi'));
 if (selectBackToModeBtn) selectBackToModeBtn.addEventListener('click', () => showView('mode'));
 
 // Setup Spread Buttons (landing screen)

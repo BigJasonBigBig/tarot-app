@@ -125,6 +125,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initTopicSelector();
     initNatalForm();
     initZiweiForm();
+    initBaziForm();
     showView('mode');
     initBgEmblemEye();
 });

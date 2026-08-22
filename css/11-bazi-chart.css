@@ -1,0 +1,356 @@
+/* -----------------------------------------------------------------------
+   BaZi (八字/四柱推命) chart — four vertical pillar cards + a horizontal
+   大運/流年 timeline. Reuses the natal-chart tile/spotlight system
+   (.natal-tile, .natal-tile-detail, .natal-spotlight, etc. from
+   css/04-birthcard-natal1.css) for the click-to-expand interaction and
+   breathing/hover glow, exactly like css/10-ziwei-chart.css does — only
+   the card/timeline layout and bazi-specific face elements are new.
+   ----------------------------------------------------------------------- */
+
+.bazi-form {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.bazi-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
+}
+
+.bazi-form-row label {
+    font-size: 0.82rem;
+    color: var(--gold);
+    letter-spacing: 0.3px;
+}
+
+.bazi-gender-options {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.bazi-gender-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.8rem;
+    border: 1.5px solid rgba(223, 186, 71, 0.3);
+    border-radius: 10px;
+    background: rgba(var(--panel-rgb), 0.5);
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.bazi-gender-option input {
+    accent-color: var(--gold);
+}
+
+.bazi-gender-option.checked {
+    border-color: var(--gold);
+    background: rgba(223, 186, 71, 0.14);
+    color: var(--gold);
+}
+
+.bazi-disclaimer {
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    opacity: 0.85;
+}
+
+/* --- Four vertical pillar cards (年/月/日/時) --- */
+.bazi-pillars {
+    width: min(720px, 96vw);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.7rem;
+}
+
+.bazi-tile {
+    width: 100%;
+    height: auto;
+    min-height: 150px;
+    flex: none;
+    animation-duration: 4.4s;
+    position: relative;
+}
+
+.bazi-tile .natal-tile-face {
+    padding: 0.6rem 0.4rem;
+    gap: 0.3rem;
+    height: 100%;
+    justify-content: center;
+}
+
+.bazi-tile-badge {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    background: var(--tile-color, var(--gold));
+    color: #0a0714;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.bazi-pillar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+}
+
+.bazi-pillar-ganzhi {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--tile-color, var(--gold));
+    letter-spacing: 2px;
+    margin: 0.15rem 0;
+}
+
+.bazi-tile-hidden-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.bazi-tile-hidden-chip {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    border: 1px solid rgba(223, 186, 71, 0.25);
+    border-radius: 6px;
+    padding: 0.05rem 0.3rem;
+}
+
+.bazi-tile-hidden-chip.is-primary {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+/* --- Detail panel content (inside the shared .natal-spotlight) --- */
+.bazi-detail-subhead {
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin: 0.6rem 0 0.35rem;
+}
+
+.bazi-detail-hidden-stems {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bazi-detail-hidden-row {
+    padding: 0.5rem 0.65rem;
+    background: rgba(var(--panel-rgb), 0.55);
+    border: 1px solid rgba(223, 186, 71, 0.18);
+    border-radius: 8px;
+}
+
+.bazi-detail-hidden-stem {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--tile-color, var(--gold));
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem;
+}
+
+.bazi-primary-tag {
+    font-size: 0.58rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    border-radius: 999px;
+    padding: 0.02rem 0.35rem;
+}
+
+.bazi-detail-hidden-tengod {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-light);
+    opacity: 0.85;
+}
+
+/* --- Summary strip: 日主/五行強弱/格局/起運 --- */
+.bazi-summary {
+    width: min(720px, 96vw);
+    margin: 0.9rem auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 0.9rem;
+    background: rgba(var(--panel-rgb), 0.55);
+    border: 1px solid rgba(223, 186, 71, 0.22);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+}
+
+.bazi-summary-item {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+}
+
+.bazi-summary-item strong {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.3px;
+}
+
+.bazi-summary-detail {
+    width: min(720px, 96vw);
+    margin: 0.6rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bazi-summary-detail p {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-light);
+}
+
+.bazi-summary-detail strong {
+    color: var(--gold);
+}
+
+/* --- 大運/流年 section --- */
+.bazi-dayun-section {
+    width: min(720px, 96vw);
+    margin: 1.3rem auto 0;
+}
+
+.bazi-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+}
+
+.bazi-section-intro {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 0.8rem;
+}
+
+.bazi-dayun-row {
+    display: flex;
+    gap: 0.55rem;
+    overflow-x: auto;
+    padding: 0.3rem 0.1rem 0.6rem;
+    scroll-snap-type: x proximity;
+}
+
+.bazi-dayun-tile {
+    flex: 0 0 auto;
+    width: 96px;
+    height: 96px;
+    animation-duration: 4.6s;
+    scroll-snap-align: start;
+}
+
+.bazi-dayun-tile .natal-tile-face {
+    padding: 0.35rem;
+    gap: 0.15rem;
+}
+
+.bazi-dayun-age {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+.bazi-dayun-ganzhi {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--tile-color, var(--gold));
+    letter-spacing: 1px;
+}
+
+.bazi-dayun-tengod {
+    font-size: 0.62rem;
+    color: var(--text-light);
+}
+
+.bazi-detail-liunian-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.bazi-detail-liunian-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    background: rgba(var(--panel-rgb), 0.5);
+    border: 1px solid rgba(223, 186, 71, 0.15);
+    border-radius: 8px;
+    font-size: 0.76rem;
+}
+
+.bazi-detail-liunian-year {
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.bazi-detail-liunian-ganzhi {
+    color: var(--tile-color, var(--gold));
+    font-weight: 700;
+}
+
+.bazi-detail-liunian-tengod {
+    color: var(--text-light);
+    opacity: 0.85;
+}
+
+@media (max-width: 640px) {
+    .bazi-pillars {
+        gap: 0.4rem;
+    }
+
+    .bazi-pillar-ganzhi {
+        font-size: 1.15rem;
+    }
+
+    .bazi-tile {
+        min-height: 125px;
+    }
+
+    .bazi-dayun-tile {
+        width: 84px;
+        height: 84px;
+    }
+}
+
+@media (max-width: 420px) {
+    .bazi-pillars {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bazi-tile {
+        min-height: 110px;
+    }
+}
