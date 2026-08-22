@@ -1,0 +1,152 @@
+/* -----------------------------------------------------------------------
+   I Ching (易經六爻卜卦) — hexagram line diagram cards. Unlike the tile-
+   grid features, a cast produces at most two hexagrams shown fully
+   expanded side by side, so this doesn't reuse .natal-tile/.natal-spotlight
+   at all — it's a smaller, standalone set of styles.
+   ----------------------------------------------------------------------- */
+
+.yijing-cast-btn {
+    display: block;
+    margin: 0 auto;
+}
+
+.yijing-result-row {
+    width: min(760px, 96vw);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+}
+
+.yijing-arrow {
+    font-size: 1.6rem;
+    color: var(--gold);
+    flex: none;
+}
+
+.yijing-hexagram-card {
+    flex: 1 1 300px;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.2rem 1.1rem;
+    border: 1.5px solid rgba(223, 186, 71, 0.3);
+    border-radius: 14px;
+    background: rgba(var(--panel-rgb), 0.55);
+}
+
+.yijing-lines {
+    width: 100%;
+    max-width: 190px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.yijing-line-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.yijing-line {
+    flex: 1;
+    height: 10px;
+    display: flex;
+    gap: 12%;
+}
+
+.yijing-line-yang {
+    background: var(--gold);
+    border-radius: 3px;
+}
+
+.yijing-line-yin-seg {
+    flex: 1;
+    background: var(--gold);
+    border-radius: 3px;
+}
+
+.yijing-line-row.is-changing .yijing-line-yang,
+.yijing-line-row.is-changing .yijing-line-yin-seg {
+    background: #f87171;
+}
+
+.yijing-line-changing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f87171;
+    flex: none;
+}
+
+.yijing-line-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    width: 2.4rem;
+    flex: none;
+    text-align: right;
+}
+
+.yijing-hexagram-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-align: center;
+}
+
+.yijing-hexagram-badge {
+    font-size: 0.68rem;
+    color: #0a0714;
+    background: var(--gold);
+    padding: 0.08rem 0.5rem;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+}
+
+.yijing-hexagram-unicode {
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--gold);
+}
+
+.yijing-hexagram-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--text-light);
+    letter-spacing: 1px;
+}
+
+.yijing-hexagram-trigrams {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.yijing-hexagram-judgment {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    text-align: left;
+}
+
+.yijing-disclaimer {
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    opacity: 0.85;
+}
+
+@media (max-width: 640px) {
+    .yijing-arrow {
+        transform: rotate(90deg);
+    }
+
+    .yijing-hexagram-card {
+        max-width: 100%;
+    }
+}

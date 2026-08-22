@@ -47,6 +47,8 @@
     <link rel="stylesheet" href="css/09-toggles-modal-responsive.css?v=202608171200">
     <link rel="stylesheet" href="css/10-ziwei-chart.css?v=202608191300">
     <link rel="stylesheet" href="css/11-bazi-chart.css?v=202608221600">
+    <link rel="stylesheet" href="css/12-runes.css?v=202608221800">
+    <link rel="stylesheet" href="css/13-yijing.css?v=202608222000">
 </head>
 <body>
     <!-- Sound toggle — floating corner control, always available -->
@@ -311,6 +313,16 @@
                     <span class="mode-select-label">八字四柱命盤</span>
                     <span class="mode-select-desc">輸入國曆生日與性別，排出四柱、十神、大運與格局</span>
                 </button>
+                <button class="mode-select-option" id="modeSelectRunesBtn" type="button">
+                    <span class="mode-select-icon">ᚱ</span>
+                    <span class="mode-select-label">盧恩符文占卜</span>
+                    <span class="mode-select-desc">抽一枚或三枚符文，獲得直覺的指引</span>
+                </button>
+                <button class="mode-select-option" id="modeSelectYijingBtn" type="button">
+                    <span class="mode-select-icon">☯</span>
+                    <span class="mode-select-label">易經六爻卜卦</span>
+                    <span class="mode-select-desc">用三錢法起卦，看本卦與之卦的變化</span>
+                </button>
             </div>
 
             <div class="landing-links">
@@ -429,6 +441,47 @@
             </div>
 
             <div class="bazi-result" id="baziResult" hidden>
+                <!-- Filled in by JS -->
+            </div>
+        </section>
+
+        <!-- Runes (盧恩符文) draw view — client-side random draw, no data
+             leaves the browser. -->
+        <section class="view-panel view-runes" id="viewRunes" hidden>
+            <button class="back-link" id="runesChartBackBtn" type="button">← 返回首頁</button>
+            <h2 class="knowledge-title">✦ 盧恩符文占卜 ✦</h2>
+            <p class="intro-desc">盧恩符文（Runes）是源自北歐的古老文字系統，後來也發展成一套直覺占卜工具。選擇下面其中一種抽法，符文會隨機決定正位或逆位，點擊任一枚符文可以看完整解讀。</p>
+
+            <div class="runes-draw-options">
+                <button class="runes-draw-btn" id="drawRuneSingleBtn" type="button">
+                    <span class="runes-draw-btn-icon">ᚠ</span>
+                    <span class="runes-draw-btn-label">單一符文</span>
+                    <span class="runes-draw-btn-desc">抽一枚符文，當作今天的一句直覺提醒</span>
+                </button>
+                <button class="runes-draw-btn" id="drawRuneThreeBtn" type="button">
+                    <span class="runes-draw-btn-icon">ᛟ</span>
+                    <span class="runes-draw-btn-label">三重視角</span>
+                    <span class="runes-draw-btn-desc">過去・現在・未來三枚符文，看清一件事的來龍去脈</span>
+                </button>
+            </div>
+            <p class="runes-disclaimer">提醒：符文的正逆位由隨機亂數決定，部分左右對稱的符文（如 Gebo、Isa、Sowilo 等）依照傳統慣例不分正逆位。結果僅供參考娛樂，是給自己一個反思的角度，不是絕對的預言。</p>
+
+            <div class="runes-result" id="runesResult" hidden>
+                <!-- Filled in by JS -->
+            </div>
+        </section>
+
+        <!-- I Ching (易經六爻卜卦) view — client-side 三錢法 random cast,
+             no data leaves the browser. -->
+        <section class="view-panel view-yijing" id="viewYijing" hidden>
+            <button class="back-link" id="yijingChartBackBtn" type="button">← 返回首頁</button>
+            <h2 class="knowledge-title">✦ 易經六爻卜卦 ✦</h2>
+            <p class="intro-desc">用傳統的「三錢法」模擬擲筊起卦：每一爻都是虛擬擲三枚銅錢決定，六爻由下往上逐一形成一個卦象。點擊下方按鈕就能起一卦。</p>
+
+            <button class="action-btn yijing-cast-btn" id="castYijingBtn" type="button">擲筊起卦</button>
+            <p class="yijing-disclaimer">提醒：這裡只提供「本卦」與「之卦」（有變爻時）的卦辭解讀，還沒有收錄逐爻的爻辭內容，之後可能會再補上。結果僅供參考娛樂，是給自己一個思考的角度，不是絕對的預言。</p>
+
+            <div class="yijing-result" id="yijingResult" hidden>
                 <!-- Filled in by JS -->
             </div>
         </section>
@@ -589,15 +642,19 @@
     <script src="js/data-tarot-content.js?v=202608171200"></script>
     <script src="js/data-ziwei-content.js?v=202608191300"></script>
     <script src="js/data-bazi-content.js?v=202608221600"></script>
+    <script src="js/data-runes-content.js?v=202608221800"></script>
+    <script src="js/data-yijing-content.js?v=202608222000"></script>
     <script src="js/theme-and-helpers.js?v=202608171200"></script>
-    <script src="js/view-routing.js?v=202608221600"></script>
+    <script src="js/view-routing.js?v=202608222000"></script>
     <script src="js/birthcard.js?v=202608171200"></script>
     <script src="js/natal-chart.js?v=202608171200"></script>
     <script src="js/ziwei-chart.js?v=202608191300"></script>
     <script src="js/bazi-chart.js?v=202608221600"></script>
+    <script src="js/runes-reading.js?v=202608221800"></script>
+    <script src="js/yijing-reading.js?v=202608222000"></script>
     <script src="js/tarot-reading.js?v=202608171200"></script>
     <script src="js/history.js?v=202608171200"></script>
     <script src="js/share.js?v=202608171200"></script>
-    <script src="js/ui-init.js?v=202608221600"></script>
+    <script src="js/ui-init.js?v=202608222000"></script>
 </body>
 </html>

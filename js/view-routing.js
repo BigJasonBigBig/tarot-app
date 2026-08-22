@@ -62,6 +62,17 @@ const baziDateInput = document.getElementById('baziDateInput');
 const baziTimeInput = document.getElementById('baziTimeInput');
 const calcBaziChartBtn = document.getElementById('calcBaziChartBtn');
 const baziResult = document.getElementById('baziResult');
+const modeSelectRunesBtn = document.getElementById('modeSelectRunesBtn');
+const viewRunes = document.getElementById('viewRunes');
+const runesChartBackBtn = document.getElementById('runesChartBackBtn');
+const drawRuneSingleBtn = document.getElementById('drawRuneSingleBtn');
+const drawRuneThreeBtn = document.getElementById('drawRuneThreeBtn');
+const runesResult = document.getElementById('runesResult');
+const modeSelectYijingBtn = document.getElementById('modeSelectYijingBtn');
+const viewYijing = document.getElementById('viewYijing');
+const yijingChartBackBtn = document.getElementById('yijingChartBackBtn');
+const castYijingBtn = document.getElementById('castYijingBtn');
+const yijingResult = document.getElementById('yijingResult');
 
 // Switches between the top-level screens: choose spread -> spread intro &
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
@@ -77,6 +88,8 @@ function showView(name) {
     viewNatalChart.hidden = name !== 'natal';
     viewZiwei.hidden = name !== 'ziwei';
     viewBazi.hidden = name !== 'bazi';
+    viewRunes.hidden = name !== 'runes';
+    viewYijing.hidden = name !== 'yijing';
     // Lets the site background swap to the natal-chart-specific starry-sky
     // artwork (see body.view-natal-active .universe-bg in style.css) while
     // every other screen keeps the regular tarot-table backdrop.
@@ -92,6 +105,8 @@ if (modeSelectTarotBtn) modeSelectTarotBtn.addEventListener('click', () => showV
 if (modeSelectNatalBtn) modeSelectNatalBtn.addEventListener('click', () => showView('natal'));
 if (modeSelectZiweiBtn) modeSelectZiweiBtn.addEventListener('click', () => showView('ziwei'));
 if (modeSelectBaziBtn) modeSelectBaziBtn.addEventListener('click', () => showView('bazi'));
+if (modeSelectRunesBtn) modeSelectRunesBtn.addEventListener('click', () => showView('runes'));
+if (modeSelectYijingBtn) modeSelectYijingBtn.addEventListener('click', () => showView('yijing'));
 if (selectBackToModeBtn) selectBackToModeBtn.addEventListener('click', () => showView('mode'));
 
 // Setup Spread Buttons (landing screen)
