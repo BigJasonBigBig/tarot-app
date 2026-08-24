@@ -1,0 +1,239 @@
+/* -----------------------------------------------------------------------
+   姓名學／五格剖象 — form + five-grid tiles + spotlight.
+   Uses independent .namenum-* class names (not shared with ziwei/bazi's
+   form classes) to avoid cross-wiring bugs between features' JS.
+   ----------------------------------------------------------------------- */
+
+.namenum-form {
+    width: min(420px, 92vw);
+    margin: 0 auto 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.namenum-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.namenum-form-row label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.namenum-form-row input[type="text"] {
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.namenum-disclaimer {
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    opacity: 0.85;
+    margin-top: 0.8rem;
+}
+
+.namenum-char-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.namenum-char-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 10px;
+    background: rgba(var(--panel-rgb), 0.55);
+    border: 1px solid rgba(223, 186, 71, 0.3);
+    font-size: 1.2rem;
+    color: var(--text-light);
+    min-width: 2.4rem;
+}
+
+.namenum-char-chip small {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+.namenum-grid {
+    width: min(640px, 96vw);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+}
+
+.namenum-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 1rem 0.6rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--tile-color, rgba(223, 186, 71, 0.4));
+    background: rgba(var(--panel-rgb), 0.55);
+    cursor: pointer;
+    color: var(--text-light);
+    font-family: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.namenum-tile:hover,
+.namenum-tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.namenum-tile.active {
+    box-shadow: 0 0 0 2px var(--tile-color), 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+.namenum-tile-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: var(--tile-color, var(--gold));
+}
+
+.namenum-tile-value {
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.namenum-tile-cat {
+    font-size: 0.68rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.namenum-tile.is-good .namenum-tile-cat { background: rgba(95, 209, 165, 0.25); color: #5fd1a5; }
+.namenum-tile.is-bad .namenum-tile-cat { background: rgba(239, 138, 107, 0.25); color: #ef8a6b; }
+.namenum-tile.is-mixed .namenum-tile-cat { background: rgba(223, 186, 71, 0.25); color: var(--gold); }
+
+.namenum-tile-detail {
+    display: none;
+}
+
+/* Fifth tile (總格) centers itself on the last row of a 3-col grid. */
+.namenum-grid .namenum-tile:nth-child(4) {
+    grid-column: 1 / span 1;
+}
+.namenum-grid .namenum-tile:nth-child(5) {
+    grid-column: 2 / span 1;
+}
+
+.namenum-spotlight {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 3, 12, 0.72);
+    padding: 1rem;
+}
+
+.namenum-spotlight.active {
+    display: flex;
+}
+
+.namenum-spotlight-inner {
+    width: min(480px, 94vw);
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(var(--panel-rgb), 0.96);
+    border: 1.5px solid rgba(223, 186, 71, 0.4);
+    border-radius: 16px;
+    padding: 1.4rem 1.3rem;
+    color: var(--text-light);
+}
+
+.namenum-spotlight-inner h4 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+
+.namenum-detail-number {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.namenum-detail-cat.is-good { color: #5fd1a5; }
+.namenum-detail-cat.is-bad { color: #ef8a6b; }
+.namenum-detail-cat.is-mixed { color: var(--gold); }
+
+.namenum-detail-name {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.namenum-detail-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.namenum-spotlight-close {
+    position: absolute;
+    top: 1.4rem;
+    right: max(1.4rem, calc(50vw - 240px - 2.4rem));
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    color: var(--text-light);
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.namenum-manual-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: min(360px, 92vw);
+    margin: 0.8rem auto;
+}
+
+.namenum-manual-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.namenum-manual-input {
+    width: 5rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    background: rgba(var(--panel-rgb), 0.6);
+    color: var(--text-light);
+}
+
+@media (max-width: 640px) {
+    .namenum-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .namenum-grid .namenum-tile:nth-child(4),
+    .namenum-grid .namenum-tile:nth-child(5) {
+        grid-column: auto;
+    }
+}

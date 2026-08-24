@@ -49,6 +49,7 @@
     <link rel="stylesheet" href="css/11-bazi-chart.css?v=202608221600">
     <link rel="stylesheet" href="css/12-runes.css?v=202608221800">
     <link rel="stylesheet" href="css/13-yijing.css?v=202608222000">
+    <link rel="stylesheet" href="css/15-name-numerology.css?v=202608241200">
 </head>
 <body>
     <!-- Sound toggle — floating corner control, always available -->
@@ -323,6 +324,11 @@
                     <span class="mode-select-label">易經六爻卜卦</span>
                     <span class="mode-select-desc">用三錢法起卦，看本卦與之卦的變化</span>
                 </button>
+                <button class="mode-select-option" id="modeSelectNameNumBtn" type="button">
+                    <span class="mode-select-icon">🈶</span>
+                    <span class="mode-select-label">姓名學／五格剖象</span>
+                    <span class="mode-select-desc">輸入姓名，算出天格、人格、地格、外格、總格與數理吉凶</span>
+                </button>
             </div>
 
             <div class="landing-links">
@@ -486,6 +492,30 @@
             </div>
         </section>
 
+        <!-- Name Numerology (姓名學／五格剖象) view — pure client-side stroke
+             lookup + calculation, no data leaves the browser. -->
+        <section class="view-panel view-namenum" id="viewNameNum" hidden>
+            <button class="back-link" id="namenumChartBackBtn" type="button">← 返回首頁</button>
+            <h2 class="knowledge-title">✦ 姓名學／五格剖象 ✦</h2>
+            <p class="intro-desc">輸入姓氏與名字（建議使用戶籍上的正式繁體字），依「五格剖象法」算出天格、人格、地格、外格、總格五個數字，並對照 81 數理表查出每一格的吉凶與簡短含義。筆畫採康熙字典部首慣例計算，可能與日常書寫筆畫不同。</p>
+
+            <form class="namenum-form" id="namenumForm">
+                <div class="namenum-form-row">
+                    <label for="namenumSurnameInput">姓氏</label>
+                    <input type="text" id="namenumSurnameInput" placeholder="例如：陳 / 歐陽" maxlength="4" autocomplete="off">
+                </div>
+                <div class="namenum-form-row">
+                    <label for="namenumGivenInput">名字</label>
+                    <input type="text" id="namenumGivenInput" placeholder="例如：小明" maxlength="6" autocomplete="off">
+                </div>
+                <button class="action-btn" id="calcNameNumBtn" type="button">開始計算</button>
+            </form>
+
+            <div class="namenum-result" id="namenumResult" hidden>
+                <!-- Filled in by JS -->
+            </div>
+        </section>
+
         <!-- Reading History view — past readings saved locally in this browser -->
         <section class="view-panel view-history" id="viewHistory" hidden>
             <button class="back-link" id="historyBackBtn" type="button">← 返回首頁</button>
@@ -644,17 +674,20 @@
     <script src="js/data-bazi-content.js?v=202608221600"></script>
     <script src="js/data-runes-content.js?v=202608221800"></script>
     <script src="js/data-yijing-content.js?v=202608222000"></script>
+    <script src="js/data-name-strokes.js?v=202608241200"></script>
+    <script src="js/data-name-numbers.js?v=202608241200"></script>
     <script src="js/theme-and-helpers.js?v=202608171200"></script>
-    <script src="js/view-routing.js?v=202608222000"></script>
+    <script src="js/view-routing.js?v=202608241200"></script>
     <script src="js/birthcard.js?v=202608171200"></script>
     <script src="js/natal-chart.js?v=202608171200"></script>
     <script src="js/ziwei-chart.js?v=202608191300"></script>
     <script src="js/bazi-chart.js?v=202608221600"></script>
     <script src="js/runes-reading.js?v=202608221800"></script>
     <script src="js/yijing-reading.js?v=202608222000"></script>
+    <script src="js/name-numerology.js?v=202608241200"></script>
     <script src="js/tarot-reading.js?v=202608171200"></script>
     <script src="js/history.js?v=202608171200"></script>
     <script src="js/share.js?v=202608171200"></script>
-    <script src="js/ui-init.js?v=202608222000"></script>
+    <script src="js/ui-init.js?v=202608241200"></script>
 </body>
 </html>
