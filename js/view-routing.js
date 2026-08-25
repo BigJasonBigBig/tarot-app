@@ -80,6 +80,12 @@ const namenumSurnameInput = document.getElementById('namenumSurnameInput');
 const namenumGivenInput = document.getElementById('namenumGivenInput');
 const calcNameNumBtn = document.getElementById('calcNameNumBtn');
 const namenumResult = document.getElementById('namenumResult');
+const modeSelectDailyFortuneBtn = document.getElementById('modeSelectDailyFortuneBtn');
+const viewDailyFortune = document.getElementById('viewDailyFortune');
+const dailyFortuneBackBtn = document.getElementById('dailyFortuneBackBtn');
+const dailyFortuneBirthInput = document.getElementById('dailyFortuneBirthInput');
+const calcDailyFortuneBtn = document.getElementById('calcDailyFortuneBtn');
+const dailyFortuneResult = document.getElementById('dailyFortuneResult');
 
 // Switches between the top-level screens: choose spread -> spread intro &
 // topic picker -> the actual reading (deck, board, results) -> knowledge page
@@ -98,6 +104,7 @@ function showView(name) {
     viewRunes.hidden = name !== 'runes';
     viewYijing.hidden = name !== 'yijing';
     viewNameNum.hidden = name !== 'namenum';
+    viewDailyFortune.hidden = name !== 'dailyfortune';
     // Lets the site background swap to the natal-chart-specific starry-sky
     // artwork (see body.view-natal-active .universe-bg in style.css) while
     // every other screen keeps the regular tarot-table backdrop.
@@ -116,6 +123,7 @@ if (modeSelectBaziBtn) modeSelectBaziBtn.addEventListener('click', () => showVie
 if (modeSelectRunesBtn) modeSelectRunesBtn.addEventListener('click', () => showView('runes'));
 if (modeSelectYijingBtn) modeSelectYijingBtn.addEventListener('click', () => showView('yijing'));
 if (modeSelectNameNumBtn) modeSelectNameNumBtn.addEventListener('click', () => showView('namenum'));
+if (modeSelectDailyFortuneBtn) modeSelectDailyFortuneBtn.addEventListener('click', () => showView('dailyfortune'));
 if (selectBackToModeBtn) selectBackToModeBtn.addEventListener('click', () => showView('mode'));
 
 // Setup Spread Buttons (landing screen)

@@ -21,8 +21,25 @@
 // The per-hexagram judgment text below is original, hand-written summary
 // interpretation (not a verbatim translation of the classical 卦辭),
 // mirroring the depth used for js/data-ziwei-content.js and
-// js/data-bazi-content.js. Per-line (384 爻辭) texts are intentionally out
-// of scope for this first version — see the in-app disclaimer.
+// js/data-bazi-content.js. HEXAGRAM_ADVICE adds a second, shorter and more
+// action-oriented takeaway per hexagram (a new dimension, not just a
+// rephrasing of the judgment text).
+//
+// LINE_POSITION_MEANINGS / lineReading() add a genuine 逐爻解讀 (line-by-line
+// reading) dimension. Rather than hand-writing 384 fully bespoke 爻辭
+// translations (a very large undertaking with real accuracy risk — the
+// classical 爻辭 wording is often terse and ambiguous even among scholars),
+// this follows the well-established simplified teaching framework used by
+// many beginner-oriented I Ching resources: each of the 6 structural
+// positions (初/二/三/四/五/上爻) has a well-documented generic meaning
+// (verified against 《易經》爻位 conventions: 奇位[1,3,5]為陽位、偶位[2,4,6]
+// 為陰位；陽爻居陽位或陰爻居陰位稱「當位／得正」，反之稱「不當位／失正」；
+// 《繫辭傳》「二多譽、三多凶、四多懼、五多功」的爻位評價), composed together
+// with whether the actual line is 當位/不當位 at that position and whether
+// it's a 變爻 (changing line) in this cast. This produces a real, specific
+// reading for all 6 lines of any cast, built compositionally from a small,
+// verifiable set of building blocks rather than from unverifiable per-
+// hexagram-per-line invented text.
 // -----------------------------------------------------------------------
 (function (root) {
     'use strict';
@@ -108,6 +125,76 @@
         [64, '火水未濟', 'li', 'kan', '䷿', '象徵尚未完成、還在通往成功路上的階段。雖然還沒到終點，但只要方向正確、持續謹慎努力，未濟正是蘊藏著無限可能的開始，不必因為還沒成功而氣餒。'],
     ];
 
+    // A short, more action-oriented one-line takeaway per hexagram — a
+    // distinct new dimension from the judgment text above, not a rephrasing
+    // of it. Keyed by hexagram number (1-64).
+    const HEXAGRAM_ADVICE = {
+        1: '保持自信但別逞強，適時徵詢他人意見再行動。',
+        2: '先配合、後主導，用耐心與包容累積實力。',
+        3: '別急著求成，先把基礎和人脈打穩再說。',
+        4: '放下身段多請教，避免自以為是誤判情勢。',
+        5: '該等的時候就好好等，硬闖只會徒增風險。',
+        6: '能私下化解就別鬧上檯面，退一步海闊天空。',
+        7: '行動前先確認名分和章法，紀律比人多更重要。',
+        8: '及早選定值得信賴的夥伴，別猶豫觀望太久。',
+        9: '先小規模累積實力，時機未到不要強求突破。',
+        10: '謹慎行事、以禮待人，危險的路也能安然通過。',
+        11: '大膽推動計畫，但順境中也別忘了居安思危。',
+        12: '此時宜守不宜攻，堅持原則耐心等待轉機。',
+        13: '廣結善緣但要出於公心，別淪為排除異己的小圈圈。',
+        14: '收穫豐盛時更要謙遜分享，別得意忘形。',
+        15: '有能力也別自滿，謙虛的人到哪都站得穩。',
+        16: '把握士氣高昂的時機推進，但別耽溺安逸忘了警覺。',
+        17: '可以順勢而為，但別喪失自己判斷的原則。',
+        18: '積弊要趁早整頓，逃避只會讓問題越滾越大。',
+        19: '擴大格局的同時，更要以德服人而非仗勢壓人。',
+        20: '先觀察反省，別急著出手，言行本身就是示範。',
+        21: '該賞罰分明就別心軟，拖延只會讓問題持續卡住。',
+        22: '適度包裝該表現的地方，但別讓外表蓋過真本事。',
+        23: '此時該收斂退守，保存實力等待局勢自然反轉。',
+        24: '把握否極泰來的契機，修正偏差、重新穩健出發。',
+        25: '出於真誠踏實做事，別心存僥倖或投機取巧。',
+        26: '先沉潛累積實力，眼前的等待是為了將來的大展身手。',
+        27: '慎選滋養身心的來源，也要謹言慎行不傷人傷己。',
+        28: '壓力極大時格外謹慎，多尋求支援別獨自蠻幹。',
+        29: '身處險境保持冷靜與誠信，像水一樣遇阻繞道而行。',
+        30: '發揮才華熱情的同時，也要懂得節制別燒盡自己。',
+        31: '用真誠開放的心去感受對方，別刻意算計。',
+        32: '用長遠眼光經營關係，但也要懂得隨局勢調整做法。',
+        33: '局勢不利時懂得及時抽身，退是為了將來更好的進。',
+        34: '實力雄厚也要用在正道上，別因逞強衝過頭而受傷。',
+        35: '把握上升期展現才華，同時保持謙和讓路走得長久。',
+        36: '環境不利時暫時收斂鋒芒，保護好自己等待時機。',
+        37: '先把家庭和內部團隊經營好，才有餘力應付外部挑戰。',
+        38: '立場不同不必撕破臉，求同存異更容易找到共識。',
+        39: '別硬闖，先檢視處境、尋求協助，耐心繞道渡過難關。',
+        40: '危機化解時動作明快一點，該放下的包袱就趁勢放下。',
+        41: '適度節制欲望、把資源用在真正重要的地方。',
+        42: '把握有利時機積極投入，慷慨付出往往帶來更大回報。',
+        43: '該斷則斷，但要光明正大處理，別用陰謀手段。',
+        44: '面對突如其來的機會或誘惑，多一分警覺再靠近。',
+        45: '把握人心凝聚的時機，但要建立妥善的組織與規矩。',
+        46: '按部就班累積實力，扎實基礎才能撐起長遠的成長。',
+        47: '身陷困境仍要守住原則，話多無益不如沉住氣蓄積實力。',
+        48: '持續提供價值造福他人，也別讓自己的核心能力荒廢。',
+        49: '改革要選對時機、名正言順，操之過急反而引發動盪。',
+        50: '重視團隊裡每個人的位置與貢獻，讓新局穩固下來。',
+        51: '面對突發驚嚇別慌亂，冷靜下來把危機化為警惕的契機。',
+        52: '該停下來就停下來，安於本分內心才能真正安定。',
+        53: '欲速則不達，按部就班順著節奏前進走得長遠又穩固。',
+        54: '角色和期待沒說清楚前，別貿然投入一段關係或合作。',
+        55: '最風光的時候更要保持清醒，居安思危延續這份豐盛。',
+        56: '在陌生環境裡謙和謹慎、廣結善緣，別仗勢張揚。',
+        57: '用柔軟低調的方式反覆推行想法，比強硬手段更能改變人心。',
+        58: '真誠交流而非討好逢迎，喜悅才能長久不流於表面。',
+        59: '及早出面凝聚人心、化解隔閡，別讓局勢繼續渙散。',
+        60: '凡事適可而止，別把節制做過了頭變成僵化束縛。',
+        61: '出於至誠與人溝通，即使難以說服的人也能漸漸打動。',
+        62: '姿態放低、謹慎行事，把握小處分寸別好高騖遠。',
+        63: '成功之後更要保持警惕，持續維護得來不易的成果。',
+        64: '方向正確就持續謹慎努力，別因還沒成功而氣餒。',
+    };
+
     const HEXAGRAMS = HEXAGRAMS_RAW.map(function (row) {
         const upper = TRIGRAMS[row[2]];
         const lower = TRIGRAMS[row[3]];
@@ -121,6 +208,7 @@
             binary: lower.bits + upper.bits, // index 0 = line1(bottom) ... index5 = line6(top)
             unicode: row[4],
             judgment: row[5],
+            advice: HEXAGRAM_ADVICE[row[0]] || '',
         };
     });
 
@@ -131,6 +219,45 @@
         const h = HEXAGRAM_BY_BINARY[binary];
         if (!h) throw new Error('hexagramByBinary: no hexagram for binary ' + binary);
         return h;
+    }
+
+    // ---------------------------------------------------------------
+    // 逐爻解讀 (line-by-line reading) — see file header for the
+    // methodology/sourcing note. Position 1 = 初爻 (bottom) ... 6 = 上爻 (top).
+    // ---------------------------------------------------------------
+    const LINE_POSITION_LABELS = { 1: '初爻', 2: '二爻', 3: '三爻', 4: '四爻', 5: '五爻', 6: '上爻' };
+
+    const LINE_POSITION_MEANINGS = {
+        1: '初爻位於全卦最底部，象徵事情剛開始、還處於基礎累積的階段，社會身份上對應最基層、尚未受到矚目的角色。這個階段適合潛藏蓄勢、扎穩根基，不宜急著曝光或搶著出頭。',
+        2: '二爻位於下卦的中心，象徵基層裡站得穩、做事有分寸的核心角色，傳統上稱「二多譽」，通常是評價較高、值得信賴的位置。這個位置提醒穩紮穩打、把內部先做好，比急著往外衝更重要。',
+        3: '三爻位於下卦最頂端、正好卡在上下兩卦交界處，傳統上稱「三多凶」，象徵進退兩難、處境容易尷尬的階段。這個位置提醒行事要格外謹慎，貿然躁進或猶豫不決都容易招來麻煩。',
+        4: '四爻位於上卦最底部，已經靠近全卦最尊貴的五爻，傳統上稱「四多懼」，象徵責任加重、如履薄冰的階段。這個位置提醒即使身處要位，也要戒慎恐懼，別因為靠近權力核心就掉以輕心。',
+        5: '五爻是全卦的君位、居於上卦正中，傳統上稱「五多功」，象徵最能發揮所長、成就最大的位置。這個位置提醒善用自己的影響力、把握機會展現實力，是六爻裡最適合主導與擔當的階段。',
+        6: '上爻位於全卦最頂端，象徵事情發展到了極致、盛極必衰的轉折點，社會身份上常被比喻為超然事外、不再親自掌權的角色。這個位置提醒凡事過猶不及，越是走到頂點越要提防過度與執著。',
+    };
+
+    const LINE_CHANGING_NOTE = '這一爻是這次卜卦擲出的變爻（動爻），代表它所在的能量正處於轉變之中，是解讀這次卦象時特別需要留意的重點——本卦講的是目前的狀態，這一爻的變化正指向事情接下來可能會怎麼發展。';
+
+    // position 1/3/5 = 陽位, position 2/4/6 = 陰位 (奇位為陽、偶位為陰).
+    function linePositionIsYangSlot(position) {
+        return position % 2 === 1;
+    }
+
+    // Composes a full reading for one line: generic position meaning +
+    // 當位/不當位 note (based on whether the actual yin/yang of the line
+    // matches the traditional yang/yin expectation for that slot) +
+    // a changing-line note if applicable.
+    function lineReading(position, type, changing) {
+        const posMeaning = LINE_POSITION_MEANINGS[position] || '';
+        const slotIsYang = linePositionIsYangSlot(position);
+        const lineIsYang = type === 'yang';
+        const aligned = slotIsYang === lineIsYang;
+        const lineWord = lineIsYang ? '陽爻' : '陰爻';
+        const slotWord = slotIsYang ? '陽位' : '陰位';
+        const alignNote = aligned
+            ? `這一爻是${lineWord}，剛好落在傳統認為的${slotWord}，屬於「當位」，象徵這個階段的發展大致合乎常規、順著正道走，是相對穩定有利的組合。`
+            : `這一爻是${lineWord}，落在傳統認為的${slotWord}，屬於「不當位」，象徵這個階段的處境或做法可能有一點不太合拍，需要多花心思調整因應，不必因此就認定凶險，但宜更加謹慎。`;
+        return posMeaning + alignNote + (changing ? LINE_CHANGING_NOTE : '');
     }
 
     // 三錢法 (three-coin method): each line is cast by flipping 3 fair coins
@@ -154,15 +281,22 @@
     // Casts a full hexagram: 6 lines, bottom (line 1) first. Returns the
     // primary (本卦) hexagram, the changing line count/positions, and the
     // resulting (之卦/變卦) hexagram if any lines are changing (null
-    // otherwise). Per-line 爻辭 text is out of scope for this version (see
-    // js/data-yijing-content.js file header) — interpretation is based on
-    // the 本卦 and (if applicable) 之卦 judgment texts only.
+    // otherwise). Each line also carries its position number (1-6) and a
+    // pre-composed `reading` string via lineReading() for the new 逐爻解讀
+    // dimension (see file header).
     function castHexagram() {
         const lines = [];
         for (let i = 0; i < 6; i++) lines.push(castLine());
 
         const primaryBinary = lines.map(function (l) { return l.type === 'yang' ? '1' : '0'; }).join('');
         const primary = hexagramByBinary(primaryBinary);
+
+        lines.forEach(function (l, i) {
+            const position = i + 1;
+            l.position = position;
+            l.positionLabel = LINE_POSITION_LABELS[position];
+            l.reading = lineReading(position, l.type, l.changing);
+        });
 
         const changingCount = lines.filter(function (l) { return l.changing; }).length;
         let transformed = null;
@@ -185,6 +319,10 @@
     const api = {
         TRIGRAMS: TRIGRAMS,
         HEXAGRAMS: HEXAGRAMS,
+        HEXAGRAM_ADVICE: HEXAGRAM_ADVICE,
+        LINE_POSITION_LABELS: LINE_POSITION_LABELS,
+        LINE_POSITION_MEANINGS: LINE_POSITION_MEANINGS,
+        lineReading: lineReading,
         hexagramByBinary: hexagramByBinary,
         castLine: castLine,
         castHexagram: castHexagram,

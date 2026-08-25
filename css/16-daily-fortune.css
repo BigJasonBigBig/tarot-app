@@ -1,0 +1,233 @@
+/* -----------------------------------------------------------------------
+   每日運勢 — form + star-rated tiles + spotlight + lucky-info strip.
+   Independent .dailyfortune-* class names (same convention as namenum).
+   ----------------------------------------------------------------------- */
+
+.dailyfortune-form {
+    width: min(360px, 92vw);
+    margin: 0 auto 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.dailyfortune-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.dailyfortune-form-row label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.dailyfortune-form-row input[type="date"] {
+    background: rgba(var(--panel-rgb), 0.6);
+    border: 1px solid rgba(223, 186, 71, 0.35);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.dailyfortune-date {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.dailyfortune-overall-stars {
+    text-align: center;
+    font-size: 1.6rem;
+    letter-spacing: 0.2rem;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+}
+
+.dailyfortune-keyword {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.dailyfortune-detail-tip {
+    margin-top: 0.7rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed rgba(223, 186, 71, 0.3);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.dailyfortune-grid {
+    width: min(640px, 96vw);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+}
+
+.dailyfortune-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 1rem 0.6rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--tile-color, rgba(223, 186, 71, 0.4));
+    background: rgba(var(--panel-rgb), 0.55);
+    cursor: pointer;
+    color: var(--text-light);
+    font-family: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dailyfortune-tile:hover,
+.dailyfortune-tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.dailyfortune-tile.active {
+    box-shadow: 0 0 0 2px var(--tile-color), 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+.dailyfortune-tile-icon {
+    font-size: 1.4rem;
+}
+
+.dailyfortune-tile-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: var(--tile-color, var(--gold));
+}
+
+.dailyfortune-tile-stars {
+    font-size: 0.85rem;
+    color: var(--gold);
+    letter-spacing: 0.1rem;
+}
+
+.dailyfortune-grid .dailyfortune-tile:nth-child(4) {
+    grid-column: 1 / span 1;
+}
+.dailyfortune-grid .dailyfortune-tile:nth-child(5) {
+    grid-column: 2 / span 1;
+}
+
+.dailyfortune-tile-detail {
+    display: none;
+}
+
+.dailyfortune-spotlight {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 3, 12, 0.72);
+    padding: 1rem;
+}
+
+.dailyfortune-spotlight.active {
+    display: flex;
+}
+
+.dailyfortune-spotlight-inner {
+    width: min(460px, 94vw);
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(var(--panel-rgb), 0.96);
+    border: 1.5px solid rgba(223, 186, 71, 0.4);
+    border-radius: 16px;
+    padding: 1.4rem 1.3rem;
+    color: var(--text-light);
+}
+
+.dailyfortune-spotlight-inner h4 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+
+.dailyfortune-detail-stars {
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.15rem;
+    margin-bottom: 0.5rem;
+}
+
+.dailyfortune-detail-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.dailyfortune-spotlight-close {
+    position: absolute;
+    top: 1.4rem;
+    right: max(1.4rem, calc(50vw - 230px - 2.4rem));
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(223, 186, 71, 0.4);
+    color: var(--text-light);
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.dailyfortune-lucky-strip {
+    width: min(560px, 96vw);
+    margin: 1.1rem auto 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.dailyfortune-lucky-item {
+    font-size: 0.82rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(var(--panel-rgb), 0.55);
+    border: 1px solid rgba(223, 186, 71, 0.3);
+    color: var(--text-light);
+}
+
+.dailyfortune-tips {
+    width: min(500px, 94vw);
+    margin: 0.9rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.dailyfortune-tip-do { color: #5fd1a5; }
+.dailyfortune-tip-dont { color: #ef8a6b; }
+
+.dailyfortune-disclaimer {
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    opacity: 0.85;
+    margin-top: 0.9rem;
+}
+
+@media (max-width: 640px) {
+    .dailyfortune-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .dailyfortune-grid .dailyfortune-tile:nth-child(4),
+    .dailyfortune-grid .dailyfortune-tile:nth-child(5) {
+        grid-column: auto;
+    }
+}

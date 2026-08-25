@@ -40,16 +40,17 @@
     <link rel="stylesheet" href="css/02-landing-header.css?v=202608171200">
     <link rel="stylesheet" href="css/03-spread-selector.css?v=202608171200">
     <link rel="stylesheet" href="css/04-birthcard-natal1.css?v=202608171200">
-    <link rel="stylesheet" href="css/05-natal2.css?v=202608171200">
+    <link rel="stylesheet" href="css/05-natal2.css?v=202608242400">
     <link rel="stylesheet" href="css/06-natal3-knowledge-history.css?v=202608171200">
     <link rel="stylesheet" href="css/07-tarot-card-deck.css?v=202608171200">
     <link rel="stylesheet" href="css/08-reading-result.css?v=202608171200">
     <link rel="stylesheet" href="css/09-toggles-modal-responsive.css?v=202608171200">
     <link rel="stylesheet" href="css/10-ziwei-chart.css?v=202608191300">
-    <link rel="stylesheet" href="css/11-bazi-chart.css?v=202608221600">
-    <link rel="stylesheet" href="css/12-runes.css?v=202608221800">
-    <link rel="stylesheet" href="css/13-yijing.css?v=202608222000">
-    <link rel="stylesheet" href="css/15-name-numerology.css?v=202608241200">
+    <link rel="stylesheet" href="css/11-bazi-chart.css?v=202608242200">
+    <link rel="stylesheet" href="css/12-runes.css?v=202608242000">
+    <link rel="stylesheet" href="css/13-yijing.css?v=202608242300">
+    <link rel="stylesheet" href="css/15-name-numerology.css?v=202608241900">
+    <link rel="stylesheet" href="css/16-daily-fortune.css?v=202608241800">
 </head>
 <body>
     <!-- Sound toggle — floating corner control, always available -->
@@ -329,6 +330,11 @@
                     <span class="mode-select-label">姓名學／五格剖象</span>
                     <span class="mode-select-desc">輸入姓名，算出天格、人格、地格、外格、總格與數理吉凶</span>
                 </button>
+                <button class="mode-select-option" id="modeSelectDailyFortuneBtn" type="button">
+                    <span class="mode-select-icon">🌞</span>
+                    <span class="mode-select-label">每日運勢</span>
+                    <span class="mode-select-desc">輸入生日，看看今天的愛情、事業、財運、健康與人際運勢</span>
+                </button>
             </div>
 
             <div class="landing-links">
@@ -485,7 +491,7 @@
             <p class="intro-desc">用傳統的「三錢法」模擬擲筊起卦：每一爻都是虛擬擲三枚銅錢決定，六爻由下往上逐一形成一個卦象。點擊下方按鈕就能起一卦。</p>
 
             <button class="action-btn yijing-cast-btn" id="castYijingBtn" type="button">擲筊起卦</button>
-            <p class="yijing-disclaimer">提醒：這裡只提供「本卦」與「之卦」（有變爻時）的卦辭解讀，還沒有收錄逐爻的爻辭內容，之後可能會再補上。結果僅供參考娛樂，是給自己一個思考的角度，不是絕對的預言。</p>
+            <p class="yijing-disclaimer">提醒：這裡的逐爻解讀是根據「爻位」（初爻到上爻各自代表的階段、當位／不當位的通則）所寫的通用性解說，不是逐字翻譯古籍裡的爻辭原文，實際占卜學派眾多，看法可能略有出入。結果僅供參考娛樂，是給自己一個思考的角度，不是絕對的預言。</p>
 
             <div class="yijing-result" id="yijingResult" hidden>
                 <!-- Filled in by JS -->
@@ -512,6 +518,27 @@
             </form>
 
             <div class="namenum-result" id="namenumResult" hidden>
+                <!-- Filled in by JS -->
+            </div>
+        </section>
+
+        <!-- Daily Fortune (每日運勢) view — pure client-side deterministic
+             (seeded by birth date + today's date) generator, no data leaves
+             the browser. -->
+        <section class="view-panel view-dailyfortune" id="viewDailyFortune" hidden>
+            <button class="back-link" id="dailyFortuneBackBtn" type="button">← 返回首頁</button>
+            <h2 class="knowledge-title">✦ 每日運勢 ✦</h2>
+            <p class="intro-desc">輸入你的出生日期，看看今天在愛情、事業、財運、健康與人際五個面向的運勢。同一天內重新查詢會是一樣的結果，隔天再來就會換一批新的內容。</p>
+
+            <form class="dailyfortune-form" id="dailyFortuneForm">
+                <div class="dailyfortune-form-row">
+                    <label for="dailyFortuneBirthInput">出生日期</label>
+                    <input type="date" id="dailyFortuneBirthInput">
+                </div>
+                <button class="action-btn" id="calcDailyFortuneBtn" type="button">查看今日運勢</button>
+            </form>
+
+            <div class="dailyfortune-result" id="dailyFortuneResult" hidden>
                 <!-- Filled in by JS -->
             </div>
         </section>
@@ -652,10 +679,10 @@
         </section>
     </main>
 
-    <script src="tarot-data.js?v=202608170747"></script>
+    <script src="tarot-data.js?v=202608242500"></script>
     <!-- Self-hosted astronomy calculation library (MIT licensed), used only by the natal chart feature -->
     <script src="assets/js/astronomy.browser.min.js"></script>
-    <script src="astrology.js?v=202608170747"></script>
+    <script src="astrology.js?v=202608242400"></script>
     <!-- Zi Wei Dou Shu (紫微斗數) calculation modules — pure functions, no
          DOM, reuse the Astronomy library above for the lunar calendar. -->
     <script src="js/ziwei-lunar.js?v=202608191300"></script>
@@ -663,31 +690,34 @@
     <!-- BaZi (八字/四柱推命) calculation modules — pure functions, no DOM,
          reuse the Astronomy library above for the 節氣/立春 boundaries. -->
     <script src="js/bazi-calendar.js?v=202608221600"></script>
-    <script src="js/bazi-placement.js?v=202608221600"></script>
+    <script src="js/bazi-placement.js?v=202608242200"></script>
     <!-- script.js was split into these ordered pieces for maintainability
          (each under ~520 lines instead of one ~1900-line file). They're all
          plain classic scripts sharing one global scope, exactly like before
          — order matters (later files call functions/reference consts
          defined in earlier ones), so keep this exact sequence. -->
     <script src="js/data-tarot-content.js?v=202608171200"></script>
-    <script src="js/data-ziwei-content.js?v=202608191300"></script>
-    <script src="js/data-bazi-content.js?v=202608221600"></script>
-    <script src="js/data-runes-content.js?v=202608221800"></script>
-    <script src="js/data-yijing-content.js?v=202608222000"></script>
+    <script src="js/data-ziwei-content.js?v=202608242100"></script>
+    <script src="js/data-bazi-content.js?v=202608242200"></script>
+    <script src="js/data-runes-content.js?v=202608242000"></script>
+    <script src="js/data-yijing-content.js?v=202608242300"></script>
     <script src="js/data-name-strokes.js?v=202608241200"></script>
-    <script src="js/data-name-numbers.js?v=202608241200"></script>
+    <script src="js/data-name-numbers.js?v=202608241900"></script>
+    <script src="js/data-name-sancai.js?v=202608241900"></script>
+    <script src="js/data-daily-fortune-content.js?v=202608241800"></script>
     <script src="js/theme-and-helpers.js?v=202608171200"></script>
-    <script src="js/view-routing.js?v=202608241200"></script>
+    <script src="js/view-routing.js?v=202608241500"></script>
     <script src="js/birthcard.js?v=202608171200"></script>
-    <script src="js/natal-chart.js?v=202608171200"></script>
+    <script src="js/natal-chart.js?v=202608242400"></script>
     <script src="js/ziwei-chart.js?v=202608191300"></script>
-    <script src="js/bazi-chart.js?v=202608221600"></script>
-    <script src="js/runes-reading.js?v=202608221800"></script>
-    <script src="js/yijing-reading.js?v=202608222000"></script>
-    <script src="js/name-numerology.js?v=202608241200"></script>
+    <script src="js/bazi-chart.js?v=202608242200"></script>
+    <script src="js/runes-reading.js?v=202608242000"></script>
+    <script src="js/yijing-reading.js?v=202608242300"></script>
+    <script src="js/name-numerology.js?v=202608241900"></script>
+    <script src="js/daily-fortune.js?v=202608241800"></script>
     <script src="js/tarot-reading.js?v=202608171200"></script>
     <script src="js/history.js?v=202608171200"></script>
     <script src="js/share.js?v=202608171200"></script>
-    <script src="js/ui-init.js?v=202608241200"></script>
+    <script src="js/ui-init.js?v=202608241500"></script>
 </body>
 </html>

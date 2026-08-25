@@ -38,16 +38,16 @@ const ZODIAC_SIGNS = [
 ];
 
 const PLANETS_META = [
-    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '太陽代表你最核心的自我認同、生命力來源與想要被世界看見的樣子，是整張命盤裡最基本的「主角能量」，也象徵你有意識想要活成的那個人。', retrogradeCapable: false, color: '#f5b942' },
-    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '月亮反映你最私密的情緒反應模式、內在安全感的來源，以及你在放鬆或壓力之下最真實的直覺反應，是外人不容易一眼看穿、卻主宰你日常心情起伏的那一面。', retrogradeCapable: false, color: '#b8c4d9' },
-    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '水星掌管你接收與處理資訊的方式、說話與書寫的風格，以及你如何學習新事物、與人交換想法——簡單說，就是你「腦袋運作」的方式。', retrogradeCapable: true, color: '#f97316' },
-    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '金星描述你在感情與美感上的品味、什麼樣的人事物容易吸引你，以及你表達愛意、享受生活的方式，也影響你如何經營人際關係中的和諧感。', retrogradeCapable: true, color: '#f472b6' },
-    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '火星代表你的行動力、慾望驅動與面對衝突時的本能反應，是你主動出擊、爭取想要的東西時展現出來的原始能量。', retrogradeCapable: true, color: '#ef4444' },
-    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '木星象徵擴張、幸運與信念系統，代表你在哪些領域容易得到機會與成長，也反映你對人生意義與價值觀的整體樂觀程度。', retrogradeCapable: true, color: '#a78bfa' },
-    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '土星代表限制、責任與需要長期努力才能修煉出來的課題，這裡常常是你最容易自我要求、也最容易感到壓力的地方，卻也是累積扎實成果的關鍵。', retrogradeCapable: true, color: '#94a3b8' },
-    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '天王星帶來突破、獨立與求新求變的衝動，這個位置容易展現出不按牌理出牌、渴望自由與革新的一面，有時也會帶來突如其來的轉折。', retrogradeCapable: true, color: '#22d3ee' },
-    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '海王星象徵夢想、靈性直覺與難以言喻的渴望，這裡容易模糊界線、充滿想像力，也可能是你容易理想化、需要學會分辨現實與幻想的領域。', retrogradeCapable: true, color: '#60a5fa' },
-    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '冥王星代表深層的蛻變力量、隱藏的慾望與生死交關般的課題，這個位置往往牽涉到你最深層、甚至連自己都不容易察覺的心理驅動力。', retrogradeCapable: true, color: '#c0392b' }
+    { body: 'Sun', label: '太陽', symbol: '☉\uFE0E', meaning: '太陽代表你最核心的自我認同、生命力來源與想要被世界看見的樣子，是整張命盤裡最基本的「主角能量」，也象徵你有意識想要活成的那個人。', keyword: '自我認同與生命力', retrogradeCapable: false, color: '#f5b942' },
+    { body: 'Moon', label: '月亮', symbol: '☽\uFE0E', meaning: '月亮反映你最私密的情緒反應模式、內在安全感的來源，以及你在放鬆或壓力之下最真實的直覺反應，是外人不容易一眼看穿、卻主宰你日常心情起伏的那一面。', keyword: '情緒與內在安全感', retrogradeCapable: false, color: '#b8c4d9' },
+    { body: 'Mercury', label: '水星', symbol: '☿\uFE0E', meaning: '水星掌管你接收與處理資訊的方式、說話與書寫的風格，以及你如何學習新事物、與人交換想法——簡單說，就是你「腦袋運作」的方式。', keyword: '思考與溝通方式', retrogradeCapable: true, color: '#f97316' },
+    { body: 'Venus', label: '金星', symbol: '♀\uFE0E', meaning: '金星描述你在感情與美感上的品味、什麼樣的人事物容易吸引你，以及你表達愛意、享受生活的方式，也影響你如何經營人際關係中的和諧感。', keyword: '感情品味與人際和諧', retrogradeCapable: true, color: '#f472b6' },
+    { body: 'Mars', label: '火星', symbol: '♂\uFE0E', meaning: '火星代表你的行動力、慾望驅動與面對衝突時的本能反應，是你主動出擊、爭取想要的東西時展現出來的原始能量。', keyword: '行動力與慾望驅動', retrogradeCapable: true, color: '#ef4444' },
+    { body: 'Jupiter', label: '木星', symbol: '♃\uFE0E', meaning: '木星象徵擴張、幸運與信念系統，代表你在哪些領域容易得到機會與成長，也反映你對人生意義與價值觀的整體樂觀程度。', keyword: '擴張機會與人生信念', retrogradeCapable: true, color: '#a78bfa' },
+    { body: 'Saturn', label: '土星', symbol: '♄\uFE0E', meaning: '土星代表限制、責任與需要長期努力才能修煉出來的課題，這裡常常是你最容易自我要求、也最容易感到壓力的地方，卻也是累積扎實成果的關鍵。', keyword: '責任限制與長期課題', retrogradeCapable: true, color: '#94a3b8' },
+    { body: 'Uranus', label: '天王星', symbol: '♅\uFE0E', meaning: '天王星帶來突破、獨立與求新求變的衝動，這個位置容易展現出不按牌理出牌、渴望自由與革新的一面，有時也會帶來突如其來的轉折。', keyword: '突破求新與獨立自主', retrogradeCapable: true, color: '#22d3ee' },
+    { body: 'Neptune', label: '海王星', symbol: '♆\uFE0E', meaning: '海王星象徵夢想、靈性直覺與難以言喻的渴望，這裡容易模糊界線、充滿想像力，也可能是你容易理想化、需要學會分辨現實與幻想的領域。', keyword: '夢想直覺與理想化傾向', retrogradeCapable: true, color: '#60a5fa' },
+    { body: 'Pluto', label: '冥王星', symbol: '♇\uFE0E', meaning: '冥王星代表深層的蛻變力量、隱藏的慾望與生死交關般的課題，這個位置往往牽涉到你最深層、甚至連自己都不容易察覺的心理驅動力。', keyword: '深層蛻變與隱藏慾望', retrogradeCapable: true, color: '#c0392b' }
 ];
 
 // Full write-up for each of the 12 houses: the traditional Chinese house
@@ -317,6 +317,45 @@ function computeAspects(planets) {
     return results;
 }
 
+// ---------------------------------------------------------------------
+// 相位解讀 (aspect interpretation) — a new dimension: previously
+// computeAspects() only returned geometry (which two planets, which
+// aspect type, how tight the orb) used to draw colored lines on the
+// wheel, with no explanatory text anywhere for what a specific aspect
+// actually means. Rather than hand-writing a bespoke entry for every one
+// of the 45 possible planet pairs x 5 aspect types (225 combinations —
+// a very large undertaking with real risk of shallow, repetitive
+// filler), this composes a genuine, specific-reading reading from two
+// verified building blocks: (1) ASPECT_MEANINGS, the well-established
+// general character of each of the 5 major aspect types (a standard,
+// uncontested part of Western astrology's aspect theory), and (2) each
+// planet's own `keyword` (added to PLANETS_META above) naming the two
+// life-domains actually in play for this specific pair. This mirrors the
+// same "template pool + parametrized composition" approach already used
+// elsewhere in this app (e.g. js/data-name-sancai.js's 三才配置).
+// ---------------------------------------------------------------------
+const ASPECT_MEANINGS = {
+    conjunction: '合相代表兩股力量緊密融合、幾乎是同一件事的兩種表現，彼此的特質會自然而然地混合在一起、密不可分。好處是力量集中、容易展現出鮮明的個人特色，需要留意的是有時會分不清楚究竟是哪一股驅力在主導，容易把兩者混為一談。',
+    sextile: '六分相代表兩股力量之間有一種輕鬆、互相成就的默契，只要願意主動一點加以運用，彼此就能互相加分、相輔相成。這是一種需要自己動手把握才會顯現出來的潛在優勢，機會通常不會自己送上門，但只要願意嘗試，會發現配合起來意外地順手。',
+    square: '四分相代表兩股力量之間存在一種摩擦與張力，彼此互相拉扯、不容易一拍即合，常常帶來需要透過努力與磨合才能化解的內在課題。這樣的組合過程可能會讓人感覺卡卡的、甚至有點內耗，但也因此最容易鍛鍊出真正的韌性與成長，是命盤裡最需要「練習」的地方。',
+    trine: '三分相代表兩股力量之間流動順暢、天生就很合拍，能夠自然地互相支持、事半功倍。這是命盤裡相對舒服省力的組合，優點是不太需要刻意經營就能發揮效果，但也要留意太順的天賦有時會讓人疏於用心琢磨，反而沒有把潛力完全發揮出來。',
+    opposition: '對分相代表兩股力量像蹺蹺板的兩端，彼此的需求或風格容易互相拉鋸、形成兩極化的張力，一邊突出時另一邊常常會被犧牲或忽略。學習如何在兩股看似對立的力量之間來回擺盪、最終找到動態的平衡與整合，是這個相位最重要也最值得練習的功課。',
+};
+
+function planetMetaByBody(body) {
+    return PLANETS_META.find(function (p) { return p.body === body; }) || null;
+}
+
+// Composes a specific reading for one computed aspect result (as returned
+// by computeAspects()), e.g. `{ a: 'Sun', b: 'Mars', aspect: 'square', ... }`.
+function aspectInterpretation(aBody, bBody, aspectName) {
+    const aMeta = planetMetaByBody(aBody);
+    const bMeta = planetMetaByBody(bBody);
+    const meaning = ASPECT_MEANINGS[aspectName] || '';
+    if (!aMeta || !bMeta || !meaning) return meaning;
+    return meaning + `具體來說，你${aMeta.keyword}的部分，跟你${bMeta.keyword}的部分，會用這種方式彼此拉扯或融合，是解讀${aMeta.label}與${bMeta.label}這組相位時可以特別留意的地方。`;
+}
+
 function eclipticLongitude(Astronomy, body, time) {
     if (body === 'Sun') {
         return Astronomy.SunPosition(time).elon;
@@ -431,14 +470,16 @@ if (typeof window !== 'undefined') {
         PLANET_HOUSE_INSIGHTS,
         CITY_PRESETS,
         ASPECT_DEFS,
+        ASPECT_MEANINGS,
         computeNatalChart,
         computeAspects,
+        aspectInterpretation,
         norm360
     };
 }
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        ZODIAC_SIGNS, PLANETS_META, HOUSE_MEANINGS, PLANET_HOUSE_INSIGHTS, CITY_PRESETS, ASPECT_DEFS,
-        computeNatalChart, computeAspects, norm360, angleDiff, computeAscendantAndMC, eclipticLongitude
+        ZODIAC_SIGNS, PLANETS_META, HOUSE_MEANINGS, PLANET_HOUSE_INSIGHTS, CITY_PRESETS, ASPECT_DEFS, ASPECT_MEANINGS,
+        computeNatalChart, computeAspects, aspectInterpretation, norm360, angleDiff, computeAscendantAndMC, eclipticLongitude
     };
 }

@@ -232,6 +232,51 @@
     color: var(--gold);
 }
 
+/* --- 神煞 section --- */
+.bazi-shensha-section {
+    width: min(720px, 96vw);
+    margin: 1.1rem auto 0;
+}
+
+.bazi-shensha-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bazi-shensha-row {
+    padding: 0.55rem 0.8rem;
+    background: rgba(var(--panel-rgb), 0.5);
+    border: 1px solid rgba(223, 186, 71, 0.18);
+    border-radius: 10px;
+}
+
+.bazi-shensha-name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.86rem;
+    margin-bottom: 0.25rem;
+}
+
+.bazi-shensha-pillar {
+    font-size: 0.62rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    border: 1px solid rgba(223, 186, 71, 0.3);
+    border-radius: 999px;
+    padding: 0.02rem 0.4rem;
+}
+
+.bazi-shensha-text {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-light);
+}
+
 /* --- 大運/流年 section --- */
 .bazi-dayun-section {
     width: min(720px, 96vw);

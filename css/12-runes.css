@@ -125,6 +125,13 @@
 }
 
 /* --- Detail panel content (inside the shared .natal-spotlight) --- */
+.runes-detail-advice {
+    margin-top: 0.7rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-light);
+}
+
 .runes-detail-aett {
     margin-top: 0.7rem;
     font-size: 0.78rem;

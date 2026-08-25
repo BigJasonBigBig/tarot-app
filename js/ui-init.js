@@ -127,6 +127,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initZiweiForm();
     initBaziForm();
     initNameNumForm();
+    initDailyFortuneForm();
     showView('mode');
     initBgEmblemEye();
 });

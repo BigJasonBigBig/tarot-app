@@ -279,6 +279,75 @@
         return { stemIndex: hidden[0], isPrimary: true, transparent: false };
     }
 
+    // ---------------------------------------------------------------
+    // 神煞 (Shen Sha) — a small, well-established subset: 桃花／驛馬／
+    // 華蓋／將星 (all four derived from the same 三合局 reference table)
+    // plus 天乙貴人／文昌貴人 (both keyed off the day stem). Cross-checked
+    // against multiple independent sources; this build follows the
+    // common "年支或日支查三合局，日干查貴人" convention used by most
+    // modern software (see bazi-plan.md-style disclosure in
+    // js/data-bazi-content.js's SHEN_SHA_MEANINGS comment).
+    // ---------------------------------------------------------------
+    // Branch index -> which of the four 三合局 triads it belongs to,
+    // and each triad's 驛馬/桃花/華蓋/將星 target branch index.
+    const TRIAD_TARGETS = {
+        shenzichen: { travelHorse: 2, peachBlossom: 9, canopy: 4, general: 0 },   // 申子辰
+        yinwuxu: { travelHorse: 8, peachBlossom: 3, canopy: 10, general: 6 },     // 寅午戌
+        sizhouchou: { travelHorse: 11, peachBlossom: 6, canopy: 1, general: 9 },  // 巳酉丑
+        haimaowei: { travelHorse: 5, peachBlossom: 0, canopy: 7, general: 3 },    // 亥卯未
+    };
+    const BRANCH_TRIAD = {
+        8: 'shenzichen', 0: 'shenzichen', 4: 'shenzichen',
+        2: 'yinwuxu', 6: 'yinwuxu', 10: 'yinwuxu',
+        5: 'sizhouchou', 9: 'sizhouchou', 1: 'sizhouchou',
+        11: 'haimaowei', 3: 'haimaowei', 7: 'haimaowei',
+    };
+    // 天乙貴人：日干 -> [兩個地支]
+    const TIANYI_BY_DAYSTEM = {
+        0: [1, 7], 4: [1, 7], 6: [1, 7],   // 甲戊庚 -> 丑未
+        1: [0, 8], 5: [0, 8],              // 乙己 -> 子申
+        2: [11, 9], 3: [11, 9],            // 丙丁 -> 亥酉
+        8: [3, 5], 9: [3, 5],              // 壬癸 -> 卯巳
+        7: [2, 6],                          // 辛 -> 寅午
+    };
+    // 文昌貴人：日干 -> 單一地支
+    const WENCHANG_BY_DAYSTEM = {
+        0: 5, 1: 6, 2: 8, 3: 9, 4: 8, 5: 9, 6: 11, 7: 0, 8: 2, 9: 3,
+    };
+
+    function computeShenSha(fourPillars) {
+        const pillarKeys = ['year', 'month', 'day', 'hour'];
+        const branches = {};
+        pillarKeys.forEach(function (k) { branches[k] = fourPillars[k].branchIndex; });
+        const dayStemIndex = fourPillars.day.stemIndex;
+
+        // Reference triads: both year-branch and day-branch are
+        // traditionally used to look up 桃花/驛馬/華蓋/將星; check both
+        // and de-duplicate if they land on the same triad.
+        const refTriads = Array.from(new Set([
+            BRANCH_TRIAD[branches.year],
+            BRANCH_TRIAD[branches.day],
+        ]));
+
+        const hits = { peachBlossom: [], travelHorse: [], canopy: [], general: [], tianyi: [], wenchang: [] };
+
+        pillarKeys.forEach(function (key) {
+            const b = branches[key];
+            refTriads.forEach(function (triad) {
+                const t = TRIAD_TARGETS[triad];
+                if (b === t.peachBlossom && hits.peachBlossom.indexOf(key) === -1) hits.peachBlossom.push(key);
+                if (b === t.travelHorse && hits.travelHorse.indexOf(key) === -1) hits.travelHorse.push(key);
+                if (b === t.canopy && hits.canopy.indexOf(key) === -1) hits.canopy.push(key);
+                if (b === t.general && hits.general.indexOf(key) === -1) hits.general.push(key);
+            });
+            const tianyiBranches = TIANYI_BY_DAYSTEM[dayStemIndex] || [];
+            if (tianyiBranches.indexOf(b) !== -1) hits.tianyi.push(key);
+            if (WENCHANG_BY_DAYSTEM[dayStemIndex] === b) hits.wenchang.push(key);
+        });
+
+        return hits;
+    }
+
     function computeGeJu(fourPillars) {
         const dm = fourPillars.day.stemIndex;
         const monthBranchIndex = fourPillars.month.branchIndex;
@@ -314,6 +383,7 @@
         computeDaYunPillars: computeDaYunPillars,
         liuNianPillar: liuNianPillar,
         computeGeJu: computeGeJu,
+        computeShenSha: computeShenSha,
         tenGod: tenGod,
         stemElement: stemElement,
         stemIsYang: stemIsYang,

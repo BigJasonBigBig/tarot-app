@@ -218,6 +218,30 @@ function natalTileColor(i) {
     return NATAL_TILE_PALETTE[i % NATAL_TILE_PALETTE.length];
 }
 
+// 相位解讀 list — see astrology.js's aspectInterpretation() for the
+// composition logic (aspect-type meaning + the two planets' keywords).
+// Sorted tightest-orb-first since a tighter orb is traditionally
+// considered a stronger, more clearly-felt aspect.
+function buildAspectListHTML(chart) {
+    const { computeAspects, aspectInterpretation, PLANETS_META } = window.TarotAstrology;
+    const aspects = computeAspects(chart.planets).slice().sort((a, b) => a.orb - b.orb);
+    if (!aspects.length) {
+        return '<p class="natal-aspect-empty">這張命盤沒有偵測到符合容許度的主要相位。</p>';
+    }
+    const metaByBody = {};
+    PLANETS_META.forEach(m => { metaByBody[m.body] = m; });
+    return aspects.map(asp => {
+        const aMeta = metaByBody[asp.a], bMeta = metaByBody[asp.b];
+        const text = aspectInterpretation(asp.a, asp.b, asp.aspect);
+        return `
+            <div class="natal-aspect-row natal-aspect-tone-${asp.tone}">
+                <span class="natal-aspect-pair">${aMeta.symbol} ${aMeta.label} ${asp.label} ${bMeta.symbol} ${bMeta.label}</span>
+                <p class="natal-aspect-text">${text}</p>
+            </div>
+        `;
+    }).join('');
+}
+
 function renderNatalResult(chart) {
     const { ascendantSign, ascendantDegree, midheavenSign, midheavenDegree } = chart;
     const wheelSvg = buildNatalWheelSVG(chart);
@@ -263,6 +287,11 @@ function renderNatalResult(chart) {
                     <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#38bdf8"></i>調和相位（六分／三分）</span>
                     <span class="natal-legend-item"><i class="natal-legend-swatch" style="background:#f87171"></i>緊張相位（四分／對分）</span>
                 </span>
+                <div class="natal-aspect-section">
+                    <p class="natal-aspect-section-title">相位解讀</p>
+                    <p class="natal-aspect-section-intro">相位是行星之間的角度關係，代表兩股能量會用什麼方式互相影響。以下依角度誤差（容許度）由小到大排序，容許度越小代表這組相位的作用通常越明顯。</p>
+                    ${buildAspectListHTML(chart)}
+                </div>
             </div>
         </div>
     `);

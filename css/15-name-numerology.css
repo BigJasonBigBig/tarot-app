@@ -228,6 +228,52 @@
     color: var(--text-light);
 }
 
+.namenum-detail-advice {
+    margin-top: 0.7rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed rgba(223, 186, 71, 0.3);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.namenum-sancai {
+    width: min(560px, 94vw);
+    margin: 1.2rem auto 0;
+    padding: 1.1rem 1.2rem;
+    border-radius: 14px;
+    border: 1.5px solid rgba(223, 186, 71, 0.3);
+    background: rgba(var(--panel-rgb), 0.5);
+    text-align: center;
+}
+
+.namenum-sancai-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.namenum-sancai-sequence {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    margin-bottom: 0.4rem;
+}
+
+.namenum-sancai-relation {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+}
+
+.namenum-sancai-text {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    text-align: left;
+}
+
 @media (max-width: 640px) {
     .namenum-grid {
         grid-template-columns: repeat(2, 1fr);

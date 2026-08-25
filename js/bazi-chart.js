@@ -127,6 +127,42 @@ function buildBaziDaYunTile(dy, index, dayMasterStemIndex, birthYear) {
     `;
 }
 
+const BAZI_PILLAR_SHORT_LABELS = { year: '年', month: '月', day: '日', hour: '時' };
+
+function buildBaziShenShaHTML(shenSha) {
+    if (!shenSha || !window.BaziData) return '';
+    const labels = window.BaziData.SHEN_SHA_LABELS;
+    const meanings = window.BaziData.SHEN_SHA_MEANINGS;
+    const rows = Object.keys(labels).map(key => {
+        const pillars = shenSha[key] || [];
+        if (!pillars.length) return '';
+        const pillarBadges = pillars.map(p => `<span class="bazi-shensha-pillar">${BAZI_PILLAR_SHORT_LABELS[p]}柱</span>`).join('');
+        return `
+            <div class="bazi-shensha-row">
+                <span class="bazi-shensha-name">${labels[key]}${pillarBadges}</span>
+                <p class="bazi-shensha-text">${meanings[key]}</p>
+            </div>
+        `;
+    }).join('');
+
+    if (!rows) {
+        return `
+            <div class="bazi-shensha-section">
+                <h3 class="bazi-section-title">神煞</h3>
+                <p class="bazi-section-intro">這次排出的命盤沒有出現本站收錄的這幾種神煞（桃花／驛馬／華蓋／將星／天乙貴人／文昌貴人），命盤上沒有不代表運勢不好，神煞只是傳統上額外的補充參考，並非決定吉凶的主要依據。</p>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="bazi-shensha-section">
+            <h3 class="bazi-section-title">神煞</h3>
+            <p class="bazi-section-intro">神煞是傳統上疊加在十神、格局之外的補充判斷，下面列出這張命盤裡出現的幾種常見神煞、出現在哪一柱，以及大致的含義，可以當作額外的參考角度。</p>
+            <div class="bazi-shensha-list">${rows}</div>
+        </div>
+    `;
+}
+
 function renderBaziResult(data) {
     const { fourPillars, tenGods, strength, geju, qiyun, daYun, birthYear } = data;
     const dayMasterStemIndex = fourPillars.day.stemIndex;
@@ -139,6 +175,8 @@ function renderBaziResult(data) {
     const patternMeaning = (window.BaziData && window.BaziData.PATTERN_MEANINGS[geju.patternName]) || '';
     const dayunIntro = (window.BaziData && window.BaziData.DAYUN_INTRO) || '';
     const elementName = window.BaziPlacement.ELEMENT_NAMES[window.BaziPlacement.stemElement(dayMasterStemIndex)];
+    const shenSha = window.BaziPlacement.computeShenSha(fourPillars);
+    const shenShaHTML = buildBaziShenShaHTML(shenSha);
 
     baziResult.hidden = false;
     baziResult.innerHTML = `
@@ -155,6 +193,8 @@ function renderBaziResult(data) {
             <p><strong>五行強弱：</strong>${strengthMeaning}${seasonText}</p>
             <p><strong>${geju.patternName}：</strong>${patternMeaning}</p>
         </div>
+
+        ${shenShaHTML}
 
         <div class="bazi-dayun-section">
             <h3 class="bazi-section-title">大運與流年</h3>

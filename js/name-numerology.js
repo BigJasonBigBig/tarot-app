@@ -124,6 +124,7 @@ function buildNameNumTile(key, wuGe) {
                 '<p class="namenum-detail-number">數理 ' + value + (info.normalized !== value ? '（換算：' + info.normalized + '）' : '') + '　<span class="namenum-detail-cat ' + catClass + '">' + info.categoryLabel + '</span></p>' +
                 '<p class="namenum-detail-name">「' + info.name + '」</p>' +
                 '<p class="namenum-detail-text">' + info.text + '</p>' +
+                '<p class="namenum-detail-advice">💡 ' + info.advice + '</p>' +
             '</div>' +
         '</button>'
     );
@@ -147,6 +148,19 @@ function closeNameNumSpotlight() {
     document.querySelectorAll('.namenum-tile').forEach(function (t) { t.classList.remove('active'); });
 }
 
+function buildSanCaiHTML(sancai) {
+    var catClass = NAMENUM_CAT_CLASS[sancai.category] || '';
+    return (
+        '<div class="namenum-sancai">' +
+            '<h3 class="namenum-sancai-title">三才配置</h3>' +
+            '<p class="namenum-sancai-sequence">天 <strong>' + sancai.tianElement + '</strong> → 人 <strong>' + sancai.renElement + '</strong> → 地 <strong>' + sancai.diElement + '</strong>　' +
+                '<span class="namenum-detail-cat ' + catClass + '">' + sancai.categoryLabel + '</span></p>' +
+            '<p class="namenum-sancai-relation">天格對人格：' + sancai.tianRenRelation + '　｜　人格對地格：' + sancai.renDiRelation + '</p>' +
+            '<p class="namenum-sancai-text">' + sancai.text + '</p>' +
+        '</div>'
+    );
+}
+
 function renderNameNumResult(surnameChars, givenChars, strokes, wuGe) {
     var charsRow = surnameChars.concat(givenChars).map(function (ch) {
         return '<span class="namenum-char-chip">' + ch + '<small>' + strokes[ch] + '畫</small></span>';
@@ -154,6 +168,8 @@ function renderNameNumResult(surnameChars, givenChars, strokes, wuGe) {
 
     var renGeInfo = window.NameNumbers.lookup(wuGe.renGe);
     var summary = '💫 「' + surnameChars.join('') + givenChars.join('') + '」的人格數理為 ' + wuGe.renGe + '（' + renGeInfo.name + '），屬於「' + renGeInfo.categoryLabel + '」。人格代表一個人的主運與性格核心，點下方任一格子可以看該格的完整解說。';
+
+    var sancai = window.NameSanCai.computeSanCai(wuGe.tianGe, wuGe.renGe, wuGe.diGe);
 
     namenumResult.hidden = false;
     namenumResult.innerHTML =
@@ -170,7 +186,8 @@ function renderNameNumResult(surnameChars, givenChars, strokes, wuGe) {
             '<div class="namenum-spotlight-inner" id="namenumSpotlightInner"></div>' +
             '<button type="button" class="namenum-spotlight-close" id="namenumSpotlightClose" aria-label="關閉">✕</button>' +
         '</div>' +
-        '<p class="namenum-disclaimer">五格筆畫採「康熙字典」筆畫計算慣例（部首簡化字會還原，例如 氵、忄、艹 等），與日常書寫筆畫可能不同；81數理與五格分析源自民間流傳的姓名學（五格剖象法），僅供參考娛樂，並非科學或心理學上的定論。</p>';
+        buildSanCaiHTML(sancai) +
+        '<p class="namenum-disclaimer">五格筆畫採「康熙字典」筆畫計算慣例（部首簡化字會還原，例如 氵、忄、艹 等），與日常書寫筆畫可能不同；81數理、三才配置與五格分析源自民間流傳的姓名學（五格剖象法／熊崎氏姓名學），僅供參考娛樂，並非科學或心理學上的定論。</p>';
 
     wireNameNumTiles();
 }

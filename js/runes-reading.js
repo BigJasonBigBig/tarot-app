@@ -16,6 +16,7 @@ function buildRuneTile(draw, index, positionLabel) {
     const rune = draw.rune;
     const orientationLabel = draw.reversed ? '逆位' : '正位';
     const meaning = draw.reversed ? rune.reversed : rune.upright;
+    const advice = draw.reversed ? rune.adviceReversed : rune.adviceUpright;
     const color = RUNES_TILE_PALETTE[index % RUNES_TILE_PALETTE.length];
     const aett = (window.RunesData && window.RunesData.AETT_INFO[rune.aett]) || null;
 
@@ -31,6 +32,7 @@ function buildRuneTile(draw, index, positionLabel) {
             <div class="natal-tile-detail">
                 <strong class="natal-tile-detail-title">${rune.name}・${orientationLabel}${positionLabel ? `（${positionLabel}）` : ''}</strong>
                 <p class="natal-tile-keyword">${meaning}</p>
+                ${advice ? `<p class="runes-detail-advice">💡 ${advice}</p>` : ''}
                 ${aett ? `<p class="runes-detail-aett"><strong>${aett.name}：</strong>${aett.desc}</p>` : ''}
             </div>
         </div>
