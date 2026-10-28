@@ -10,27 +10,46 @@
     document.body.appendChild(canvas);
     var ctx = canvas.getContext('2d');
     var stars = [];
+    var orbs = [];
     var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     function resize() {
         w = window.innerWidth; h = window.innerHeight;
         canvas.width = w * dpr; canvas.height = h * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        var count = Math.round(Math.min(160, (w * h) / 9000));
+        var count = Math.round(Math.min(280, (w * h) / 5500));
         stars = [];
+        orbs = [];
+        for (var o = 0; o < 22; o++) {
+            orbs.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 38 + 14, vy: Math.random() * 0.25 + 0.08, vx: (Math.random() - 0.5) * 0.15, p: Math.random() * 6.28, a: Math.random() * 0.07 + 0.04 });
+        }
         for (var i = 0; i < count; i++) {
             stars.push({
                 x: Math.random() * w, y: Math.random() * h,
-                r: Math.random() * 1.4 + 0.3,
+                r: Math.random() * 1.8 + 0.4,
                 p: Math.random() * Math.PI * 2,
                 s: Math.random() * 0.02 + 0.006,
-                gold: Math.random() < 0.3
+                gold: Math.random() < 0.45
             });
         }
     }
 
     function frame() {
         ctx.clearRect(0, 0, w, h);
+        for (var k = 0; k < orbs.length; k++) {
+            var ob = orbs[k];
+            ob.y -= ob.vy; ob.x += ob.vx; ob.p += 0.01;
+            if (ob.y < -ob.r) { ob.y = h + ob.r; ob.x = Math.random() * w; }
+            var g = ctx.createRadialGradient(ob.x, ob.y, 0, ob.x, ob.y, ob.r);
+            var oa = ob.a * (0.7 + 0.3 * Math.sin(ob.p));
+            g.addColorStop(0, 'rgba(255,233,160,' + oa + ')');
+            g.addColorStop(1, 'rgba(255,233,160,0)');
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(ob.x, ob.y, ob.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
         for (var i = 0; i < stars.length; i++) {
             var st = stars[i];
             st.p += st.s;
@@ -66,8 +85,17 @@
         setTimeout(function () { m.remove(); }, 1400);
     }
     (function loop() {
-        setTimeout(function () { meteor(); loop(); }, 3500 + Math.random() * 6000);
+        setTimeout(function () { meteor(); loop(); }, 1800 + Math.random() * 3200);
     })();
+
+    // ---- 游標光暈 ----
+    var halo = document.createElement('div');
+    halo.id = 'luxeHalo';
+    halo.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(halo);
+    window.addEventListener('mousemove', function (e) {
+        halo.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    }, { passive: true });
 
     // ---- 金粉 ----
     var last = 0;

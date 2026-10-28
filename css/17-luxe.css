@@ -460,3 +460,199 @@ select:focus {
         letter-spacing: 3px;
     }
 }
+
+/* =======================================================================
+   LUXE v2 — 加強版：更強的金光、極光、整頁金框、呼吸光暈
+   ======================================================================= */
+
+/* 極光：緩慢飄移的金紫光幕 */
+.universe-bg::after {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    background:
+        radial-gradient(ellipse 45% 30% at 25% 20%, rgba(223, 186, 71, 0.22), transparent 70%),
+        radial-gradient(ellipse 40% 35% at 78% 30%, rgba(139, 92, 246, 0.26), transparent 70%),
+        radial-gradient(ellipse 50% 30% at 55% 85%, rgba(223, 186, 71, 0.16), transparent 70%);
+    mix-blend-mode: screen;
+    animation: luxeAurora 22s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes luxeAurora {
+    0% { transform: translate3d(-3%, -2%, 0) scale(1); opacity: 0.8; }
+    50% { transform: translate3d(3%, 2%, 0) scale(1.08); opacity: 1; }
+    100% { transform: translate3d(-1%, 4%, 0) scale(1.03); opacity: 0.85; }
+}
+
+/* 整頁金色畫框：雙線 + 四角光暈 */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 8px;
+    z-index: 40;
+    pointer-events: none;
+    border: 1px solid rgba(223, 186, 71, 0.7);
+    border-radius: 6px;
+    box-shadow:
+        inset 0 0 0 4px rgba(var(--panel-rgb-strong), 0.0),
+        inset 0 0 0 5px rgba(223, 186, 71, 0.28),
+        inset 0 0 40px rgba(223, 186, 71, 0.14),
+        0 0 22px rgba(223, 186, 71, 0.28);
+    background:
+        radial-gradient(circle at 0 0, rgba(255, 243, 176, 0.55) 0, transparent 38px),
+        radial-gradient(circle at 100% 0, rgba(255, 243, 176, 0.55) 0, transparent 38px),
+        radial-gradient(circle at 0 100%, rgba(255, 243, 176, 0.55) 0, transparent 38px),
+        radial-gradient(circle at 100% 100%, rgba(255, 243, 176, 0.55) 0, transparent 38px);
+    animation: luxeFramePulse 5s ease-in-out infinite;
+}
+
+@keyframes luxeFramePulse {
+    0%, 100% { opacity: 0.75; }
+    50% { opacity: 1; }
+}
+
+/* 標題：更大、更亮、兩側星飾 */
+h1 {
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    letter-spacing: 6px;
+    filter:
+        drop-shadow(0 0 10px rgba(255, 243, 176, 0.65))
+        drop-shadow(0 0 26px var(--gold-glow))
+        drop-shadow(0 3px 3px rgba(0, 0, 0, 0.8));
+}
+
+h1::before,
+h1::after {
+    content: '✦';
+    display: inline-block;
+    margin: 0 0.5em;
+    font-size: 0.45em;
+    vertical-align: middle;
+    -webkit-text-fill-color: var(--luxe-gold-hi);
+    animation: luxeTwinkle 3s ease-in-out infinite;
+}
+
+header::before {
+    height: 340px;
+    background: radial-gradient(ellipse at center, rgba(223, 186, 71, 0.32) 0%, rgba(139, 92, 246, 0.10) 40%, transparent 70%);
+}
+
+/* 功能卡片：金色漸層底 + 常駐呼吸光暈 + 加粗金框 */
+.mode-select-option {
+    border: 2px solid rgba(255, 233, 160, 0.75);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(223, 186, 71, 0.22) 0%, transparent 60%),
+        linear-gradient(160deg, rgba(var(--panel-rgb), 0.95) 0%, rgba(var(--panel-rgb-strong), 0.88) 100%);
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.6),
+        0 0 18px rgba(223, 186, 71, 0.3),
+        inset 0 0 0 4px rgba(var(--panel-rgb-strong), 0.9),
+        inset 0 0 0 5px rgba(223, 186, 71, 0.5),
+        inset 0 0 30px rgba(223, 186, 71, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: luxeCardGlow 4.5s ease-in-out infinite;
+}
+
+.mode-select-option:nth-child(2n) { animation-delay: -1.5s; }
+.mode-select-option:nth-child(3n) { animation-delay: -3s; }
+
+@keyframes luxeCardGlow {
+    0%, 100% { border-color: rgba(223, 186, 71, 0.6); }
+    50% { border-color: rgba(255, 243, 176, 0.95); }
+}
+
+.mode-select-option:hover,
+.mode-select-option:focus-visible {
+    box-shadow:
+        0 20px 46px rgba(0, 0, 0, 0.65),
+        0 0 40px rgba(255, 233, 160, 0.55),
+        inset 0 0 0 4px rgba(var(--panel-rgb-strong), 0.9),
+        inset 0 0 0 5px rgba(255, 243, 176, 0.85),
+        inset 0 0 36px rgba(223, 186, 71, 0.25);
+}
+
+.mode-select-option::after {
+    content: '✦';
+    font-size: 0.9rem;
+    opacity: 0.95;
+    color: var(--luxe-gold-hi);
+    animation: luxeTwinkle 3s ease-in-out infinite;
+}
+
+.mode-select-icon {
+    font-size: 3.1rem;
+    filter: drop-shadow(0 0 14px var(--gold-glow)) drop-shadow(0 0 4px rgba(255, 243, 176, 0.7));
+}
+
+.mode-select-label {
+    font-size: 1.15em;
+}
+
+/* 結果面板與卡片：金框發光 */
+.reading-result {
+    border: 1.5px solid rgba(255, 233, 160, 0.6);
+    box-shadow:
+        0 18px 50px rgba(0, 0, 0, 0.75),
+        0 0 36px rgba(223, 186, 71, 0.28),
+        inset 0 0 0 5px rgba(var(--panel-rgb-strong), 0.9),
+        inset 0 0 0 6px rgba(223, 186, 71, 0.3);
+}
+
+.result-title {
+    background: var(--luxe-metal);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: luxeShine 7s linear infinite;
+    filter: drop-shadow(0 0 12px var(--gold-glow));
+}
+
+.action-btn {
+    font-size: 1.1rem;
+    box-shadow:
+        0 8px 22px rgba(223, 186, 71, 0.5),
+        0 0 20px rgba(255, 233, 160, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.tarot-card-container .tarot-card {
+    filter: drop-shadow(0 0 10px rgba(223, 186, 71, 0.4));
+}
+
+/* 游標光暈（由 luxe-fx.js 移動） */
+#luxeHalo {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 320px;
+    height: 320px;
+    margin: -160px 0 0 -160px;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 233, 160, 0.16) 0%, transparent 65%);
+    transition: transform 0.18s ease-out;
+    will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .universe-bg::after,
+    body::after,
+    .mode-select-option,
+    .mode-select-option::after,
+    .result-title,
+    h1::before,
+    h1::after {
+        animation: none;
+    }
+    #luxeHalo { display: none; }
+}
+
+@media (max-width: 600px) {
+    body::after { inset: 4px; }
+    h1 { letter-spacing: 2px; }
+    h1::before, h1::after { margin: 0 0.25em; }
+}
